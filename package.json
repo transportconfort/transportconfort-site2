@@ -1,0 +1,12 @@
+{
+  "name": "transportconfort-site",
+  "private": true,
+  "version": "1.0.0",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "stripe": "^14.0.0"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}
