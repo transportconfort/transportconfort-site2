@@ -198,14 +198,14 @@ async function pay(payFull = false) {
   } else {
     alert("Calendly se charge… réessayez dans 1 seconde.");
   }
-
+}
 
   // Bind UI
   els.estimateBtn.addEventListener('click', estimate);
   els.pay20.addEventListener('click', () => pay(false));
   els.pay100.addEventListener('click', () => pay(true));
   els.calendlyBtn.addEventListener('click', calendly);
-})();
+
 
 // ===== Utilitaires hors IIFE =====
 function isNightOrWeekend(dateStr, timeStr) {
