@@ -142,83 +142,53 @@ await loadGmaps();
 
     window._TC_LAST = { type: 'COURSE', from, to, whenISO: dt.toISOString(), dist_m: dist, dur_s: dur, price_eur: p };
   }
-
-  // ===== Stripe Pay (corrigé) =====
-  async function pay(payFull = false) {
-    try {
-      if (!window._TC_LAST) {
-        alert('Faites une estimation d’abord.');
-        return;
-      }
-
-      const stripePk =
-        cfg.STRIPE_PUBLISHABLE_KEY ||
-        window.STRIPE_PUBLISHABLE_KEY ||
-        (window.TC_conf && TC_conf.STRIPE_PUBLISHABLE_KEY);
-
-      if (!stripePk || !window.Stripe) {
-        alert('Stripe non configuré.');
-        return;
-      }
-
-      const stripe = Stripe(stripePk);
-      let card = window._stripeElements && window._stripeElements.getElement && window._stripeElements.getElement('card');
-
-      if (!card) {
-        const el = document.getElementById('card-element');
-        if (!el) {
-          alert('Zone carte manquante (#card-element).');
-          return;
-        }
-        const elements = stripe.elements();
-        card = elements.create('card');
-        card.mount(el);
-        // Optionnel : conserver globalement
-        window._stripeElements = elements;
-      }
-
-      const status = document.getElementById('status');
-      if (status) status.textContent = 'Création du paiement…';
-
-      const amount_eur = Math.round(Math.max(window._TC_LAST.price_eur || 0, 0) * 100);
-      const meta = Object.assign({}, window._TC_LAST || {}, { pay_mode: payFull ? 'FULL' : 'DEPOSIT' });
-
-      const resp = await fetch('/.netlify/functions/create-payment-intent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount_eur, metadata: meta })
-      });
-      if (!resp.ok) throw new Error(await resp.text());
-      const { clientSecret } = await resp.json();
-
-      const result = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card,
-          billing_details: { name: 'Client Transport Confort' }
-        }
-      });
-
-      if (result.error) throw result.error;
-
-      if (result.paymentIntent && result.paymentIntent.status === 'succeeded') {
-        if (status) {
-          status.style.color = '#2ecc71';
-          status.textContent = '✅ Paiement confirmé. Vous pouvez finaliser la réservation dans Calendly.';
-        }
-      } else {
-        if (status) status.textContent = '🕓 Paiement en attente de validation (3-D Secure)…';
-      }
-    } catch (e) {
-      console.error(e);
-      const status = document.getElementById('status');
-      if (status) {
-        status.style.color = '#ff5252';
-        status.textContent = '❌ Paiement refusé/indisponible.';
-      }
-      alert('❌ Paiement indisponible pour le moment.');
+// ===== Paiement via Stancer (paylink) =====
+async function pay(payFull = false) {
+  try {
+    if (!window._TC_LAST) {
+      alert('Faites une estimation d’abord.');
+      return;
     }
-  }
 
+    // Prépare la charge selon le mode
+    const isMAD = (window._TC_LAST.type === 'MAD' || document.getElementById('mode-mad')?.checked);
+    const payload = {
+      type: isMAD ? 'mad' : 'course',
+      from: window._TC_LAST.from || els.from.value,
+      to: window._TC_LAST.to || els.to.value,
+      dateISO: window._TC_LAST.whenISO,
+      dureeHeures: isMAD ? (window._TC_LAST.mad_hours || Number(document.getElementById('mad-hours')?.value || 1)) : undefined
+    };
+
+    // Appelle la fonction Netlify → calcule prix (Google si course) → crée paylink Stancer
+    const resp = await fetch('/.netlify/functions/paylink-from-simulator', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!resp.ok) {
+      const txt = await resp.text();
+      console.error('Stancer error:', txt);
+      alert('❌ Paiement indisponible pour le moment.');
+      return;
+    }
+
+    const { paylink } = await resp.json();
+    if (!paylink) {
+      alert('❌ Lien de paiement introuvable.');
+      return;
+    }
+
+    // Redirection unique vers la page de paiement Stancer
+    window.location.href = paylink;
+  } catch (e) {
+    console.error(e);
+    alert('❌ Erreur pendant l’initialisation du paiement.');
+  }
+}
+
+  
   function calendly() {
     const calMAD = (cfg.CALENDLY_MAD || '').trim();
     const calVTC = (cfg.CALENDLY_VTC || window.CALENDLY_URL || '').trim();
