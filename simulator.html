@@ -1,131 +1,180 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Simulateur & Réservation • Transport Confort</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="/assets/style.css">
-<script>
-  window.GMAPS_KEY="GMAPS_KEY_PLACEHOLDER";
-  window.CALENDLY_URL="CALENDLY_URL_PLACEHOLDER";
-</script>
-<script src="/js/app.js"></script>
-<script>
-(async function(){
-  try{
-    const cfg = await TC.loadConfig();
-    if(cfg && cfg.GMAPS_KEY){ window.GMAPS_KEY = cfg.GMAPS_KEY; }
-    if(cfg && cfg.CALENDLY_VTC){ window.CALENDLY_URL = cfg.CALENDLY_VTC; }
-  }catch(e){ console.warn('config not loaded', e); }
-})();
-</script>
-<script src="/js/simulator.js" defer></script>
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Simulateur & Réservation • Transport Confort</title>
 
-<link rel="stylesheet" href="https://assets.calendly.com/assets/external/widget.css"/>
-<script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/style.css">
 
-<script>
-  // Bootstrap Calendly URLs if non configurés dans js/config.js
-  window.cfg = window.cfg || {};
-  if(!window.cfg.CALENDLY_VTC){ window.cfg.CALENDLY_VTC = "https://calendly.com/contact-transportconfort/reservation-vtc"; }
-  if(!window.cfg.CALENDLY_MAD){ window.cfg.CALENDLY_MAD = window.cfg.CALENDLY_VTC; }
-</script>
+  <!-- App + simulateur -->
+  <script src="/js/app.js"></script>
+  <script src="/js/simulator.js" defer></script>
 
+  <!-- Calendly (nécessaire pour l'embed inline) -->
+  <link rel="stylesheet" href="https://assets.calendly.com/assets/external/widget.css"/>
+  <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+</head>
 
-  <script src="https://js.stripe.com/v3"></script>
-</head><body><div class="container"><div class="header"><div class="brand"><img src="/assets/logo.png" alt="Logo"><div><h1>Transport Confort</h1><div class="slogan">Transport haut de gamme • Confort premium</div></div></div><nav class="nav"><a href="/">Accueil</a><a href="/simulator.html">Simulateur</a><a href="/tarifs.html">Tarifs</a><a href="/mentions.html">Mentions & CGV</a><a href="/a-propos.html">À propos</a><a href="/cgu.html">CGU</a><a href="/cgv.html">CGV</a></nav></div>
-<div class="grid section">
-  <div class="card">
-    <h2>Demande de trajet</h2>
-<div class="mode" style="margin:6px 0 10px 0;display:flex;gap:10px;align-items:center">
-  <label><input type="radio" name="mode" id="mode-course" value="course" checked> Course classique</label>
-  <label><input type="radio" name="mode" id="mode-mad" value="mad"> Mise à disposition (MAD)</label>
-</div><div class="badge" style="margin:6px 0">🎉 Offre de lancement : <b>-15% jusqu’au 31/12/2025</b></div>
-    <label>Départ</label><input id="from" class="input" placeholder="Adresse de départ" autocomplete="off">
-    <label>Arrivée</label><input id="to" class="input" placeholder="Adresse d’arrivée" autocomplete="off">
-    <div class="row"><div><label>Date</label><div style="display:flex;gap:6px"><input id="date" class="input" type="date" required><button type="button" id="openDate" class="btn" style="padding:8px 10px">📅</button></div></div><div><label>Heure</label><select id="time" class="input"></select></div></div>
-    <div class="row"><div><label>Passagers</label><select id="pax" class="input"><option>1</option><option>2</option><option>3</option><option>4</option></select></div><div><label>Commentaires</label><input id="note" class="input" placeholder="Infos vol, bagages, siège enfant… (optionnel)"></div></div>
-    <div class="actions" style="margin-top:12px"><button id="estimate" class="btn">Estimer</button><button id="calendly" class="btn secondary" disabled>Réserver (Calendly)</button></div>
-    <p class="small">Après estimation, vous pourrez payer l’acompte <b>20 %</b> (ou <b>100 %</b>) via Stripe et fixer l’horaire dans Calendly.</p>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="brand">
+        <img src="/assets/logo.png" alt="Logo">
+        <div>
+          <h1>Transport Confort</h1>
+          <div class="slogan">Transport haut de gamme • Confort premium</div>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="/">Accueil</a>
+        <a href="/simulator.html">Simulateur</a>
+        <a href="/tarifs.html">Tarifs</a>
+        <a href="/mentions.html">Mentions & CGV</a>
+        <a href="/a-propos.html">À propos</a>
+        <a href="/cgu.html">CGU</a>
+        <a href="/cgv.html">CGV</a>
+      </nav>
+    </div>
+
+    <div class="grid section">
+      <div class="card">
+        <h2>Demande de trajet</h2>
+
+        <div class="mode" style="margin:6px 0 10px 0;display:flex;gap:10px;align-items:center">
+          <label><input type="radio" name="mode" id="mode-course" value="course" checked> Course classique</label>
+          <label><input type="radio" name="mode" id="mode-mad" value="mad"> Mise à disposition (MAD)</label>
+        </div>
+
+        <div class="badge" style="margin:6px 0">🎉 Offre de lancement : <b>-15% jusqu’au 31/12/2025</b></div>
+
+        <label>Départ</label>
+        <input id="from" class="input" placeholder="Adresse de départ" autocomplete="off">
+        <label>Arrivée</label>
+        <input id="to" class="input" placeholder="Adresse d’arrivée" autocomplete="off">
+
+        <div class="row">
+          <div>
+            <label>Date</label>
+            <div style="display:flex;gap:6px">
+              <input id="date" class="input" type="date" required>
+              <button type="button" id="openDate" class="btn" style="padding:8px 10px">📅</button>
+            </div>
+          </div>
+          <div>
+            <label>Heure</label>
+            <select id="time" class="input"></select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <label>Passagers</label>
+            <select id="pax" class="input"><option>1</option><option>2</option><option>3</option><option>4</option></select>
+          </div>
+          <div>
+            <label>Commentaires</label>
+            <input id="note" class="input" placeholder="Infos vol, bagages, siège enfant… (optionnel)">
+          </div>
+        </div>
+
+        <div class="actions" style="margin-top:12px">
+          <button id="estimate" class="btn">Estimer</button>
+          <button id="calendly" class="btn secondary" disabled>Réserver (Calendly)</button>
+        </div>
+
+        <p class="small">
+          Après estimation, vous pourrez payer l’acompte <b>20 %</b> (ou <b>100 %</b>) via <b>Stancer</b> et fixer l’horaire dans Calendly.
+        </p>
+      </div>
+
+      <div class="card">
+        <div id="map" style="height:360px;border-radius:10px;overflow:hidden;margin-bottom:10px"></div>
+        <div class="kpi"><span class="badge">Distance</span> <span id="distance" class="value">—</span></div>
+        <div class="kpi"><span class="badge">Durée</span> <span id="duration" class="value">—</span></div>
+        <div class="price" style="margin:8px 0">
+          <span>Total estimé :</span> <span id="total" class="value">—</span> <span>TTC</span>
+        </div>
+
+        <!-- Plus de bloc carte Stripe -->
+        <div class="actions">
+          <button id="pay20" class="btn" disabled>Payer acompte 20 %</button>
+          <button id="pay100" class="btn secondary" disabled>Payer 100 %</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero"><img src="/assets/hero-g6.png" alt="XPENG G6"></div>
+
+    <div class="footer small">
+      © Transport Confort by Vincent — SIREN 990 407 397 — TVA FR71 990 407 397 — 23 rue La Bruyère, 93800 Épinay-sur-Seine — 07 49 55 62 77
+    </div>
   </div>
-  <div class="card">
-    <div id="map" style="height:360px;border-radius:10px;overflow:hidden;margin-bottom:10px"></div>
-    <div class="kpi"><span class="badge">Distance</span> <span id="distance" class="value">—</span></div>
-    <div class="kpi"><span class="badge">Durée</span> <span id="duration" class="value">—</span></div>
-    <div class="price" style="margin:8px 0"><span>Total estimé :</span> <span id="total" class="value">—</span> <span>TTC</span></div>
-    <div id="card-wrap" class="card" style="padding:12px;margin-top:10px;border:1px solid #222;border-radius:12px"><div id="card-element"></div><div id="card-status" class="small" style="margin-top:6px;color:#bbb"></div></div>
-    <div class="actions"><button id="pay20" class="btn" disabled>Payer acompte 20 %</button><button id="pay100" class="btn secondary" disabled>Payer 100 %</button></div>
+
+  <!-- Section Calendly inline -->
+  <div class="section">
+    <h3>Réservation</h3>
+    <p class="small">Vous pouvez réserver directement ci-dessous. La date choisie dans le simulateur sera utilisée pour afficher les créneaux.</p>
+    <div class="actions" style="margin-bottom:8px">
+      <button class="btn" id="btn-open-inline">Afficher le calendrier</button>
+    </div>
+    <div id="calendly-inline" style="min-height:740px"></div>
   </div>
-</div>
-<div class="hero"><img src="/assets/hero-g6.png" alt="XPENG G6"></div>
-<div class="footer small">© Transport Confort by Vincent — SIREN 990 407 397 — TVA FR71 990 407 397 — 23 rue La Bruyère, 93800 Épinay-sur-Seine — 07 49 55 62 77</div></div>
-<div class="section">
-  <h3>Réservation</h3>
-  <p class="small">Vous pouvez réserver directement ci-dessous. La date choisie dans le simulateur sera utilisée pour afficher les créneaux.</p>
-  <div class="actions" style="margin-bottom:8px">
-    <button class="btn" id="btn-open-inline">Afficher le calendrier</button>
-  </div>
-  <div id="calendly-inline" style="min-height:740px"></div>
-</div>
 
+  <!-- Mini-fonction globale utilisée par simulator.js (calendly() l’appelle) -->
+  <script>
+    // Charge /config.json puis monte le widget inline dans #calendly-inline
+    async function openInlineCalendly() {
+      try {
+        // récupère config (CALENDLY_VTC / CALENDLY_MAD)
+        const res = await fetch('/config.json', { cache: 'no-store' });
+        const cfg = await res.json();
 
+        // récupère date/heure depuis le formulaire ou depuis la dernière estimation
+        const dEl = document.getElementById('date'), tEl = document.getElementById('time');
+        let d = dEl && dEl.value || null;
+        let t = tEl && tEl.value || null;
+        if ((!d || !t) && window._TC_LAST?.whenISO) {
+          const d0 = new Date(window._TC_LAST.whenISO), pad = n => String(n).padStart(2,'0');
+          d = d || `${d0.getFullYear()}-${pad(d0.getMonth()+1)}-${pad(d0.getDate())}`;
+          t = t || `${pad(d0.getHours())}:${pad(d0.getMinutes())}`;
+        }
+        if (!d) { alert('Choisissez d’abord une date (ou faites une estimation).'); return; }
 
-<script>
-(async function(){
-  async function ensureCfg(){
-    if(window.cfg && (window.cfg.CALENDLY_VTC || window.cfg.CALENDLY_MAD)) return window.cfg;
-    try{
-      const res = await fetch('/config.json', {cache:'no-store'});
-      const data = await res.json();
-      window.cfg = Object.assign(window.cfg||{}, data||{});
-      return window.cfg;
-    }catch(e){
-      return window.cfg || {};
+        // choisit l'event MAD ou VTC
+        const isMAD = !!document.getElementById('mode-mad')?.checked;
+        const baseUrl = (isMAD ? cfg.CALENDLY_MAD : cfg.CALENDLY_VTC) || cfg.CALENDLY_VTC || cfg.CALENDLY_MAD;
+        if (!baseUrl) { alert('Lien Calendly non configuré.'); return; }
+
+        // construit l'URL avec contexte
+        const url = new URL(baseUrl);
+        url.searchParams.set('date', d);
+        url.searchParams.set('month', d.slice(0,7));
+        url.searchParams.set('utm_content', JSON.stringify(window._TC_LAST || {}));
+
+        // init inline
+        const host = document.getElementById('calendly-inline');
+        if (window.Calendly?.initInlineWidget && host) {
+          host.innerHTML = '';
+          Calendly.initInlineWidget({ url: url.toString(), parentElement: host });
+          host.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          window.open(url.toString(), '_blank'); // fallback si le script Calendly n’a pas fini de se charger
+        }
+      } catch (e) {
+        console.error(e);
+        alert("Impossible d’ouvrir le calendrier.");
+      }
     }
-  }
-  async function openInlineCalendly(){
-    try{
-      await ensureCfg();
-      const dEl=document.getElementById('date'), tEl=document.getElementById('time');
-      let d=dEl && dEl.value || null;
-      let t=tEl && tEl.value || null;
-      if((!d||!t) && window._TC_LAST && window._TC_LAST.whenISO){
-        const d0 = new Date(window._TC_LAST.whenISO), pad=n=>String(n).padStart(2,'0');
-        d = d || (d0.getFullYear()+'-'+pad(d0.getMonth()+1)+'-'+pad(d0.getDate()));
-        t = t || (pad(d0.getHours())+':'+pad(d0.getMinutes()));
-      }
-      if(!d){ alert('Choisissez d’abord une date (ou lancez une estimation).'); return; }
-      const calMAD=(window.cfg&&window.cfg.CALENDLY_MAD)||'';
-      const calVTC=(window.cfg&&window.cfg.CALENDLY_VTC)||'';
-      const modeMad = document.getElementById('mode-mad') && document.getElementById('mode-mad').checked;
-      const baseUrl = (modeMad ? calMAD : calVTC) || calVTC || calMAD;
-      if(!baseUrl){ alert('Lien Calendly non configuré.'); return; }
-      const url = new URL(baseUrl);
-      url.searchParams.set('date', d);
-      url.searchParams.set('month', d.slice(0,7));
-      const ctx = window._TC_LAST || {};
-      url.searchParams.set('utm_content', JSON.stringify(ctx));
-      const host=document.getElementById('calendly-inline');
-      if(window.Calendly && Calendly.initInlineWidget && host){
-        host.innerHTML='';
-        Calendly.initInlineWidget({ url: url.toString(), parentElement: host });
-        host.scrollIntoView({behavior:'smooth'});
-      }else{
-        window.open(url.toString(),'_blank');
-      }
-    }catch(e){ console.error(e); alert('Impossible d’ouvrir le calendrier.'); }
-  }
-  window.openInlineCalendly = openInlineCalendly;
-  document.addEventListener('DOMContentLoaded', function(){
-    try{
-      const results = document.getElementById('results');
-      if(!results) return;
-      if(document.getElementById('btn-choose-slot')) return;
-      const btn = document.createElement('button');
-      btn.id = 'btn-choose-slot';
-      btn.className = 'btn btn-primary';
-      btn.style.marginTop = '8px';
-      btn.textContent = 'Choisir mon créneau';
-      btn.addEventListener('click', openInlineCalendly);
-      const actions = results.querySelector('.actions') || results;
-      actions.appendChild(btn);
-    }catch(e){ console.warn('Injection CTA Calendly a échoué', e); }
-  });
-})();
-</script>
 
-</body></html>
+    // bouton “Afficher le calendrier” en bas
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('btn-open-inline');
+      if (btn) btn.addEventListener('click', openInlineCalendly);
+      // expose global pour simulator.js
+      window.openInlineCalendly = openInlineCalendly;
+    });
+  </script>
+</body>
+</html>
