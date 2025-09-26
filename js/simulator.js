@@ -52,12 +52,18 @@ await loadGmaps();
   new google.maps.places.Autocomplete(els.from, { componentRestrictions: { country: "fr" } });
   new google.maps.places.Autocomplete(els.to, { componentRestrictions: { country: "fr" } });
 
-  // Carte + itinéraire
-  const map = new google.maps.Map(els.map, { center: { lat: 48.987, lng: 2.3 }, zoom: 11, mapTypeControl: false, fullscreenControl: false, streetViewControl: false });
-  const ds = new google.maps.DirectionsService();
-  const dr = new google.maps.DirectionsRenderer({ map });
-  }
+// Carte + itinéraire
+const map = new google.maps.Map(els.map, {
+  center: { lat: 48.987, lng: 2.3 },
+  zoom: 11,
+  mapTypeControl: false,
+  fullscreenControl: false,
+  streetViewControl: false
+});
+const ds = new google.maps.DirectionsService();
+const dr = new google.maps.DirectionsRenderer({ map });
 
+ 
   function price(dist, dur, when) {
   const min = 10, perKm = 1.6, perMin = 0.55;
   const isNW = isNightOrWeekend(
