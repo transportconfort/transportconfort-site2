@@ -22,6 +22,11 @@
   from = "/mentions"
   to = "/mentions.html"
   status = 301
+  [[redirects]]
+  from = "http://*"
+  to = "https://:splat"
+  status = 301
+  force = true
 
 [functions]
   node_bundler = "esbuild"
