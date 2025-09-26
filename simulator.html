@@ -126,57 +126,69 @@
 
   <!-- Mini-fonction globale utilisée par simulator.js (calendly() l’appelle) -->
   <script>
-    // Charge /config.json puis monte le widget inline dans #calendly-inline
-    async function openInlineCalendly() {
+  async function openInlineCalendly() {
+    try {
+      // 1) charge la config via l’utilitaire global (évite les soucis SSL)
+      let cfg = {};
       try {
-        // récupère config (CALENDLY_VTC / CALENDLY_MAD)
-        const res = await fetch('/config.json', { cache: 'no-store' });
-        const cfg = await res.json();
+        cfg = await (window.TC && TC.loadConfig ? TC.loadConfig() : Promise.resolve({}));
+      } catch (_) { cfg = {}; }
 
-        // récupère date/heure depuis le formulaire ou depuis la dernière estimation
-        const dEl = document.getElementById('date'), tEl = document.getElementById('time');
-        let d = dEl && dEl.value || null;
-        let t = tEl && tEl.value || null;
-        if ((!d || !t) && window._TC_LAST?.whenISO) {
-          const d0 = new Date(window._TC_LAST.whenISO), pad = n => String(n).padStart(2,'0');
-          d = d || `${d0.getFullYear()}-${pad(d0.getMonth()+1)}-${pad(d0.getDate())}`;
-          t = t || `${pad(d0.getHours())}:${pad(d0.getMinutes())}`;
+      // 2) fallback absolu en HTTPS si besoin
+      if ((!cfg || (!cfg.CALENDLY_VTC && !cfg.CALENDLY_MAD))) {
+        try {
+          const res = await fetch(`${location.origin}/config.json`, { cache: 'no-store' });
+          const data = await res.json();
+          cfg = Object.assign({}, cfg || {}, data || {});
+        } catch (_) {
+          // dernier recours : lire une config bootstrap globale si présente
+          cfg = window.cfg || cfg || {};
         }
-        if (!d) { alert('Choisissez d’abord une date (ou faites une estimation).'); return; }
-
-        // choisit l'event MAD ou VTC
-        const isMAD = !!document.getElementById('mode-mad')?.checked;
-        const baseUrl = (isMAD ? cfg.CALENDLY_MAD : cfg.CALENDLY_VTC) || cfg.CALENDLY_VTC || cfg.CALENDLY_MAD;
-        if (!baseUrl) { alert('Lien Calendly non configuré.'); return; }
-
-        // construit l'URL avec contexte
-        const url = new URL(baseUrl);
-        url.searchParams.set('date', d);
-        url.searchParams.set('month', d.slice(0,7));
-        url.searchParams.set('utm_content', JSON.stringify(window._TC_LAST || {}));
-
-        // init inline
-        const host = document.getElementById('calendly-inline');
-        if (window.Calendly?.initInlineWidget && host) {
-          host.innerHTML = '';
-          Calendly.initInlineWidget({ url: url.toString(), parentElement: host });
-          host.scrollIntoView({ behavior: 'smooth' });
-        } else {
-          window.open(url.toString(), '_blank'); // fallback si le script Calendly n’a pas fini de se charger
-        }
-      } catch (e) {
-        console.error(e);
-        alert("Impossible d’ouvrir le calendrier.");
       }
-    }
 
-    // bouton “Afficher le calendrier” en bas
-    document.addEventListener('DOMContentLoaded', () => {
-      const btn = document.getElementById('btn-open-inline');
-      if (btn) btn.addEventListener('click', openInlineCalendly);
-      // expose global pour simulator.js
-      window.openInlineCalendly = openInlineCalendly;
-    });
-  </script>
+      // 3) récupère date/heure (formulaire ou dernière estimation)
+      const dEl = document.getElementById('date');
+      const tEl = document.getElementById('time');
+      let d = dEl && dEl.value || null;
+      let t = tEl && tEl.value || null;
+      if ((!d || !t) && window._TC_LAST?.whenISO) {
+        const d0 = new Date(window._TC_LAST.whenISO), pad = n => String(n).padStart(2,'0');
+        d = d || `${d0.getFullYear()}-${pad(d0.getMonth()+1)}-${pad(d0.getDate())}`;
+        t = t || `${pad(d0.getHours())}:${pad(d0.getMinutes())}`;
+      }
+      if (!d) { alert('Choisissez d’abord une date (ou faites une estimation).'); return; }
+
+      // 4) choisit l’event (MAD ou VTC)
+      const isMAD = !!document.getElementById('mode-mad')?.checked;
+      const baseUrl = (isMAD ? cfg.CALENDLY_MAD : cfg.CALENDLY_VTC) || cfg.CALENDLY_VTC || cfg.CALENDLY_MAD;
+      if (!baseUrl) { alert('Lien Calendly non configuré.'); return; }
+
+      // 5) construit l’URL et monte le widget
+      const url = new URL(baseUrl);
+      url.searchParams.set('date', d);
+      url.searchParams.set('month', d.slice(0,7));
+      url.searchParams.set('utm_content', JSON.stringify(window._TC_LAST || {}));
+
+      const host = document.getElementById('calendly-inline');
+      if (window.Calendly?.initInlineWidget && host) {
+        host.innerHTML = '';
+        Calendly.initInlineWidget({ url: url.toString(), parentElement: host });
+        host.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        window.open(url.toString(), '_blank'); // fallback si le SDK Calendly n’est pas prêt
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Impossible d’ouvrir le calendrier.");
+    }
+  }
+
+  // bouton “Afficher le calendrier”
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('btn-open-inline');
+    if (btn) btn.addEventListener('click', openInlineCalendly);
+    window.openInlineCalendly = openInlineCalendly; // utilisé par simulator.js
+  });
+</script>
 </body>
 </html>
