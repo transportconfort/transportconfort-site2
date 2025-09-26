@@ -193,19 +193,12 @@ async function pay(payFull = false) {
 
   
   function calendly() {
-    const calMAD = (cfg.CALENDLY_MAD || '').trim();
-    const calVTC = (cfg.CALENDLY_VTC || window.CALENDLY_URL || '').trim();
-    const cal = (document.getElementById('mode-mad')?.checked ? calMAD : calVTC);
-
-    if (!cal) { alert("Lien Calendly non configuré."); return; }
-    if (!window._TC_LAST) { alert("Faites une estimation d'abord."); return; }
-
-    const url = new URL(cal);
-    url.searchParams.set("name", "Client Transport Confort");
-    url.searchParams.set("start_time", window._TC_LAST.whenISO);
-    url.searchParams.set("utm_content", JSON.stringify(window._TC_LAST));
-    window.open(url.toString(), "_blank");
+  if (window.openInlineCalendly) {
+    window.openInlineCalendly();   // ouvre l'embed inline en bas de page
+  } else {
+    alert("Calendly se charge… réessayez dans 1 seconde.");
   }
+
 
   // Bind UI
   els.estimateBtn.addEventListener('click', estimate);
