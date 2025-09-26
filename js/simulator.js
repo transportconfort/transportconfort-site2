@@ -59,11 +59,15 @@ await loadGmaps();
   }
 
   function price(dist, dur, when) {
-    const min = 10, perKm = 1.6, perMin = 0.55, surge = isNightWeekend(when) ? 1.2 : 1;
-    let amt = (perKm * (dist / 1000)) + (perMin * (dur / 60));
-    if (amt < min) amt = min;
-    return Math.round(amt * surge * 100) / 100;
-  }
+  const min = 10, perKm = 1.6, perMin = 0.55;
+  const isNW = isNightOrWeekend(
+    when.toISOString().slice(0, 10),
+    when.toTimeString().slice(0, 5)
+  );
+  let amt = (perKm * (dist / 1000)) + (perMin * (dur / 60));
+  if (amt < min) amt = min;
+  return Math.round(amt * (isNW ? 1.2 : 1) * 100) / 100;
+}
 
   async function estimate() {
     const from = els.from.value.trim();
