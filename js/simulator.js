@@ -56,13 +56,6 @@ await loadGmaps();
   const map = new google.maps.Map(els.map, { center: { lat: 48.987, lng: 2.3 }, zoom: 11, mapTypeControl: false, fullscreenControl: false, streetViewControl: false });
   const ds = new google.maps.DirectionsService();
   const dr = new google.maps.DirectionsRenderer({ map });
-
-  function isNightWeekend(dt) {
-    const h = dt.getHours();
-    const isN = (h >= 23 || h < 7);
-    const d = dt.getDay();
-    const isWE = (d === 0 || d === 6);
-    return isN || isWE;
   }
 
   function price(dist, dur, when) {
