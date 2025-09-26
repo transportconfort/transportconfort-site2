@@ -334,3 +334,4 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => { if (inp.showPicker) inp.showPicker(); else inp.focus(); });
   }
 });
+})(); 
