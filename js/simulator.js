@@ -1,8 +1,12 @@
 (async function () {
-  const cfg = await TC.loadConfig();
-  const GMAPS_KEY = cfg.GMAPS_KEY || window.GMAPS_KEY || "GMAPS_KEY_PLACEHOLDER";
+ const cfg = await TC.loadConfig();
 
-  await TC.addScript(`https://maps.googleapis.com/maps/api/js?key=${GMAPS_KEY}&libraries=places`);
+async function loadGmaps() {
+  const r = await fetch('/.netlify/functions/public-gmaps-key');
+  const { key } = await r.json();
+  await TC.addScript(`https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&libraries=places`);
+}
+await loadGmaps();
 
   const els = {
     from: TC.q('#from'),
