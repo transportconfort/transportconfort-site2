@@ -76,11 +76,11 @@
 <div class="row" id="mad-row" style="display:none">
   <label for="mad-hours">Durée (MAD)</label>
   <select id="mad-hours" class="input">
-    <option value="1">1h (120 €)</option>
-    <option value="2">2h (110 €/h)</option>
-    <option value="3">3h (100 €/h)</option>
-    <option value="4">4h (95 €/h)</option>
-    <option value="8">8h (85 €/h)</option>
+    <option value="1">1h (100 €)</option>
+    <option value="2">2h (180 € soit 90 €/h)</option>
+    <option value="3">3h (240 € soit 80 €/h)</option>
+    <option value="4">4h (300 € soit 75 €/h)</option>
+    <option value="8">8h (560 € soit 70 €/h)</option>
   </select>
 </div>
           <div>
@@ -104,8 +104,12 @@
         <div class="kpi"><span class="badge">Distance</span> <span id="distance" class="value">—</span></div>
         <div class="kpi"><span class="badge">Durée</span> <span id="duration" class="value">—</span></div>
         <div class="price" style="margin:8px 0">
-          <span>Total estimé :</span> <span id="total" class="value">—</span> <span>TTC</span>
-        </div>
+  <span>Total estimé :</span>
+  <span id="total" class="value">—</span>
+  <span id="totalLabel" class="badge" style="margin-left:6px;display:none"></span>
+  <span>TTC</span>
+</div>
+
 
         <!-- Plus de bloc carte Stripe -->
         <div class="actions">
