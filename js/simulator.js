@@ -250,7 +250,6 @@ const dr = new google.maps.DirectionsRenderer({ map });
     price_eur: p,
     label: 'Tarif classique'
   };
- }
 
  // ===== Paiement via Stancer (paylink) =====
 async function pay(payFull = false) {
