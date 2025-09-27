@@ -344,7 +344,7 @@ function addMADControls() {
 
   sync();
 }
-}
+ 
 document.addEventListener('DOMContentLoaded', addMADControls);
 
 document.addEventListener('DOMContentLoaded', () => {
