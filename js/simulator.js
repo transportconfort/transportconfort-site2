@@ -250,9 +250,9 @@ const dr = new google.maps.DirectionsRenderer({ map });
     price_eur: p,
     label: 'Tarif classique'
   };
-}
+ }
 
-// ===== Paiement via Stancer (paylink) =====
+ // ===== Paiement via Stancer (paylink) =====
 async function pay(payFull = false) {
   try {
     if (!window._TC_LAST) {
@@ -315,7 +315,6 @@ async function pay(payFull = false) {
 
 
 // ===== Utilitaires hors IIFE =====
-function isNightOrWeekend(dateStr, timeStr) {
   try {
     const [y, m, d] = (dateStr || '').split('-').map(Number);
     const [hh, mm] = (timeStr || '').split(':').map(Number);
@@ -397,9 +396,6 @@ function computeEnghienForfait(kmToEnghien, isNightWE) {
   return band ? { total: band.price, label: band.label } : null;
 }
 
-function applyPricing(distanceKm, durationMin, dateStr, timeStr, fromText, toText, mode, madHours) {
-  const NIGHT_OR_WE = isNightOrWeekend(dateStr, timeStr);
-
   // MAD
   if (mode === 'mad') {
     const madRates = { 1: 100, 2: 90, 3: 80, 4: 75, 8: 70 };
@@ -454,7 +450,6 @@ async function computeAndDisplay(result) {
   }
   window.__lastEstimate = { ...result, total: discounted, label: pricing.label, base: pricing.total };
 }
-document.addEventListener('DOMContentLoaded', addMADControls);
 
 document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('openDate');
