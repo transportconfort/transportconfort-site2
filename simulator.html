@@ -167,6 +167,11 @@
       url.searchParams.set('date', d);
       url.searchParams.set('month', d.slice(0,7));
       url.searchParams.set('utm_content', JSON.stringify(window._TC_LAST || {}));
+      // --- couleurs personnalisées pour matcher le style Transport Confort ---
+url.searchParams.set('background_color', '0B0B0B'); // fond noir logo
+url.searchParams.set('text_color', 'FFFFFF');       // texte blanc
+url.searchParams.set('primary_color', 'C7A24B');    // doré logo
+
 
       // --- init inline sans SDK Calendly : on injecte une iframe ---
 const host = document.getElementById('calendly-inline');
@@ -180,7 +185,16 @@ iframe.height = '800';
 iframe.frameBorder = '0';
 iframe.title = 'Calendly';
 iframe.loading = 'lazy';
-iframe.style = 'min-width:320px;height:800px;width:100%;border:0;border-radius:12px';
+// style premium aligné à Transport Confort
+iframe.style = `
+  min-width:320px;
+  height:800px;
+  width:100%;
+  border:2px solid #C7A24B;      
+  border-radius:16px;            
+  box-shadow:0 4px 20px rgba(199,162,75,0.25); 
+  background:#0B0B0B;            
+`;
 host.appendChild(iframe);
 
 host.scrollIntoView({ behavior: 'smooth' });
