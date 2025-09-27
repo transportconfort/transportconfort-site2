@@ -150,6 +150,74 @@ if (modeMad) {
     });
     dr.setDirections(route);
 
+   // === Forfaits Aéroports & Enghien avant le calcul classique ===
+{
+  const fromText = els.from.value || '';
+  const toText   = els.to.value   || '';
+  const dateStr  = els.date.value;
+  const timeStr  = els.time.value;
+  const isNW     = isNightOrWeekend(dateStr, timeStr);
+
+  // 2.1) Forfait Aéroport (seulement si l’un des deux points est "Paris")
+  const ap = detectAirportCode(fromText, toText);
+  if (ap && isParisLeg(fromText, toText)) {
+    const base = isNW ? AIRPORT_FORFAITS[ap].night : AIRPORT_FORFAITS[ap].day; // grille fixe
+    // MAJ UI
+    els.distance.textContent = '—';
+    els.duration.textContent = '—';
+    els.total.textContent    = TC.fmtMoney(base);
+
+    els.pay20.disabled = false;
+    els.pay100.disabled = false;
+    els.calendlyBtn.disabled = false;
+
+    window._TC_LAST = {
+      type: 'FORFAIT_AEROPORT',
+      airport: ap,
+      from, to,
+      whenISO: dt.toISOString(),
+      price_eur: base,
+      label: `Forfait ${ap} ${isNW ? 'nuit/WE' : 'jour'}`
+    };
+    return; // on s’arrête ici : pas de calcul classique
+  }
+
+  // 2.2) Forfait Enghien (si l’un des deux points est à ≤ 30 km du centre ENGHien)
+  // On récupère les coordonnées du 1er trajet trouvé
+  const leg = route.routes?.[0]?.legs?.[0];
+  if (leg) {
+    const start = { lat: leg.start_location.lat(), lng: leg.start_location.lng() };
+    const end   = { lat: leg.end_location.lat(),   lng: leg.end_location.lng() };
+
+    const dStart = haversineKm(start, ENGHien);
+    const dEnd   = haversineKm(end,   ENGHien);
+    const dMin   = Math.min(dStart, dEnd);
+
+    const eng = computeEnghienForfait(dMin, isNW);
+    if (eng) {
+      // MAJ UI
+      els.distance.textContent = '—';
+      els.duration.textContent = '—';
+      els.total.textContent    = TC.fmtMoney(eng.total);
+
+      els.pay20.disabled = false;
+      els.pay100.disabled = false;
+      els.calendlyBtn.disabled = false;
+
+      window._TC_LAST = {
+        type: 'FORFAIT_ENGHIEN',
+        from, to,
+        whenISO: dt.toISOString(),
+        price_eur: eng.total,
+        label: eng.label,
+        km_to_enghien: Math.round(dMin * 10) / 10
+      };
+      return; // on s’arrête ici : pas de calcul classique
+    }
+  }
+}
+// === fin forfaits, on laissera le calcul classique s’exécuter plus bas ===
+
     const dm = new google.maps.DistanceMatrixService();
     const r = await dm.getDistanceMatrix({
       origins: [from],
@@ -248,20 +316,74 @@ function isNightOrWeekend(dateStr, timeStr) {
   } catch (e) { return false; }
 }
 
-function detectAirportForfait(fromText, toText) {
-  const t = (fromText + ' ' + toText).toLowerCase();
-  let airport = null;
-  if (t.includes('orl') || t.includes('orly')) airport = 'ORY';
-  if (t.includes('roissy') || t.includes('charles de gaulle') || t.includes('cdg')) airport = 'CDG';
-  if (t.includes('beauvais') || t.includes('bva') || t.includes('tillé')) airport = 'BVA';
-  return airport;
+// ------ Helpers forfaits (Aéroports + Enghien) ------
+
+// Nuit/WE (23:00–07:00 ou samedi/dimanche) : sert à choisir le tarif nuit des forfaits Enghien,
+// et pour la +20% des courses classiques (déjà gérée dans price()).
+function isNightOrWeekend(dateStr, timeStr) {
+  try {
+    const [y, m, d] = (dateStr || '').split('-').map(Number);
+    const [hh, mm] = (timeStr || '').split(':').map(Number);
+    const dt = new Date(y, (m || 1) - 1, d || 1, hh || 0, mm || 0);
+    const day = dt.getDay(); // 0=dimanche
+    const hour = dt.getHours();
+    const isWE = (day === 0 || day === 6);
+    const isNight = (hour >= 23 || hour < 7);
+    return isNight || isWE;
+  } catch (e) { return false; }
 }
 
-const FORFAITS = {
-  ORY: { day: 60, night: 70 },
-  CDG: { day: 90, night: 105 },
-  BVA: { day: 170, night: 190 }
+// Aéroports (depuis/vers PARIS uniquement)
+const AIRPORT_FORFAITS = {
+  ORY: { day: 60,  night: 70  },
+  CDG: { day: 80,  night: 90  },
+  BVA: { day: 150, night: 170 }
 };
+
+// Détection par texte (simple et robuste pour ton usage)
+function detectAirportCode(fromText, toText) {
+  const t = (fromText + ' ' + toText).toLowerCase();
+  if (t.includes('orly') || t.includes('ory')) return 'ORY';
+  if (t.includes('roissy') || t.includes('charles de gaulle') || t.includes('cdg')) return 'CDG';
+  if (t.includes('beauvais') || t.includes('tillé') || t.includes('bva')) return 'BVA';
+  return null;
+}
+
+// Vérifie si un des deux champs mentionne "paris"
+function isParisLeg(fromText, toText) {
+  const f = (fromText || '').toLowerCase();
+  const t = (toText   || '').toLowerCase();
+  return f.includes('paris') || t.includes('paris');
+}
+
+// Enghien-les-Bains (Casino/Théâtre) – centre de référence
+const ENGHIEN = { lat: 48.9697, lng: 2.3091 };
+
+// Haversine (km)
+function haversineKm(a, b) {
+  const R = 6371;
+  const dLat = (b.lat - a.lat) * Math.PI / 180;
+  const dLon = (b.lng - a.lng) * Math.PI / 180;
+  const la1 = a.lat * Math.PI / 180;
+  const la2 = b.lat * Math.PI / 180;
+  const x = Math.sin(dLat/2)**2 + Math.cos(la1) * Math.cos(la2) * Math.sin(dLon/2)**2;
+  return 2 * R * Math.asin(Math.sqrt(x));
+}
+
+// Calcule le forfait Enghien en fonction de la distance au centre ENGHien
+// Retourne {total, label} ou null si > 30 km (pas de forfait).
+function computeEnghienForfait(kmToEnghien, isNightWE) {
+  let band = null;
+  if (kmToEnghien <= 5)       band = isNightWE ? { price: 20, label: 'Forfait Enghien 5 km (nuit/WE)' } 
+                                              : { price: 15, label: 'Forfait Enghien 5 km (jour)' };
+  else if (kmToEnghien <= 10) band = isNightWE ? { price: 30, label: 'Forfait Enghien 10 km (nuit/WE)' } 
+                                              : { price: 25, label: 'Forfait Enghien 10 km (jour)' };
+  else if (kmToEnghien <= 20) band = isNightWE ? { price: 60, label: 'Forfait Enghien 20 km (nuit/WE)' } 
+                                              : { price: 50, label: 'Forfait Enghien 20 km (jour)' };
+  else if (kmToEnghien <= 30) band = isNightWE ? { price: 80, label: 'Forfait Enghien 30 km (nuit/WE)' } 
+                                              : { price: 70, label: 'Forfait Enghien 30 km (jour)' };
+  return band ? { total: band.price, label: band.label } : null;
+}
 
 function applyPricing(distanceKm, durationMin, dateStr, timeStr, fromText, toText, mode, madHours) {
   const NIGHT_OR_WE = isNightOrWeekend(dateStr, timeStr);
