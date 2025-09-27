@@ -464,20 +464,22 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => { if (inp.showPicker) inp.showPicker(); else inp.focus(); });
   }
 });
- function syncModeUI() {
-  const isMad    = document.getElementById('mode-mad')?.checked;
-  const madRow   = document.getElementById('mad-row');
-  const toInput  = document.getElementById('to');
-  const toLabel  = toInput ? toInput.previousElementSibling : null;
+  
+function syncModeUI() {
+  const isMad   = document.getElementById('mode-mad')?.checked;
+  const madRow  = document.getElementById('mad-row');
+  const toInput = document.getElementById('to');
+  const toLabel = toInput ? toInput.previousElementSibling : null;
 
-  if (madRow) madRow.style.display = isMad ? 'flex' : 'none';
+  if (madRow)  madRow.style.display  = isMad ? 'flex' : 'none';
   if (toInput) toInput.style.display = isMad ? 'none' : '';
   if (toLabel) toLabel.style.display = isMad ? 'none' : '';
 }
 
+// === hooks DOM ===
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('mode-mad')?.addEventListener('change', syncModeUI);
   document.getElementById('mode-course')?.addEventListener('change', syncModeUI);
   syncModeUI(); // appel initial au chargement
-});           
-})();          
+});
+})(); // fin de l’IIFE
