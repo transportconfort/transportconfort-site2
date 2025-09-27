@@ -454,7 +454,6 @@ async function computeAndDisplay(result) {
   }
   window.__lastEstimate = { ...result, total: discounted, label: pricing.label, base: pricing.total };
 }
-
 document.addEventListener('DOMContentLoaded', addMADControls);
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -482,4 +481,4 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('mode-course')?.addEventListener('change', syncModeUI);
   syncModeUI(); // appel initial au chargement
 });
-}(); // fin de l’IIFE
+})(); // fin de l’IIFE
