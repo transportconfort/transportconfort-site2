@@ -295,58 +295,53 @@ async function computeAndDisplay(result) {
 }
 
 function addMADControls() {
-  // radios
-  const modeMad = document.getElementById('mode-mad');
+  // Évite le doublon si le champ existe déjà
+  if (document.getElementById('mad-hours')) return;
+
+  const modeMad    = document.getElementById('mode-mad');
   const modeCourse = document.getElementById('mode-course');
+  const pax        = document.getElementById('pax');   // select Passagers
+  const toInput    = document.getElementById('to');    // champ Arrivée
+  const toLabel    = toInput ? toInput.previousElementSibling : null;
 
-  // ancre d’insertion : la ligne “Passagers” (id="pax" dans ton HTML)
-  const pax = document.getElementById('pax');
-  const paxRow = pax ? pax.closest('.row') || pax.parentElement : null;
+  // On insère le sélecteur après la ligne Passagers
+  const insertAfter = pax ? (pax.closest('.row') || pax.parentElement) : null;
 
-  // champs Arrivée (à masquer en MAD)
-  const toInput = document.getElementById('to');
-  const toLabel = toInput ? toInput.previousElementSibling : null;
+  // Création de la ligne Durée (MAD)
+  const row = document.createElement('div');
+  row.className = 'row';
+  row.innerHTML = `
+    <label for="mad-hours">Durée (MAD)</label>
+    <select id="mad-hours" class="input">
+      <option value="1">1h (120 €)</option>
+      <option value="2">2h (110 €/h)</option>
+      <option value="3">3h (100 €/h)</option>
+      <option value="4">4h (95 €/h)</option>
+      <option value="8">8h (85 €/h)</option>
+    </select>
+  `;
 
-  // crée la ligne MAD si absente
-  let row = document.getElementById('mad-row');
-  if (!row) {
-    row = document.createElement('div');
-    row.id = 'mad-row';
-    row.className = 'row';
-    row.innerHTML = `
-      <label>Durée (MAD)</label>
-      <select id="mad-hours" class="input">
-        <option value="1">1h (120 €)</option>
-        <option value="2">2h (110 €/h)</option>
-        <option value="3">3h (100 €/h)</option>
-        <option value="4">4h (95 €/h)</option>
-        <option value="8">8h (85 €/h)</option>
-      </select>
-    `;
-    if (paxRow && paxRow.after) {
-      paxRow.after(row);
-    } else if (toInput && toInput.parentElement?.after) {
-      // fallback : insérer après le bloc Arrivée
-      toInput.parentElement.after(row);
-    } else {
-      document.body.appendChild(row);
-    }
+  if (insertAfter && insertAfter.after) {
+    insertAfter.after(row);
+  } else {
+    // Plan B : on met la ligne à la fin du formulaire
+    const fromInput = document.getElementById('from');
+    (fromInput && fromInput.parentElement ? fromInput.parentElement : document.body).appendChild(row);
   }
 
-  function sync() {
-    const isMad = !!modeMad?.checked;
+  row.style.display = 'none';
+
+  // Fonction qui masque/affiche en fonction du mode
+  const sync = () => {
+    const isMad = !!(modeMad && modeMad.checked);
     row.style.display = isMad ? 'flex' : 'none';
-
-    // masquer/afficher le champ Arrivée pour MAD
-    if (toInput) {
-      toInput.style.display = isMad ? 'none' : '';
-      if (isMad) toInput.value = ''; // optionnel : vider l’adresse en MAD
-    }
+    if (toInput) toInput.style.display = isMad ? 'none' : '';
     if (toLabel) toLabel.style.display = isMad ? 'none' : '';
-  }
+  };
 
-  modeMad?.addEventListener('change', sync);
-  modeCourse?.addEventListener('change', sync);
+  if (modeMad)    modeMad.addEventListener('change', sync);
+  if (modeCourse) modeCourse.addEventListener('change', sync);
+
   sync();
 }
 }
