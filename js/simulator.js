@@ -294,57 +294,6 @@ async function computeAndDisplay(result) {
   window.__lastEstimate = { ...result, total: discounted, label: pricing.label, base: pricing.total };
 }
 
-function addMADControls() {
-  // Évite le doublon si le champ existe déjà
-  if (document.getElementById('mad-hours')) return;
-
-  const modeMad    = document.getElementById('mode-mad');
-  const modeCourse = document.getElementById('mode-course');
-  const pax        = document.getElementById('pax');   // select Passagers
-  const toInput    = document.getElementById('to');    // champ Arrivée
-  const toLabel    = toInput ? toInput.previousElementSibling : null;
-
-  // On insère le sélecteur après la ligne Passagers
-  const insertAfter = pax ? (pax.closest('.row') || pax.parentElement) : null;
-
-  // Création de la ligne Durée (MAD)
-  const row = document.createElement('div');
-  row.className = 'row';
-  row.innerHTML = `
-    <label for="mad-hours">Durée (MAD)</label>
-    <select id="mad-hours" class="input">
-      <option value="1">1h (120 €)</option>
-      <option value="2">2h (110 €/h)</option>
-      <option value="3">3h (100 €/h)</option>
-      <option value="4">4h (95 €/h)</option>
-      <option value="8">8h (85 €/h)</option>
-    </select>
-  `;
-
-  if (insertAfter && insertAfter.after) {
-    insertAfter.after(row);
-  } else {
-    // Plan B : on met la ligne à la fin du formulaire
-    const fromInput = document.getElementById('from');
-    (fromInput && fromInput.parentElement ? fromInput.parentElement : document.body).appendChild(row);
-  }
-
-  row.style.display = 'none';
-
-  // Fonction qui masque/affiche en fonction du mode
-  const sync = () => {
-    const isMad = !!(modeMad && modeMad.checked);
-    row.style.display = isMad ? 'flex' : 'none';
-    if (toInput) toInput.style.display = isMad ? 'none' : '';
-    if (toLabel) toLabel.style.display = isMad ? 'none' : '';
-  };
-
-  if (modeMad)    modeMad.addEventListener('change', sync);
-  if (modeCourse) modeCourse.addEventListener('change', sync);
-
-  sync();
-}
- 
 document.addEventListener('DOMContentLoaded', addMADControls);
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -353,5 +302,21 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btn && inp) {
     btn.addEventListener('click', () => { if (inp.showPicker) inp.showPicker(); else inp.focus(); });
   }
+});
+ function syncModeUI() {
+  const isMad    = document.getElementById('mode-mad')?.checked;
+  const madRow   = document.getElementById('mad-row');
+  const toInput  = document.getElementById('to');
+  const toLabel  = toInput ? toInput.previousElementSibling : null;
+
+  if (madRow) madRow.style.display = isMad ? 'flex' : 'none';
+  if (toInput) toInput.style.display = isMad ? 'none' : '';
+  if (toLabel) toLabel.style.display = isMad ? 'none' : '';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('mode-mad')?.addEventListener('change', syncModeUI);
+  document.getElementById('mode-course')?.addEventListener('change', syncModeUI);
+  syncModeUI(); // appel initial au chargement
 });
 })(); 
