@@ -97,94 +97,78 @@ const dr = new google.maps.DirectionsRenderer({ map });
 }
 
   async function estimate() {
-    const from = els.from.value.trim();
-    const to = els.to.value ? els.to.value.trim() : '';
-    const dateStr = els.date.value;
-    const timeStr = els.time.value;
-    const dt = new Date((dateStr || '') + "T" + (timeStr || '') + ":00");
-    const modeMadEl = document.getElementById('mode-mad');
-    const modeMad = !!(modeMadEl && modeMadEl.checked);
+  const from    = els.from.value.trim();
+  const to      = (els.to.value || '').trim();
+  const dateStr = els.date.value;
+  const timeStr = els.time.value;
+  const dt      = new Date((dateStr || '') + 'T' + (timeStr || '') + ':00');
+  const modeMad = !!document.getElementById('mode-mad')?.checked;
 
-    if (!from) { alert("Renseignez l’adresse de prise en charge."); return; }
-    if (!dateStr || !timeStr) { alert("Sélectionnez la date et l’heure."); return; }
+  if (!from) { alert('Renseignez l’adresse de prise en charge.'); return; }
+  if (!dateStr || !timeStr) { alert('Sélectionnez la date et l’heure.'); return; }
 
-// MAD (mise à dispo) : tarif forfaitaire (pas de majoration nuit/WE)
-if (modeMad) {
-  const sel = document.getElementById('mad-hours');
-  const h = sel ? Number(sel.value || 1) : 1;
+  // ========== MISE À DISPOSITION (MAD) – forfaits fixes ==========
+  if (modeMad) {
+    const sel = document.getElementById('mad-hours');
+    const h   = sel ? Number(sel.value || 1) : 1;
+    let total = MAD_TOTALS[h];
+    if (total == null) total = 100 * h; // secours
 
-  // Barème MAD (totaux TTC)
-  const madTotals = { 1: 100, 2: 180, 3: 240, 4: 300, 8: 560 };
-  let total = madTotals[h];
-  if (total == null) {
-    // secours : si une valeur inattendue arrive, on approxime à 100 €/h
-    total = 100 * h;
+    // UI
+    els.distance.textContent = '—';
+    els.duration.textContent = h + ' h';
+    els.total.textContent    = TC.fmtMoney(total);
+    const totalLbl = document.getElementById('totalLabel');
+    if (totalLbl) { totalLbl.textContent = `MAD ${h}h`; totalLbl.style.display = ''; }
+
+    // Actions
+    els.pay20.disabled = false;
+    els.pay100.disabled = false;
+    els.calendlyBtn.disabled = false;
+
+    // Contexte de réservation/paiement
+    window._TC_LAST = {
+      type: 'MAD',
+      mode: 'mad',
+      from,
+      to: '',
+      whenISO: dt.toISOString(),
+      mad_hours: h,
+      price_eur: total,
+      label: `MAD ${h}h`
+    };
+
+    // Nettoie un éventuel itinéraire affiché
+    try { if (window.dr) window.dr.set('directions', null); } catch (_) {}
+    return; // pas de Google Distance pour MAD
   }
 
-  // MAJ de l’UI
-  const distEl  = document.getElementById('distance');
-  const durEl   = document.getElementById('duration');
-  const totalEl = document.getElementById('total');
-  const totalLbl= document.getElementById('totalLabel');
+  // ========== COURSES / FORFAITS ==========
+  if (!to) { alert('Renseignez l’adresse d’arrivée.'); return; }
 
-  if (distEl)  distEl.textContent  = '—';
-  if (durEl)   durEl.textContent   = h + ' h';
-  if (totalEl) totalEl.textContent = TC.fmtMoney(total);
-  if (totalLbl) {
-    totalLbl.textContent = `MAD ${h}h`;
-    totalLbl.style.display = '';
-  }
+  // On trace un itinéraire (utile pour récupérer les coords legs + UX)
+  const route = await ds.route({
+    origin: from,
+    destination: to,
+    travelMode: google.maps.TravelMode.DRIVING,
+    drivingOptions: { departureTime: dt, trafficModel: 'bestguess' }
+  });
+  dr.setDirections(route);
 
-  // Boutons action
-  els.pay20.disabled = false;
-  els.pay100.disabled = false;
-  els.calendlyBtn.disabled = false;
-
-  // Contexte pour Calendly / paiement
-  window._TC_LAST = {
-    type: 'MAD',
-    mode: 'mad',
-    from,
-    to: '',
-    whenISO: dt.toISOString(),
-    mad_hours: h,
-    price_eur: total,
-    label: `MAD ${h}h`
-  };
-
-  // Nettoie l’itinéraire si présent
-  try { if (window.dr) window.dr.set('directions', null); } catch (e) {}
-
-  return; // on s’arrête là, pas besoin de distances Google pour MAD
-}
-
-    // Courses classiques / aéroports
-    if (!to) { alert("Renseignez l’adresse d’arrivée."); return; }
-
-    const route = await ds.route({
-      origin: from,
-      destination: to,
-      travelMode: google.maps.TravelMode.DRIVING,
-      drivingOptions: { departureTime: dt, trafficModel: 'bestguess' }
-    });
-    dr.setDirections(route);
-
-   // === Forfaits Aéroports & Enghien avant le calcul classique ===
-{
+  // 1) Forfait AÉROPORT (si un des deux points est Paris)
   const fromText = els.from.value || '';
   const toText   = els.to.value   || '';
-  const dateStr  = els.date.value;
-  const timeStr  = els.time.value;
   const isNW     = isNightOrWeekend(dateStr, timeStr);
+  const ap       = detectAirportCode(fromText, toText);
 
-  // 2.1) Forfait Aéroport (seulement si l’un des deux points est "Paris")
-  const ap = detectAirportCode(fromText, toText);
   if (ap && isParisLeg(fromText, toText)) {
-    const base = isNW ? AIRPORT_FORFAITS[ap].night : AIRPORT_FORFAITS[ap].day; // grille fixe
-    // MAJ UI
+    const base = AIRPORT_FORFAITS[ap][isNW ? 'night' : 'day'];
+
     els.distance.textContent = '—';
     els.duration.textContent = '—';
     els.total.textContent    = TC.fmtMoney(base);
+    const totalLbl = document.getElementById('totalLabel');
+    if (totalLbl) { totalLbl.textContent = `Forfait ${ap} ${isNW ? 'nuit/WE' : 'jour'}`; totalLbl.style.display = ''; }
 
     els.pay20.disabled = false;
     els.pay100.disabled = false;
@@ -198,26 +182,26 @@ if (modeMad) {
       price_eur: base,
       label: `Forfait ${ap} ${isNW ? 'nuit/WE' : 'jour'}`
     };
-    return; // on s’arrête ici : pas de calcul classique
+    return;
   }
 
-  // 2.2) Forfait Enghien (si l’un des deux points est à ≤ 30 km du centre ENGHien)
-  // On récupère les coordonnées du 1er trajet trouvé
+  // 2) Forfait ENGHIEN (si l’un des 2 points est ≤ 30 km du centre)
   const leg = route.routes?.[0]?.legs?.[0];
   if (leg) {
     const start = { lat: leg.start_location.lat(), lng: leg.start_location.lng() };
     const end   = { lat: leg.end_location.lat(),   lng: leg.end_location.lng() };
 
-    const dStart = haversineKm(start, ENGHien);
-    const dEnd   = haversineKm(end,   ENGHien);
+    const dStart = haversineKm(start, ENGHIEN);
+    const dEnd   = haversineKm(end,   ENGHIEN);
     const dMin   = Math.min(dStart, dEnd);
 
     const eng = computeEnghienForfait(dMin, isNW);
     if (eng) {
-      // MAJ UI
       els.distance.textContent = '—';
       els.duration.textContent = '—';
       els.total.textContent    = TC.fmtMoney(eng.total);
+      const totalLbl = document.getElementById('totalLabel');
+      if (totalLbl) { totalLbl.textContent = eng.label; totalLbl.style.display = ''; }
 
       els.pay20.disabled = false;
       els.pay100.disabled = false;
@@ -231,34 +215,43 @@ if (modeMad) {
         label: eng.label,
         km_to_enghien: Math.round(dMin * 10) / 10
       };
-      return; // on s’arrête ici : pas de calcul classique
+      return;
     }
-  }
+
+  // 3) TARIF CLASSIQUE (km + min, +20 % nuit/WE)
+  const dm  = new google.maps.DistanceMatrixService();
+  const r   = await dm.getDistanceMatrix({
+    origins: [from],
+    destinations: [to],
+    travelMode: google.maps.TravelMode.DRIVING,
+    drivingOptions: { departureTime: dt, trafficModel: 'bestguess' }
+  });
+  const cell = r.rows[0].elements[0];
+  const dist = cell.distance.value;                          // en mètres
+  const dur  = (cell.duration_in_traffic || cell.duration).value; // en secondes
+
+  const p = price(dist, dur, dt); // ta fonction existante (min 10€, 1.60€/km, 0.55€/min, +20% nuit/WE)
+  els.distance.textContent = (dist / 1000).toFixed(1) + ' km';
+  els.duration.textContent = Math.round(dur / 60) + ' min';
+  els.total.textContent    = TC.fmtMoney(p);
+  const totalLbl = document.getElementById('totalLabel');
+  if (totalLbl) { totalLbl.textContent = 'Tarif classique'; totalLbl.style.display = ''; }
+
+  els.pay20.disabled = false;
+  els.pay100.disabled = false;
+  els.calendlyBtn.disabled = false;
+
+  window._TC_LAST = {
+    type: 'COURSE',
+    from, to,
+    whenISO: dt.toISOString(),
+    dist_m: dist,
+    dur_s: dur,
+    price_eur: p,
+    label: 'Tarif classique'
+  };
 }
-// === fin forfaits, on laissera le calcul classique s’exécuter plus bas ===
 
-    const dm = new google.maps.DistanceMatrixService();
-    const r = await dm.getDistanceMatrix({
-      origins: [from],
-      destinations: [to],
-      travelMode: google.maps.TravelMode.DRIVING,
-      drivingOptions: { departureTime: dt, trafficModel: 'bestguess' }
-    });
-    const cell = r.rows[0].elements[0];
-    const dist = cell.distance.value;
-    const dur = (cell.duration_in_traffic || cell.duration).value;
-
-    const p = price(dist, dur, dt);
-    els.distance.textContent = (dist / 1000).toFixed(1) + " km";
-    els.duration.textContent = Math.round(dur / 60) + " min";
-    els.total.textContent = TC.fmtMoney(p);
-
-    els.pay20.disabled = false;
-    els.pay100.disabled = false;
-    els.calendlyBtn.disabled = false;
-
-    window._TC_LAST = { type: 'COURSE', from, to, whenISO: dt.toISOString(), dist_m: dist, dur_s: dur, price_eur: p };
-  }
 // ===== Paiement via Stancer (paylink) =====
 async function pay(payFull = false) {
   try {
