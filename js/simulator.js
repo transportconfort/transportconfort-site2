@@ -295,35 +295,60 @@ async function computeAndDisplay(result) {
 }
 
 function addMADControls() {
-  if (document.getElementById('mad-hours')) return;
+  // radios
   const modeMad = document.getElementById('mode-mad');
   const modeCourse = document.getElementById('mode-course');
-  const passengers = document.getElementById('passengers');
+
+  // ancre d’insertion : la ligne “Passagers” (id="pax" dans ton HTML)
+  const pax = document.getElementById('pax');
+  const paxRow = pax ? pax.closest('.row') || pax.parentElement : null;
+
+  // champs Arrivée (à masquer en MAD)
   const toInput = document.getElementById('to');
   const toLabel = toInput ? toInput.previousElementSibling : null;
 
-  const passengersRow = passengers ? passengers.parentElement : null;
-  const row = document.createElement('div');
-  row.className = 'row';
-  row.innerHTML = `<label>Durée (MAD)</label><select id="mad-hours" class="input">
-    <option value="1">1h (120 €)</option>
-    <option value="2">2h (110 €/h)</option>
-    <option value="3">3h (100 €/h)</option>
-    <option value="4">4h (95 €/h)</option>
-    <option value="8">8h (85 €/h)</option>
-  </select>`;
-  if (passengersRow && passengersRow.after) { passengersRow.after(row); }
-  row.style.display = 'none';
+  // crée la ligne MAD si absente
+  let row = document.getElementById('mad-row');
+  if (!row) {
+    row = document.createElement('div');
+    row.id = 'mad-row';
+    row.className = 'row';
+    row.innerHTML = `
+      <label>Durée (MAD)</label>
+      <select id="mad-hours" class="input">
+        <option value="1">1h (120 €)</option>
+        <option value="2">2h (110 €/h)</option>
+        <option value="3">3h (100 €/h)</option>
+        <option value="4">4h (95 €/h)</option>
+        <option value="8">8h (85 €/h)</option>
+      </select>
+    `;
+    if (paxRow && paxRow.after) {
+      paxRow.after(row);
+    } else if (toInput && toInput.parentElement?.after) {
+      // fallback : insérer après le bloc Arrivée
+      toInput.parentElement.after(row);
+    } else {
+      document.body.appendChild(row);
+    }
+  }
 
   function sync() {
-    const isMad = !!(modeMad && modeMad.checked);
+    const isMad = !!modeMad?.checked;
     row.style.display = isMad ? 'flex' : 'none';
-    if (toInput) { toInput.style.display = isMad ? 'none' : ''; }
-    if (toLabel) { toLabel.style.display = isMad ? 'none' : ''; }
+
+    // masquer/afficher le champ Arrivée pour MAD
+    if (toInput) {
+      toInput.style.display = isMad ? 'none' : '';
+      if (isMad) toInput.value = ''; // optionnel : vider l’adresse en MAD
+    }
+    if (toLabel) toLabel.style.display = isMad ? 'none' : '';
   }
-  if (modeCourse) modeCourse.addEventListener('change', sync);
-  if (modeMad) modeMad.addEventListener('change', sync);
+
+  modeMad?.addEventListener('change', sync);
+  modeCourse?.addEventListener('change', sync);
   sync();
+}
 }
 document.addEventListener('DOMContentLoaded', addMADControls);
 
