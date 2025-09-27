@@ -1,6 +1,27 @@
 (async function () {
  const cfg = await TC.loadConfig();
 
+ // === BARÈMES OFFICIELS ===
+
+// MAD : totaux fixes (pas de +20%)
+const MAD_TOTALS = { 1: 100, 2: 180, 3: 240, 4: 300, 8: 560 };
+
+// Aéroports : montants fixes jour/nuit
+const FORFAITS = {
+  ORY: { day: 60,  night: 70  },
+  CDG: { day: 80,  night: 90  },
+  BVA: { day: 150, night: 170 }
+};
+
+// Enghien (Casino/Théâtre) : 5/10/20/30 km, au-delà => classique
+function enghienBandKm(km) {
+  if (km <= 5)  return { day: 15, night: 20 };
+  if (km <= 10) return { day: 25, night: 30 };
+  if (km <= 20) return { day: 50, night: 60 };
+  if (km <= 30) return { day: 70, night: 80 };
+  return null;
+}
+
 async function loadGmaps() {
   const r = await fetch('/.netlify/functions/public-gmaps-key');
   const { key } = await r.json();
@@ -87,30 +108,36 @@ const dr = new google.maps.DirectionsRenderer({ map });
     if (!from) { alert("Renseignez l’adresse de prise en charge."); return; }
     if (!dateStr || !timeStr) { alert("Sélectionnez la date et l’heure."); return; }
 
-    // MAD (mise à dispo) : tarif horaire
-    if (modeMad) {
-      const sel = document.getElementById('mad-hours');
-      const h = sel ? Number(sel.value || 1) : 1;
-      const madRates = { 1: 100, 2: 90, 3: 80, 4: 75, 8: 70 };
-      const hourly = madRates[h] || 120;
-      let total = hourly * h;
-      if (isNightOrWeekend(dateStr, timeStr)) total = Math.round(total * 1.2);
+// --- Mise à disposition (MAD) ---
+if (modeMad) {
+  const sel = document.getElementById('mad-hours');
+  const h = sel ? Number(sel.value || 1) : 1;
 
-      const distEl = document.getElementById('distance');
-      const durEl = document.getElementById('duration');
-      const totalEl = document.getElementById('total');
-      if (distEl) distEl.textContent = '—';
-      if (durEl) durEl.textContent = h + " h";
-      if (totalEl) totalEl.textContent = TC.fmtMoney(total);
+  // Ton barème fixe
+  const MAD_TOTALS = { 1: 100, 2: 180, 3: 240, 4: 300, 8: 560 };
+  const total = MAD_TOTALS[h] || 100;
 
-      els.pay20.disabled = false;
-      els.pay100.disabled = false;
-      els.calendlyBtn.disabled = false;
+  // affichage résultats
+  els.distance.textContent = "—";
+  els.duration.textContent = h + " h";
+  els.total.textContent = TC.fmtMoney(total);
 
-      window._TC_LAST = { type: 'MAD', mode: 'mad', from, to: '', whenISO: dt.toISOString(), mad_hours: h, price_eur: total };
-      try { if (window.dr) { window.dr.set('directions', null); } } catch (e) { /* noop */ }
-      return;
-    }
+  els.pay20.disabled = false;
+  els.pay100.disabled = false;
+  els.calendlyBtn.disabled = false;
+
+  window._TC_LAST = {
+    type: 'MAD',
+    mode: 'mad',
+    from: from,
+    to: '',
+    whenISO: dt.toISOString(),
+    mad_hours: h,
+    price_eur: total
+  };
+
+  return; // on arrête là, pas besoin de distance Google
+}
 
     // Courses classiques / aéroports
     if (!to) { alert("Renseignez l’adresse d’arrivée."); return; }
