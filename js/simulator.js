@@ -479,5 +479,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('mode-mad')?.addEventListener('change', syncModeUI);
   document.getElementById('mode-course')?.addEventListener('change', syncModeUI);
   syncModeUI(); // appel initial au chargement
-});
-})(); 
+});            // <- ferme l'écouteur
+
+})();          // <- ferme l’IIFE "(async function () { ... })();"
+
