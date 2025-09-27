@@ -1,33 +1,32 @@
 (async function () {
- const cfg = await TC.loadConfig();
+  const cfg = await TC.loadConfig();
 
- // === BARÈMES OFFICIELS ===
+  // === BARÈMES OFFICIELS ===
+  // MAD : totaux fixes (pas de +20%)
+  const MAD_TOTALS = { 1: 100, 2: 180, 3: 240, 4: 300, 8: 560 };
 
-// MAD : totaux fixes (pas de +20%)
-const MAD_TOTALS = { 1: 100, 2: 180, 3: 240, 4: 300, 8: 560 };
+  // Aéroports : montants fixes jour/nuit
+  const FORFAITS = {
+    ORY: { day: 60,  night: 70  },
+    CDG: { day: 80,  night: 90  },
+    BVA: { day: 150, night: 170 }
+  };
 
-// Aéroports : montants fixes jour/nuit
-const FORFAITS = {
-  ORY: { day: 60,  night: 70  },
-  CDG: { day: 80,  night: 90  },
-  BVA: { day: 150, night: 170 }
-};
+  // Enghien (Casino/Théâtre) : 5/10/20/30 km, au-delà => classique
+  function enghienBandKm(km) {
+    if (km <= 5)  return { day: 15, night: 20 };
+    if (km <= 10) return { day: 25, night: 30 };
+    if (km <= 20) return { day: 50, night: 60 };
+    if (km <= 30) return { day: 70, night: 80 };
+    return null;
+  }
 
-// Enghien (Casino/Théâtre) : 5/10/20/30 km, au-delà => classique
-function enghienBandKm(km) {
-  if (km <= 5)  return { day: 15, night: 20 };
-  if (km <= 10) return { day: 25, night: 30 };
-  if (km <= 20) return { day: 50, night: 60 };
-  if (km <= 30) return { day: 70, night: 80 };
-  return null;
-}
-
-async function loadGmaps() {
-  const r = await fetch('/.netlify/functions/public-gmaps-key');
-  const { key } = await r.json();
-  await TC.addScript(`https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&libraries=places`);
-}
-await loadGmaps();
+  async function loadGmaps() {
+    const r = await fetch('/.netlify/functions/public-gmaps-key');
+    const { key } = await r.json();
+    await TC.addScript(`https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&libraries=places`);
+  }
+  await loadGmaps();
 
   const els = {
     from: TC.q('#from'),
@@ -71,240 +70,236 @@ await loadGmaps();
 
   // Autocomplete
   new google.maps.places.Autocomplete(els.from, { componentRestrictions: { country: "fr" } });
-  new google.maps.places.Autocomplete(els.to, { componentRestrictions: { country: "fr" } });
+  new google.maps.places.Autocomplete(els.to,   { componentRestrictions: { country: "fr" } });
 
-// Carte + itinéraire
-const map = new google.maps.Map(els.map, {
-  center: { lat: 48.987, lng: 2.3 },
-  zoom: 11,
-  mapTypeControl: false,
-  fullscreenControl: false,
-  streetViewControl: false
-});
-const ds = new google.maps.DirectionsService();
-const dr = new google.maps.DirectionsRenderer({ map });
+  // Carte + itinéraire
+  const map = new google.maps.Map(els.map, {
+    center: { lat: 48.987, lng: 2.3 },
+    zoom: 11,
+    mapTypeControl: false,
+    fullscreenControl: false,
+    streetViewControl: false
+  });
+  const ds = new google.maps.DirectionsService();
+  const dr = new google.maps.DirectionsRenderer({ map });
 
- 
   function price(dist, dur, when) {
-  const min = 10, perKm = 1.6, perMin = 0.55;
-  const isNW = isNightOrWeekend(
-    when.toISOString().slice(0, 10),
-    when.toTimeString().slice(0, 5)
-  );
-  let amt = (perKm * (dist / 1000)) + (perMin * (dur / 60));
-  if (amt < min) amt = min;
-  return Math.round(amt * (isNW ? 1.2 : 1) * 100) / 100;
-}
+    const min = 10, perKm = 1.6, perMin = 0.55;
+    const isNW = isNightOrWeekend(
+      when.toISOString().slice(0, 10),
+      when.toTimeString().slice(0, 5)
+    );
+    let amt = (perKm * (dist / 1000)) + (perMin * (dur / 60));
+    if (amt < min) amt = min;
+    return Math.round(amt * (isNW ? 1.2 : 1) * 100) / 100;
+  }
 
   async function estimate() {
-  const from    = els.from.value.trim();
-  const to      = (els.to.value || '').trim();
-  const dateStr = els.date.value;
-  const timeStr = els.time.value;
-  const dt      = new Date((dateStr || '') + 'T' + (timeStr || '') + ':00');
-  const modeMad = !!document.getElementById('mode-mad')?.checked;
+    const from    = els.from.value.trim();
+    const to      = (els.to.value || '').trim();
+    const dateStr = els.date.value;
+    const timeStr = els.time.value;
+    const dt      = new Date((dateStr || '') + 'T' + (timeStr || '') + ':00');
+    const modeMad = !!document.getElementById('mode-mad')?.checked;
 
-  if (!from) { alert('Renseignez l’adresse de prise en charge.'); return; }
-  if (!dateStr || !timeStr) { alert('Sélectionnez la date et l’heure.'); return; }
+    if (!from) { alert('Renseignez l’adresse de prise en charge.'); return; }
+    if (!dateStr || !timeStr) { alert('Sélectionnez la date et l’heure.'); return; }
 
-  // ========== MISE À DISPOSITION (MAD) – forfaits fixes ==========
-  if (modeMad) {
-    const sel = document.getElementById('mad-hours');
-    const h   = sel ? Number(sel.value || 1) : 1;
-    let total = MAD_TOTALS[h];
-    if (total == null) total = 100 * h; // secours
+    // ========== MISE À DISPOSITION (MAD) – forfaits fixes ==========
+    if (modeMad) {
+      const sel = document.getElementById('mad-hours');
+      const h   = sel ? Number(sel.value || 1) : 1;
+      let total = MAD_TOTALS[h];
+      if (total == null) total = 100 * h; // secours
 
-    // UI
-    els.distance.textContent = '—';
-    els.duration.textContent = h + ' h';
-    els.total.textContent    = TC.fmtMoney(total);
-    const totalLbl = document.getElementById('totalLabel');
-    if (totalLbl) { totalLbl.textContent = `MAD ${h}h`; totalLbl.style.display = ''; }
+      // UI
+      els.distance.textContent = '—';
+      els.duration.textContent = h + ' h';
+      els.total.textContent    = TC.fmtMoney(total);
+      const totalLbl = document.getElementById('totalLabel');
+      if (totalLbl) { totalLbl.textContent = `MAD ${h}h`; totalLbl.style.display = ''; }
 
-    // Actions
-    els.pay20.disabled = false;
-    els.pay100.disabled = false;
-    els.calendlyBtn.disabled = false;
+      // Actions
+      els.pay20.disabled = false;
+      els.pay100.disabled = false;
+      els.calendlyBtn.disabled = false;
 
-    // Contexte de réservation/paiement
-    window._TC_LAST = {
-      type: 'MAD',
-      mode: 'mad',
-      from,
-      to: '',
-      whenISO: dt.toISOString(),
-      mad_hours: h,
-      price_eur: total,
-      label: `MAD ${h}h`
-    };
+      // Contexte de réservation/paiement
+      window._TC_LAST = {
+        type: 'MAD',
+        mode: 'mad',
+        from,
+        to: '',
+        whenISO: dt.toISOString(),
+        mad_hours: h,
+        price_eur: total,
+        label: `MAD ${h}h`
+      };
 
-    // Nettoie un éventuel itinéraire affiché
-    try { if (window.dr) window.dr.set('directions', null); } catch (_) {}
-    return; // pas de Google Distance pour MAD
-  }
+      // Nettoie un éventuel itinéraire affiché
+      try { dr.set('directions', null); } catch (_) {}
+      return; // pas de Google Distance pour MAD
+    }
 
-  // ========== COURSES / FORFAITS ==========
-  if (!to) { alert('Renseignez l’adresse d’arrivée.'); return; }
+    // ========== COURSES / FORFAITS ==========
+    if (!to) { alert('Renseignez l’adresse d’arrivée.'); return; }
 
-  // On trace un itinéraire (utile pour récupérer les coords legs + UX)
-  const route = await ds.route({
-    origin: from,
-    destination: to,
-    travelMode: google.maps.TravelMode.DRIVING,
-    drivingOptions: { departureTime: dt, trafficModel: 'bestguess' }
-  });
-  dr.setDirections(route);
+    // On trace un itinéraire
+    const route = await ds.route({
+      origin: from,
+      destination: to,
+      travelMode: google.maps.TravelMode.DRIVING,
+      drivingOptions: { departureTime: dt, trafficModel: 'bestguess' }
+    });
+    dr.setDirections(route);
 
-  // 1) Forfait AÉROPORT (si un des deux points est Paris)
-  const fromText = els.from.value || '';
-  const toText   = els.to.value   || '';
-  const isNW     = isNightOrWeekend(dateStr, timeStr);
-  const ap       = detectAirportCode(fromText, toText);
+    // 1) Forfait AÉROPORT (si un des deux points est Paris)
+    const fromText = els.from.value || '';
+    const toText   = els.to.value   || '';
+    const isNW     = isNightOrWeekend(dateStr, timeStr);
+    const ap       = detectAirportCode(fromText, toText);
 
-  if (ap && isParisLeg(fromText, toText)) {
-    const base = AIRPORT_FORFAITS[ap][isNW ? 'night' : 'day'];
+    if (ap && isParisLeg(fromText, toText)) {
+      const base = FORFAITS[ap][isNW ? 'night' : 'day']; // <— FIX
 
-    els.distance.textContent = '—';
-    els.duration.textContent = '—';
-    els.total.textContent    = TC.fmtMoney(base);
-    const totalLbl = document.getElementById('totalLabel');
-    if (totalLbl) { totalLbl.textContent = `Forfait ${ap} ${isNW ? 'nuit/WE' : 'jour'}`; totalLbl.style.display = ''; }
-
-    els.pay20.disabled = false;
-    els.pay100.disabled = false;
-    els.calendlyBtn.disabled = false;
-
-    window._TC_LAST = {
-      type: 'FORFAIT_AEROPORT',
-      airport: ap,
-      from, to,
-      whenISO: dt.toISOString(),
-      price_eur: base,
-      label: `Forfait ${ap} ${isNW ? 'nuit/WE' : 'jour'}`
-    };
-    return;
-  }
-
-  // 2) Forfait ENGHIEN (si l’un des 2 points est ≤ 30 km du centre)
-  const leg = route.routes?.[0]?.legs?.[0];
-  if (leg) {
-    const start = { lat: leg.start_location.lat(), lng: leg.start_location.lng() };
-    const end   = { lat: leg.end_location.lat(),   lng: leg.end_location.lng() };
-
-    const dStart = haversineKm(start, ENGHIEN);
-    const dEnd   = haversineKm(end,   ENGHIEN);
-    const dMin   = Math.min(dStart, dEnd);
-
-    const eng = computeEnghienForfait(dMin, isNW);
-    if (eng) {
       els.distance.textContent = '—';
       els.duration.textContent = '—';
-      els.total.textContent    = TC.fmtMoney(eng.total);
+      els.total.textContent    = TC.fmtMoney(base);
       const totalLbl = document.getElementById('totalLabel');
-      if (totalLbl) { totalLbl.textContent = eng.label; totalLbl.style.display = ''; }
+      if (totalLbl) { totalLbl.textContent = `Forfait ${ap} ${isNW ? 'nuit/WE' : 'jour'}`; totalLbl.style.display = ''; }
 
       els.pay20.disabled = false;
       els.pay100.disabled = false;
       els.calendlyBtn.disabled = false;
 
       window._TC_LAST = {
-        type: 'FORFAIT_ENGHIEN',
+        type: 'FORFAIT_AEROPORT',
+        airport: ap,
         from, to,
         whenISO: dt.toISOString(),
-        price_eur: eng.total,
-        label: eng.label,
-        km_to_enghien: Math.round(dMin * 10) / 10
+        price_eur: base,
+        label: `Forfait ${ap} ${isNW ? 'nuit/WE' : 'jour'}`
       };
       return;
-     }
-
-  // 3) TARIF CLASSIQUE (km + min, +20 % nuit/WE)
-  const dm  = new google.maps.DistanceMatrixService();
-  const r   = await dm.getDistanceMatrix({
-    origins: [from],
-    destinations: [to],
-    travelMode: google.maps.TravelMode.DRIVING,
-    drivingOptions: { departureTime: dt, trafficModel: 'bestguess' }
-  });
-  const cell = r.rows[0].elements[0];
-  const dist = cell.distance.value;                          // en mètres
-  const dur  = (cell.duration_in_traffic || cell.duration).value; // en secondes
-
-  const p = price(dist, dur, dt); // ta fonction existante (min 10€, 1.60€/km, 0.55€/min, +20% nuit/WE)
-  els.distance.textContent = (dist / 1000).toFixed(1) + ' km';
-  els.duration.textContent = Math.round(dur / 60) + ' min';
-  els.total.textContent    = TC.fmtMoney(p);
-  const totalLbl = document.getElementById('totalLabel');
-  if (totalLbl) { totalLbl.textContent = 'Tarif classique'; totalLbl.style.display = ''; }
-
-  els.pay20.disabled = false;
-  els.pay100.disabled = false;
-  els.calendlyBtn.disabled = false;
-
-  window._TC_LAST = {
-    type: 'COURSE',
-    from, to,
-    whenISO: dt.toISOString(),
-    dist_m: dist,
-    dur_s: dur,
-    price_eur: p,
-    label: 'Tarif classique'
-  };
-
- // ===== Paiement via Stancer (paylink) =====
-async function pay(payFull = false) {
-  try {
-    if (!window._TC_LAST) {
-      alert('Faites une estimation d’abord.');
-      return;
     }
 
-    // Prépare la charge selon le mode
-    const isMAD = (window._TC_LAST.type === 'MAD' || document.getElementById('mode-mad')?.checked);
-    const payload = {
-      type: isMAD ? 'mad' : 'course',
-      from: window._TC_LAST.from || els.from.value,
-      to: window._TC_LAST.to || els.to.value,
-      dateISO: window._TC_LAST.whenISO,
-      dureeHeures: isMAD ? (window._TC_LAST.mad_hours || Number(document.getElementById('mad-hours')?.value || 1)) : undefined
-    };
+    // 2) Forfait ENGHIEN (si l’un des 2 points est ≤ 30 km du centre)
+    const leg = route.routes?.[0]?.legs?.[0];
+    if (leg) {
+      const start = { lat: leg.start_location.lat(), lng: leg.start_location.lng() };
+      const end   = { lat: leg.end_location.lat(),   lng: leg.end_location.lng() };
 
-    // Appelle la fonction Netlify → calcule prix (Google si course) → crée paylink Stancer
-    const resp = await fetch('/.netlify/functions/paylink-from-simulator', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      const dStart = haversineKm(start, ENGHIEN);
+      const dEnd   = haversineKm(end,   ENGHIEN);
+      const dMin   = Math.min(dStart, dEnd);
+
+      const eng = computeEnghienForfait(dMin, isNW);
+      if (eng) {
+        els.distance.textContent = '—';
+        els.duration.textContent = '—';
+        els.total.textContent    = TC.fmtMoney(eng.total);
+        const totalLbl = document.getElementById('totalLabel');
+        if (totalLbl) { totalLbl.textContent = eng.label; totalLbl.style.display = ''; }
+
+        els.pay20.disabled = false;
+        els.pay100.disabled = false;
+        els.calendlyBtn.disabled = false;
+
+        window._TC_LAST = {
+          type: 'FORFAIT_ENGHIEN',
+          from, to,
+          whenISO: dt.toISOString(),
+          price_eur: eng.total,
+          label: eng.label,
+          km_to_enghien: Math.round(dMin * 10) / 10
+        };
+        return;
+      }
+    } // <— MISSING BRACE FIXED
+
+    // 3) TARIF CLASSIQUE (km + min, +20 % nuit/WE)
+    const dm  = new google.maps.DistanceMatrixService();
+    const r   = await dm.getDistanceMatrix({
+      origins: [from],
+      destinations: [to],
+      travelMode: google.maps.TravelMode.DRIVING,
+      drivingOptions: { departureTime: dt, trafficModel: 'bestguess' }
     });
+    const cell = r.rows[0].elements[0];
+    const dist = cell.distance.value;                               // en mètres
+    const dur  = (cell.duration_in_traffic || cell.duration).value; // en secondes
 
-    if (!resp.ok) {
-      const txt = await resp.text();
-      console.error('Stancer error:', txt);
-      alert('❌ Paiement indisponible pour le moment.');
-      return;
+    const p = price(dist, dur, dt);
+    els.distance.textContent = (dist / 1000).toFixed(1) + ' km';
+    els.duration.textContent = Math.round(dur / 60) + ' min';
+    els.total.textContent    = TC.fmtMoney(p);
+    const totalLbl = document.getElementById('totalLabel');
+    if (totalLbl) { totalLbl.textContent = 'Tarif classique'; totalLbl.style.display = ''; }
+
+    els.pay20.disabled = false;
+    els.pay100.disabled = false;
+    els.calendlyBtn.disabled = false;
+
+    window._TC_LAST = {
+      type: 'COURSE',
+      from, to,
+      whenISO: dt.toISOString(),
+      dist_m: dist,
+      dur_s: dur,
+      price_eur: p,
+      label: 'Tarif classique'
+    };
+  } // <— MISSING BRACE: fin de estimate()
+
+  // ===== Paiement via Stancer (paylink) =====
+  async function pay(payFull = false) {
+    try {
+      if (!window._TC_LAST) {
+        alert('Faites une estimation d’abord.');
+        return;
+      }
+      const isMAD = (window._TC_LAST.type === 'MAD' || document.getElementById('mode-mad')?.checked);
+      const payload = {
+        type: isMAD ? 'mad' : 'course',
+        from: window._TC_LAST.from || els.from.value,
+        to: window._TC_LAST.to || els.to.value,
+        dateISO: window._TC_LAST.whenISO,
+        dureeHeures: isMAD ? (window._TC_LAST.mad_hours || Number(document.getElementById('mad-hours')?.value || 1)) : undefined
+      };
+
+      const resp = await fetch('/.netlify/functions/paylink-from-simulator', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!resp.ok) {
+        const txt = await resp.text();
+        console.error('Stancer error:', txt);
+        alert('❌ Paiement indisponible pour le moment.');
+        return;
+      }
+
+      const { paylink } = await resp.json();
+      if (!paylink) {
+        alert('❌ Lien de paiement introuvable.');
+        return;
+      }
+
+      window.location.href = paylink;
+    } catch (e) {
+      console.error(e);
+      alert('❌ Erreur pendant l’initialisation du paiement.');
     }
-
-    const { paylink } = await resp.json();
-    if (!paylink) {
-      alert('❌ Lien de paiement introuvable.');
-      return;
-    }
-
-    // Redirection unique vers la page de paiement Stancer
-    window.location.href = paylink;
-  } catch (e) {
-    console.error(e);
-    alert('❌ Erreur pendant l’initialisation du paiement.');
   }
-}
 
-  
   function calendly() {
-  if (window.openInlineCalendly) {
-    window.openInlineCalendly();   // ouvre l'embed inline en bas de page
-  } else {
-    alert("Calendly se charge… réessayez dans 1 seconde.");
+    if (window.openInlineCalendly) {
+      window.openInlineCalendly();
+    } else {
+      alert("Calendly se charge… réessayez dans 1 seconde.");
+    }
   }
-}
 
   // Bind UI
   els.estimateBtn.addEventListener('click', estimate);
@@ -312,92 +307,90 @@ async function pay(payFull = false) {
   els.pay100.addEventListener('click', () => pay(true));
   els.calendlyBtn.addEventListener('click', calendly);
 
+  // ===== Utilitaires & hooks =====
 
-// ===== Utilitaires hors IIFE =====
- // ===== Utilitaires & hooks =====
+  // Nuit/WE (23:00–07:00 ou samedi/dimanche)
+  function isNightOrWeekend(dateStr, timeStr) {
+    try {
+      const [y, m, d] = (dateStr || '').split('-').map(Number);
+      const [hh, mm] = (timeStr || '').split(':').map(Number);
+      const dt = new Date(y, (m || 1) - 1, d || 1, hh || 0, mm || 0);
+      const day = dt.getDay();           // 0 = dimanche
+      const hour = dt.getHours();
+      const isWE = (day === 0 || day === 6);
+      const isNight = (hour >= 23 || hour < 7);
+      return isNight || isWE;
+    } catch (e) { return false; }
+  }
 
-// Nuit/WE (23:00–07:00 ou samedi/dimanche)
-function isNightOrWeekend(dateStr, timeStr) {
-  try {
-    const [y, m, d] = (dateStr || '').split('-').map(Number);
-    const [hh, mm] = (timeStr || '').split(':').map(Number);
-    const dt = new Date(y, (m || 1) - 1, d || 1, hh || 0, mm || 0);
-    const day = dt.getDay();           // 0 = dimanche
-    const hour = dt.getHours();
-    const isWE = (day === 0 || day === 6);
-    const isNight = (hour >= 23 || hour < 7);
-    return isNight || isWE;
-  } catch (e) { return false; }
-}
+  // Détection aéroports par texte
+  function detectAirportCode(fromText, toText) {
+    const t = (fromText + ' ' + toText).toLowerCase();
+    if (t.includes('orly') || t.includes('ory')) return 'ORY';
+    if (t.includes('roissy') || t.includes('charles de gaulle') || t.includes('cdg')) return 'CDG';
+    if (t.includes('beauvais') || t.includes('tillé') || t.includes('bva')) return 'BVA';
+    return null;
+  }
 
-// Détection aéroports par texte
-function detectAirportCode(fromText, toText) {
-  const t = (fromText + ' ' + toText).toLowerCase();
-  if (t.includes('orly') || t.includes('ory')) return 'ORY';
-  if (t.includes('roissy') || t.includes('charles de gaulle') || t.includes('cdg')) return 'CDG';
-  if (t.includes('beauvais') || t.includes('tillé') || t.includes('bva')) return 'BVA';
-  return null;
-}
+  // Vérifie si un des deux points mentionne Paris
+  function isParisLeg(fromText, toText) {
+    const f = (fromText || '').toLowerCase();
+    const t = (toText   || '').toLowerCase();
+    return f.includes('paris') || t.includes('paris');
+  }
 
-// Vérifie si un des deux points mentionne Paris
-function isParisLeg(fromText, toText) {
-  const f = (fromText || '').toLowerCase();
-  const t = (toText   || '').toLowerCase();
-  return f.includes('paris') || t.includes('paris');
-}
+  // Centre d’Enghien (Casino/Théâtre)
+  const ENGHIEN = { lat: 48.9697, lng: 2.3091 };
 
-// Centre d’Enghien (Casino/Théâtre)
-const ENGHIEN = { lat: 48.9697, lng: 2.3091 };
+  // Distance haversine en km
+  function haversineKm(a, b) {
+    const R = 6371;
+    const dLat = (b.lat - a.lat) * Math.PI / 180;
+    const dLon = (b.lng - a.lng) * Math.PI / 180;
+    const la1 = a.lat * Math.PI / 180;
+    const la2 = b.lat * Math.PI / 180;
+    const x = Math.sin(dLat/2)**2 + Math.cos(la1) * Math.cos(la2) * Math.sin(dLon/2)**2;
+    return 2 * R * Math.asin(Math.sqrt(x));
+  }
 
-// Distance haversine en km
-function haversineKm(a, b) {
-  const R = 6371;
-  const dLat = (b.lat - a.lat) * Math.PI / 180;
-  const dLon = (b.lng - a.lng) * Math.PI / 180;
-  const la1 = a.lat * Math.PI / 180;
-  const la2 = b.lat * Math.PI / 180;
-  const x = Math.sin(dLat/2)**2 + Math.cos(la1) * Math.cos(la2) * Math.sin(dLon/2)**2;
-  return 2 * R * Math.asin(Math.sqrt(x));
-}
+  // Forfaits Enghien
+  function computeEnghienForfait(kmToEnghien, isNightWE) {
+    let band = null;
+    if (kmToEnghien <= 5)       band = isNightWE ? { price: 20, label: 'Forfait Enghien 5 km (nuit/WE)' }
+                                                 : { price: 15, label: 'Forfait Enghien 5 km (jour)' };
+    else if (kmToEnghien <= 10) band = isNightWE ? { price: 30, label: 'Forfait Enghien 10 km (nuit/WE)' }
+                                                 : { price: 25, label: 'Forfait Enghien 10 km (jour)' };
+    else if (kmToEnghien <= 20) band = isNightWE ? { price: 60, label: 'Forfait Enghien 20 km (nuit/WE)' }
+                                                 : { price: 50, label: 'Forfait Enghien 20 km (jour)' };
+    else if (kmToEnghien <= 30) band = isNightWE ? { price: 80, label: 'Forfait Enghien 30 km (nuit/WE)' }
+                                                 : { price: 70, label: 'Forfait Enghien 30 km (jour)' };
+    return band ? { total: band.price, label: band.label } : null;
+  }
 
-// Forfaits Enghien
-function computeEnghienForfait(kmToEnghien, isNightWE) {
-  let band = null;
-  if (kmToEnghien <= 5)       band = isNightWE ? { price: 20, label: 'Forfait Enghien 5 km (nuit/WE)' }
-                                               : { price: 15, label: 'Forfait Enghien 5 km (jour)' };
-  else if (kmToEnghien <= 10) band = isNightWE ? { price: 30, label: 'Forfait Enghien 10 km (nuit/WE)' }
-                                               : { price: 25, label: 'Forfait Enghien 10 km (jour)' };
-  else if (kmToEnghien <= 20) band = isNightWE ? { price: 60, label: 'Forfait Enghien 20 km (nuit/WE)' }
-                                               : { price: 50, label: 'Forfait Enghien 20 km (jour)' };
-  else if (kmToEnghien <= 30) band = isNightWE ? { price: 80, label: 'Forfait Enghien 30 km (nuit/WE)' }
-                                               : { price: 70, label: 'Forfait Enghien 30 km (jour)' };
-  return band ? { total: band.price, label: band.label } : null;
-}
+  // UI : affiche/masque la ligne MAD + le champ "Arrivée"
+  function syncModeUI() {
+    const isMad   = document.getElementById('mode-mad')?.checked;
+    const madRow  = document.getElementById('mad-row');
+    const toInput = document.getElementById('to');
+    const toLabel = toInput ? toInput.previousElementSibling : null;
 
-// UI : affiche/masque la ligne MAD + le champ "Arrivée"
-function syncModeUI() {
-  const isMad   = document.getElementById('mode-mad')?.checked;
-  const madRow  = document.getElementById('mad-row');
-  const toInput = document.getElementById('to');
-  const toLabel = toInput ? toInput.previousElementSibling : null;
+    if (madRow)  madRow.style.display  = isMad ? 'flex' : 'none';
+    if (toInput) toInput.style.display = isMad ? 'none' : '';
+    if (toLabel) toLabel.style.display = isMad ? 'none' : '';
+  }
 
-  if (madRow)  madRow.style.display  = isMad ? 'flex' : 'none';
-  if (toInput) toInput.style.display = isMad ? 'none' : '';
-  if (toLabel) toLabel.style.display = isMad ? 'none' : '';
-}
+  // Hooks DOM
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('mode-mad')?.addEventListener('change', syncModeUI);
+    document.getElementById('mode-course')?.addEventListener('change', syncModeUI);
 
-// Hooks DOM
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('mode-mad')?.addEventListener('change', syncModeUI);
-  document.getElementById('mode-course')?.addEventListener('change', syncModeUI);
+    // Bouton calendrier
+    const btn = document.getElementById('openDate');
+    const inp = document.getElementById('date');
+    if (btn && inp) btn.addEventListener('click', () => {
+      if (inp.showPicker) inp.showPicker(); else inp.focus();
+    });
 
-  // Bouton calendrier
-  const btn = document.getElementById('openDate');
-  const inp = document.getElementById('date');
-  if (btn && inp) btn.addEventListener('click', () => {
-    if (inp.showPicker) inp.showPicker(); else inp.focus();
+    syncModeUI(); // init
   });
-
-  syncModeUI(); // init
-});
 })(); // fin de l’IIFE
