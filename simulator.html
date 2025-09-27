@@ -72,6 +72,17 @@
             <label>Passagers</label>
             <select id="pax" class="input"><option>1</option><option>2</option><option>3</option><option>4</option></select>
           </div>
+          <!-- Ligne visible uniquement en MAD -->
+<div class="row" id="mad-row" style="display:none">
+  <label for="mad-hours">Durée (MAD)</label>
+  <select id="mad-hours" class="input">
+    <option value="1">1h (120 €)</option>
+    <option value="2">2h (110 €/h)</option>
+    <option value="3">3h (100 €/h)</option>
+    <option value="4">4h (95 €/h)</option>
+    <option value="8">8h (85 €/h)</option>
+  </select>
+</div>
           <div>
             <label>Commentaires</label>
             <input id="note" class="input" placeholder="Infos vol, bagages, siège enfant… (optionnel)">
