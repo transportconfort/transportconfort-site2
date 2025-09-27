@@ -315,28 +315,15 @@ async function pay(payFull = false) {
 
 
 // ===== Utilitaires hors IIFE =====
-  try {
-    const [y, m, d] = (dateStr || '').split('-').map(Number);
-    const [hh, mm] = (timeStr || '').split(':').map(Number);
-    const dt = new Date(y, (m || 1) - 1, d || 1, hh || 0, mm || 0);
-    const day = dt.getDay();               // 0=dimanche
-    const hour = dt.getHours();
-    const isWE = (day === 0 || day === 6);
-    const isNight = (hour >= 23 || hour < 7);
-    return isNight || isWE;
-  } catch (e) { return false; }
-}
+ // ===== Utilitaires & hooks =====
 
-// ------ Helpers forfaits (Aéroports + Enghien) ------
-
-// Nuit/WE (23:00–07:00 ou samedi/dimanche) : sert à choisir le tarif nuit des forfaits Enghien,
-// et pour la +20% des courses classiques (déjà gérée dans price()).
+// Nuit/WE (23:00–07:00 ou samedi/dimanche)
 function isNightOrWeekend(dateStr, timeStr) {
   try {
     const [y, m, d] = (dateStr || '').split('-').map(Number);
     const [hh, mm] = (timeStr || '').split(':').map(Number);
     const dt = new Date(y, (m || 1) - 1, d || 1, hh || 0, mm || 0);
-    const day = dt.getDay(); // 0=dimanche
+    const day = dt.getDay();           // 0 = dimanche
     const hour = dt.getHours();
     const isWE = (day === 0 || day === 6);
     const isNight = (hour >= 23 || hour < 7);
@@ -344,14 +331,7 @@ function isNightOrWeekend(dateStr, timeStr) {
   } catch (e) { return false; }
 }
 
-// Aéroports (depuis/vers PARIS uniquement)
-const AIRPORT_FORFAITS = {
-  ORY: { day: 60,  night: 70  },
-  CDG: { day: 80,  night: 90  },
-  BVA: { day: 150, night: 170 }
-};
-
-// Détection par texte (simple et robuste pour ton usage)
+// Détection aéroports par texte
 function detectAirportCode(fromText, toText) {
   const t = (fromText + ' ' + toText).toLowerCase();
   if (t.includes('orly') || t.includes('ory')) return 'ORY';
@@ -360,17 +340,17 @@ function detectAirportCode(fromText, toText) {
   return null;
 }
 
-// Vérifie si un des deux champs mentionne "paris"
+// Vérifie si un des deux points mentionne Paris
 function isParisLeg(fromText, toText) {
   const f = (fromText || '').toLowerCase();
   const t = (toText   || '').toLowerCase();
   return f.includes('paris') || t.includes('paris');
 }
 
-// Enghien-les-Bains (Casino/Théâtre) – centre de référence
+// Centre d’Enghien (Casino/Théâtre)
 const ENGHIEN = { lat: 48.9697, lng: 2.3091 };
 
-// Haversine (km)
+// Distance haversine en km
 function haversineKm(a, b) {
   const R = 6371;
   const dLat = (b.lat - a.lat) * Math.PI / 180;
@@ -381,84 +361,21 @@ function haversineKm(a, b) {
   return 2 * R * Math.asin(Math.sqrt(x));
 }
 
-// Calcule le forfait Enghien en fonction de la distance au centre ENGHien
-// Retourne {total, label} ou null si > 30 km (pas de forfait).
+// Forfaits Enghien
 function computeEnghienForfait(kmToEnghien, isNightWE) {
   let band = null;
-  if (kmToEnghien <= 5)       band = isNightWE ? { price: 20, label: 'Forfait Enghien 5 km (nuit/WE)' } 
-                                              : { price: 15, label: 'Forfait Enghien 5 km (jour)' };
-  else if (kmToEnghien <= 10) band = isNightWE ? { price: 30, label: 'Forfait Enghien 10 km (nuit/WE)' } 
-                                              : { price: 25, label: 'Forfait Enghien 10 km (jour)' };
-  else if (kmToEnghien <= 20) band = isNightWE ? { price: 60, label: 'Forfait Enghien 20 km (nuit/WE)' } 
-                                              : { price: 50, label: 'Forfait Enghien 20 km (jour)' };
-  else if (kmToEnghien <= 30) band = isNightWE ? { price: 80, label: 'Forfait Enghien 30 km (nuit/WE)' } 
-                                              : { price: 70, label: 'Forfait Enghien 30 km (jour)' };
+  if (kmToEnghien <= 5)       band = isNightWE ? { price: 20, label: 'Forfait Enghien 5 km (nuit/WE)' }
+                                               : { price: 15, label: 'Forfait Enghien 5 km (jour)' };
+  else if (kmToEnghien <= 10) band = isNightWE ? { price: 30, label: 'Forfait Enghien 10 km (nuit/WE)' }
+                                               : { price: 25, label: 'Forfait Enghien 10 km (jour)' };
+  else if (kmToEnghien <= 20) band = isNightWE ? { price: 60, label: 'Forfait Enghien 20 km (nuit/WE)' }
+                                               : { price: 50, label: 'Forfait Enghien 20 km (jour)' };
+  else if (kmToEnghien <= 30) band = isNightWE ? { price: 80, label: 'Forfait Enghien 30 km (nuit/WE)' }
+                                               : { price: 70, label: 'Forfait Enghien 30 km (jour)' };
   return band ? { total: band.price, label: band.label } : null;
 }
 
-  // MAD
-  if (mode === 'mad') {
-    const madRates = { 1: 100, 2: 90, 3: 80, 4: 75, 8: 70 };
-    let h = Number(madHours || 1);
-    if (!madRates[h]) h = 1;
-    let hourly = madRates[h];
-    let total = hourly * h;
-    if (NIGHT_OR_WE) total = Math.round(total * 1.2);
-    return { total, base: total, label: `MAD ${h}h @ ${hourly}€/h` };
-  }
-
-  // Forfaits aéroports
-  const airport = detectAirportForfait(fromText, toText);
-  if (airport) {
-    const f = FORFAITS[airport];
-    let base = NIGHT_OR_WE ? f.night : f.day;
-    return { total: base, base, label: `Forfait ${airport} ${NIGHT_OR_WE ? 'nuit/WE' : 'jour'}` };
-  }
-
-  // Classique
-  const PRICE_PER_KM = 1.60;
-  const PRICE_PER_MIN = 0.55;
-  const MINIMUM = 10.0;
-  let base = Math.max(MINIMUM, PRICE_PER_KM * distanceKm + PRICE_PER_MIN * durationMin);
-  if (NIGHT_OR_WE) base *= 1.2;
-  base = Math.round(base * 100) / 100;
-  return { total: base, base, label: 'Tarif classique' };
-}
-
-async function computeAndDisplay(result) {
-  const els = {
-    from: document.getElementById('from'),
-    to: document.getElementById('to'),
-    date: document.getElementById('date'),
-    time: document.getElementById('time'),
-    modeCourse: document.getElementById('mode-course'),
-    modeMAD: document.getElementById('mode-mad'),
-    durationMAD: document.getElementById('mad-hours')
-  };
-  const mode = (els.modeMAD && els.modeMAD.checked) ? 'mad' : 'course';
-  const madHours = els.durationMAD ? els.durationMAD.value : 1;
-  const pricing = applyPricing(result.distanceKm, result.durationMin, els.date.value, els.time.value, els.from.value, els.to.value, mode, madHours);
-
-  const discounted = Math.round(pricing.total * 100) / 100; // (si tu appliques -15% un jour, calcule-le ici)
-  const panelTotal = document.getElementById('totalPanel');
-  if (panelTotal) {
-    panelTotal.innerHTML = `<div style="display:flex;flex-direction:column;gap:4px">
-      <div><small>${pricing.label}</small></div>
-      <div><small>Prix normal :</small> <s>${pricing.total.toFixed(2)} € TTC</s></div>
-      <div><b>Total estimé :</b> ${discounted.toFixed(2)} € TTC</div>
-    </div>`;
-  }
-  window.__lastEstimate = { ...result, total: discounted, label: pricing.label, base: pricing.total };
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  const btn = document.getElementById('openDate');
-  const inp = document.getElementById('date');
-  if (btn && inp) {
-    btn.addEventListener('click', () => { if (inp.showPicker) inp.showPicker(); else inp.focus(); });
-  }
-});
-  
+// UI : affiche/masque la ligne MAD + le champ "Arrivée"
 function syncModeUI() {
   const isMad   = document.getElementById('mode-mad')?.checked;
   const madRow  = document.getElementById('mad-row');
@@ -470,10 +387,18 @@ function syncModeUI() {
   if (toLabel) toLabel.style.display = isMad ? 'none' : '';
 }
 
-// === hooks DOM ===
+// Hooks DOM
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('mode-mad')?.addEventListener('change', syncModeUI);
   document.getElementById('mode-course')?.addEventListener('change', syncModeUI);
-  syncModeUI(); // appel initial au chargement
+
+  // Bouton calendrier
+  const btn = document.getElementById('openDate');
+  const inp = document.getElementById('date');
+  if (btn && inp) btn.addEventListener('click', () => {
+    if (inp.showPicker) inp.showPicker(); else inp.focus();
+  });
+
+  syncModeUI(); // init
 });
 })(); // fin de l’IIFE
