@@ -14,7 +14,6 @@
 
   <!-- Calendly (nécessaire pour l'embed inline) -->
   <link rel="stylesheet" href="https://assets.calendly.com/assets/external/widget.css"/>
-  <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
 </head>
 
 <body>
@@ -169,13 +168,23 @@
       url.searchParams.set('month', d.slice(0,7));
       url.searchParams.set('utm_content', JSON.stringify(window._TC_LAST || {}));
 
-      const host = document.getElementById('calendly-inline');
-      if (window.Calendly?.initInlineWidget && host) {
-        host.innerHTML = '';
-        Calendly.initInlineWidget({ url: url.toString(), parentElement: host });
-        host.scrollIntoView({ behavior: 'smooth' });
-      } else {
-        window.open(url.toString(), '_blank'); // fallback si le SDK Calendly n’est pas prêt
+      // --- init inline sans SDK Calendly : on injecte une iframe ---
+const host = document.getElementById('calendly-inline');
+if (!host) { alert('Zone calendrier manquante (#calendly-inline).'); return; }
+
+host.innerHTML = '';
+const iframe = document.createElement('iframe');
+iframe.src = url.toString();
+iframe.width = '100%';
+iframe.height = '800';
+iframe.frameBorder = '0';
+iframe.title = 'Calendly';
+iframe.loading = 'lazy';
+iframe.style = 'min-width:320px;height:800px;width:100%;border:0;border-radius:12px';
+host.appendChild(iframe);
+
+host.scrollIntoView({ behavior: 'smooth' });
+
       }
     } catch (e) {
       console.error(e);
