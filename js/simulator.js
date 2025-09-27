@@ -108,35 +108,54 @@ const dr = new google.maps.DirectionsRenderer({ map });
     if (!from) { alert("Renseignez l’adresse de prise en charge."); return; }
     if (!dateStr || !timeStr) { alert("Sélectionnez la date et l’heure."); return; }
 
-// --- Mise à disposition (MAD) ---
+// MAD (mise à dispo) : tarif forfaitaire (pas de majoration nuit/WE)
 if (modeMad) {
   const sel = document.getElementById('mad-hours');
   const h = sel ? Number(sel.value || 1) : 1;
 
-  // Ton barème fixe
-  const MAD_TOTALS = { 1: 100, 2: 180, 3: 240, 4: 300, 8: 560 };
-  const total = MAD_TOTALS[h] || 100;
+  // Barème MAD (totaux TTC)
+  const madTotals = { 1: 100, 2: 180, 3: 240, 4: 300, 8: 560 };
+  let total = madTotals[h];
+  if (total == null) {
+    // secours : si une valeur inattendue arrive, on approxime à 100 €/h
+    total = 100 * h;
+  }
 
-  // affichage résultats
-  els.distance.textContent = "—";
-  els.duration.textContent = h + " h";
-  els.total.textContent = TC.fmtMoney(total);
+  // MAJ de l’UI
+  const distEl  = document.getElementById('distance');
+  const durEl   = document.getElementById('duration');
+  const totalEl = document.getElementById('total');
+  const totalLbl= document.getElementById('totalLabel');
 
+  if (distEl)  distEl.textContent  = '—';
+  if (durEl)   durEl.textContent   = h + ' h';
+  if (totalEl) totalEl.textContent = TC.fmtMoney(total);
+  if (totalLbl) {
+    totalLbl.textContent = `MAD ${h}h`;
+    totalLbl.style.display = '';
+  }
+
+  // Boutons action
   els.pay20.disabled = false;
   els.pay100.disabled = false;
   els.calendlyBtn.disabled = false;
 
+  // Contexte pour Calendly / paiement
   window._TC_LAST = {
     type: 'MAD',
     mode: 'mad',
-    from: from,
+    from,
     to: '',
     whenISO: dt.toISOString(),
     mad_hours: h,
-    price_eur: total
+    price_eur: total,
+    label: `MAD ${h}h`
   };
 
-  return; // on arrête là, pas besoin de distance Google
+  // Nettoie l’itinéraire si présent
+  try { if (window.dr) window.dr.set('directions', null); } catch (e) {}
+
+  return; // on s’arrête là, pas besoin de distances Google pour MAD
 }
 
     // Courses classiques / aéroports
