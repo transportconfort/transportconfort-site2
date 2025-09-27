@@ -44,6 +44,60 @@
     map: TC.q('#map')
   };
 
+  // === UI MAD: injection de la ligne "Durée" + masquage champ Arrivée ===
+function ensureMadRow() {
+  let row = document.getElementById('mad-row');
+  if (!row) {
+    row = document.createElement('div');
+    row.id = 'mad-row';
+    row.style.display = 'none';
+    row.style.gap = '8px';
+    row.style.alignItems = 'center';
+    row.style.marginTop = '8px';
+    row.innerHTML = `
+      <label for="mad-hours" style="min-width:140px;">Durée (MAD)</label>
+      <select id="mad-hours">
+        <option value="1">1 h</option>
+        <option value="2">2 h</option>
+        <option value="3">3 h</option>
+        <option value="4">4 h</option>
+        <option value="8">8 h (journée)</option>
+      </select>
+    `;
+    // Point d'ancrage: après le bloc du #pax si possible
+    const paxNode = document.getElementById('pax');
+    const anchor = paxNode?.closest('div') || els.time?.closest('div') || els.map?.parentElement || document.body;
+    anchor.parentNode.insertBefore(row, anchor.nextSibling);
+  }
+}
+
+// Masque/affiche le champ "Arrivée" et montre la durée MAD quand besoin
+function syncModeUI() {
+  const isMad   = document.getElementById('mode-mad')?.checked;
+  const madRow  = document.getElementById('mad-row');
+  const toInput = document.getElementById('to');
+
+  // label du champ "to": <label for="to"> si présent, sinon élément précédent
+  const toLabel = document.querySelector('label[for="to"]') || (toInput ? toInput.previousElementSibling : null);
+
+  if (madRow)  madRow.style.display  = isMad ? 'flex' : 'none';
+
+  if (toInput) {
+    toInput.style.display = isMad ? 'none' : '';
+    if (isMad) toInput.value = ''; // on nettoie pour éviter des fuites d'état
+  }
+  if (toLabel) toLabel.style.display = isMad ? 'none' : '';
+}
+
+// Initialisation immédiate (à l'import du script)
+ensureMadRow();
+syncModeUI();
+
+// Brancher les changements de mode (si pas déjà fait)
+document.getElementById('mode-mad')?.addEventListener('change', syncModeUI);
+document.getElementById('mode-course')?.addEventListener('change', syncModeUI);
+
+
   // Pré-remplir date/heure (T+120 min, arrondi 5 min)
   els.time.step = 300;
   const now = new Date();
@@ -183,39 +237,46 @@
       return;
     }
 
-    // 2) Forfait ENGHIEN (si l’un des 2 points est ≤ 30 km du centre)
-    const leg = route.routes?.[0]?.legs?.[0];
-    if (leg) {
-      const start = { lat: leg.start_location.lat(), lng: leg.start_location.lng() };
-      const end   = { lat: leg.end_location.lat(),   lng: leg.end_location.lng() };
+   // 2) Forfait ENGHIEN (si l’un des 2 points est "Enghien" au sens rayon d’attache)
+const leg = route.routes?.[0]?.legs?.[0];
+if (leg) {
+  const start = { lat: leg.start_location.lat(), lng: leg.start_location.lng() };
+  const end   = { lat: leg.end_location.lat(),   lng: leg.end_location.lng() };
 
-      const dStart = haversineKm(start, ENGHIEN);
-      const dEnd   = haversineKm(end,   ENGHIEN);
-      const dMin   = Math.min(dStart, dEnd);
+  const dStart = haversineKm(start, ENGHIEN); // km du départ -> centre Enghien
+  const dEnd   = haversineKm(end,   ENGHIEN); // km de l’arrivée -> centre Enghien
 
-      const eng = computeEnghienForfait(dMin, isNW);
-      if (eng) {
-        els.distance.textContent = '—';
-        els.duration.textContent = '—';
-        els.total.textContent    = TC.fmtMoney(eng.total);
-        const totalLbl = document.getElementById('totalLabel');
-        if (totalLbl) { totalLbl.textContent = eng.label; totalLbl.style.display = ''; }
+  const R_ENGHIEN = 2; // km – rayon d’attache "Casino/Théâtre"
+  const isEnghienEndpoint = (dStart <= R_ENGHIEN) || (dEnd <= R_ENGHIEN);
 
-        els.pay20.disabled = false;
-        els.pay100.disabled = false;
-        els.calendlyBtn.disabled = false;
+  if (isEnghienEndpoint) {
+    // La tranche se calcule sur la distance du point NON-Enghien
+    const bandDist = (dStart <= R_ENGHIEN) ? dEnd : dStart;
 
-        window._TC_LAST = {
-          type: 'FORFAIT_ENGHIEN',
-          from, to,
-          whenISO: dt.toISOString(),
-          price_eur: eng.total,
-          label: eng.label,
-          km_to_enghien: Math.round(dMin * 10) / 10
-        };
-        return;
-      }
-    } // <— MISSING BRACE FIXED
+    const eng = computeEnghienForfait(bandDist, isNW);
+    if (eng) {
+      els.distance.textContent = '—';
+      els.duration.textContent = '—';
+      els.total.textContent    = TC.fmtMoney(eng.total);
+      const totalLbl = document.getElementById('totalLabel');
+      if (totalLbl) { totalLbl.textContent = eng.label; totalLbl.style.display = ''; }
+
+      els.pay20.disabled = false;
+      els.pay100.disabled = false;
+      els.calendlyBtn.disabled = false;
+
+      window._TC_LAST = {
+        type: 'FORFAIT_ENGHIEN',
+        from, to,
+        whenISO: dt.toISOString(),
+        price_eur: eng.total,
+        label: eng.label,
+        km_to_enghien: Math.round(bandDist * 10) / 10
+      };
+      return;
+    }
+  }
+}
 
     // 3) TARIF CLASSIQUE (km + min, +20 % nuit/WE)
     const dm  = new google.maps.DistanceMatrixService();
