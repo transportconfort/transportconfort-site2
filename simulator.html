@@ -182,30 +182,29 @@ async function openInlineCalendly() {
       mad_hours
     };
 
-    // 3) signature serveur (Netlify function B/E)
-    let signed;
-    try {
-      const r = await fetch('/.netlify/functions/sim-presign', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ canon })
-      });
-      if (!r.ok) {
-  console.warn('presign HTTP ' + r.status + ' — fallback');
-  const canonB64 = btoa(unescape(encodeURIComponent(JSON.stringify(canon))));
-  signed = { signature: '', nonce: '', canon_b64: canonB64 };
-} else {
-  signed = await r.json();
-}
+   // 3) signature serveur (Netlify function B/E)
+let signed;
+try {
+  const r = await fetch('/.netlify/functions/sim-presign', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ canon })
+  });
 
-      signed = await r.json(); // { signature, canon_b64, nonce }
-   } catch (e) {
+  const canonB64Fallback = btoa(unescape(encodeURIComponent(JSON.stringify(canon))));
+
+  if (!r.ok) {
+    console.warn('presign HTTP ' + r.status + ' — fallback');
+    signed = { signature: '', nonce: '', canon_b64: canonB64Fallback };
+  } else {
+    signed = await r.json(); // { signature, canon_b64, nonce }
+  }
+} catch (e) {
   console.warn('presign error — fallback', e);
-  // on encode le canon côté client et on continue quand même
   const canonB64 = btoa(unescape(encodeURIComponent(JSON.stringify(canon))));
   signed = { signature: '', nonce: '', canon_b64: canonB64 };
 }
-
+ 
 
     // 4) prefill questions (quand tu auras mis les IDs en section D)
     const cfg = isMAD ? CAL.mad : CAL.course;
