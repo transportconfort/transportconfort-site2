@@ -14,6 +14,7 @@
 
   <!-- Calendly (nécessaire pour l'embed inline) -->
   <link rel="stylesheet" href="https://assets.calendly.com/assets/external/widget.css"/>
+  <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
 </head>
 
 <body>
@@ -141,95 +142,115 @@
      style="width:100%;height:800px;border:1px solid #222;border-radius:12px"></div>
   </div>
 
-  <!-- Mini-fonction globale utilisée par simulator.js (calendly() l’appelle) -->
-  <script>
-  async function openInlineCalendly() {
-    try {
-      // 1) charge la config via l’utilitaire global (évite les soucis SSL)
-      let cfg = {};
-      try {
-        cfg = await (window.TC && TC.loadConfig ? TC.loadConfig() : Promise.resolve({}));
-      } catch (_) { cfg = {}; }
-
-      // 2) fallback absolu en HTTPS si besoin
-      if ((!cfg || (!cfg.CALENDLY_VTC && !cfg.CALENDLY_MAD))) {
-        try {
-          const res = await fetch(`${location.origin}/config.json`, { cache: 'no-store' });
-          const data = await res.json();
-          cfg = Object.assign({}, cfg || {}, data || {});
-        } catch (_) {
-          // dernier recours : lire une config bootstrap globale si présente
-          cfg = window.cfg || cfg || {};
-        }
-      }
-
-      // 3) récupère date/heure (formulaire ou dernière estimation)
-      const dEl = document.getElementById('date');
-      const tEl = document.getElementById('time');
-      let d = dEl && dEl.value || null;
-      let t = tEl && tEl.value || null;
-      if ((!d || !t) && window._TC_LAST?.whenISO) {
-        const d0 = new Date(window._TC_LAST.whenISO), pad = n => String(n).padStart(2,'0');
-        d = d || `${d0.getFullYear()}-${pad(d0.getMonth()+1)}-${pad(d0.getDate())}`;
-        t = t || `${pad(d0.getHours())}:${pad(d0.getMinutes())}`;
-      }
-      if (!d) { alert('Choisissez d’abord une date (ou faites une estimation).'); return; }
-
-      // 4) choisit l’event (MAD ou VTC)
-      const isMAD = !!document.getElementById('mode-mad')?.checked;
-      const baseUrl = (isMAD ? cfg.CALENDLY_MAD : cfg.CALENDLY_VTC) || cfg.CALENDLY_VTC || cfg.CALENDLY_MAD;
-      if (!baseUrl) { alert('Lien Calendly non configuré.'); return; }
-
-      // 5) construit l’URL et monte le widget
-      const url = new URL(baseUrl);
-      url.searchParams.set('date', d);
-      url.searchParams.set('month', d.slice(0,7));
-      url.searchParams.set('utm_content', JSON.stringify(window._TC_LAST || {}));
-      // --- couleurs personnalisées pour matcher le style Transport Confort ---
-url.searchParams.set('background_color', '0B0B0B'); // fond noir logo
-url.searchParams.set('text_color', 'FFFFFF');       // texte blanc
-url.searchParams.set('primary_color', 'C7A24B');    // doré logo
-
-
-      // --- init inline sans SDK Calendly : on injecte une iframe ---
-const host = document.getElementById('calendly-inline');
-if (!host) { alert('Zone calendrier manquante (#calendly-inline).'); return; }
-
-host.innerHTML = '';
-const iframe = document.createElement('iframe');
-iframe.src = url.toString();
-iframe.width = '100%';
-iframe.height = '800';
-iframe.frameBorder = '0';
-iframe.title = 'Calendly';
-iframe.loading = 'lazy';
-// style premium aligné à Transport Confort
-iframe.style = `
-  min-width:320px;
-  height:800px;
-  width:100%;
-  border:2px solid #C7A24B;      
-  border-radius:16px;            
-  box-shadow:0 4px 20px rgba(199,162,75,0.25); 
-  background:#0B0B0B;            
-`;
-host.appendChild(iframe);
-
-host.scrollIntoView({ behavior: 'smooth' });
-
-    } catch (e) {
-      console.error(e);
-      alert("Impossible d’ouvrir le calendrier.");
-    }
+<script>
+// === à compléter plus tard (section D) : mets tes URLs événement + IDs de questions ===
+const CAL = {
+  mad: {
+    url: 'https://calendly.com/TON_ORG/mad-chauffeur-prive',
+    qid: { date:'QID_MAD_DATE', time:'QID_MAD_TIME', from:'QID_MAD_FROM', duration:'QID_MAD_DURATION', price:'QID_MAD_PRICE' }
+  },
+  course: {
+    url: 'https://calendly.com/TON_ORG/reservation-vtc-premium',
+    qid: { date:'QID_VTC_DATE', time:'QID_VTC_TIME', from:'QID_VTC_FROM', to:'QID_VTC_TO', price:'QID_VTC_PRICE' }
   }
+};
 
-  // bouton “Afficher le calendrier”
-  document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('btn-open-inline');
-    if (btn) btn.addEventListener('click', openInlineCalendly);
-    window.openInlineCalendly = openInlineCalendly; // utilisé par simulator.js
-  });
+function getVal(id){ const el=document.getElementById(id); return el?el.value.trim():''; }
+
+async function openInlineCalendly() {
+  try {
+    // 1) données depuis le formulaire / dernière estimation
+    const isMAD = !!document.getElementById('mode-mad')?.checked;
+    const dateStr = getVal('date');
+    const timeStr = getVal('time');
+    let whenISO = (window._TC_LAST && window._TC_LAST.whenISO) || null;
+    if (!whenISO && dateStr && timeStr) whenISO = `${dateStr}T${timeStr}:00`;
+
+    const from = (window._TC_LAST?.from) || getVal('from');
+    const to   = isMAD ? '' : ((window._TC_LAST?.to) || getVal('to'));
+    const price_eur = (window._TC_LAST?.price_eur ?? null);
+    const mad_hours = isMAD ? (window._TC_LAST?.mad_hours || Number(document.getElementById('mad-hours')?.value||1)) : undefined;
+
+    if (!dateStr && !whenISO) { alert('Choisissez une date (ou faites une estimation).'); return; }
+
+    // 2) paquet canon
+    const canon = {
+      type: isMAD ? 'mad' : 'course',
+      whenISO,
+      from,
+      to,
+      price_eur,
+      mad_hours
+    };
+
+    // 3) signature serveur (Netlify function B/E)
+    let signed;
+    try {
+      const r = await fetch('/.netlify/functions/sim-presign', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ canon })
+      });
+      if (!r.ok) throw new Error(await r.text());
+      signed = await r.json(); // { signature, canon_b64, nonce }
+    } catch(e) {
+      console.error('presign error', e);
+      alert('Initialisation sécurisée indisponible (signature).');
+      return;
+    }
+
+    // 4) prefill questions (quand tu auras mis les IDs en section D)
+    const cfg = isMAD ? CAL.mad : CAL.course;
+    const ca = {};
+    if (cfg.qid.price && price_eur!=null) ca[cfg.qid.price] = (typeof TC!=='undefined' && TC.fmtMoney)? TC.fmtMoney(price_eur) : `${price_eur} €`;
+    if (cfg.qid.from  && from)            ca[cfg.qid.from]  = from;
+    if (!isMAD && cfg.qid.to && to)       ca[cfg.qid.to]    = to;
+    if (isMAD && cfg.qid.duration && mad_hours) ca[cfg.qid.duration] = `${mad_hours} h`;
+    if (cfg.qid.date && whenISO) ca[cfg.qid.date] = whenISO.slice(0,10);
+    if (cfg.qid.time && whenISO) ca[cfg.qid.time] = new Date(whenISO).toTimeString().slice(0,5);
+
+    // 5) UTM porteurs de preuve (non éditables)
+    const utm = {
+      utm_source: 'simulator',
+      utm_medium: signed.signature,   // HMAC
+      utm_term:   signed.nonce,       // anti-rejeu
+      utm_content: signed.canon_b64,  // canon encodé base64
+      utm_campaign: (window._TC_LAST?.label || (isMAD?'MAD':'COURSE'))
+    };
+
+    // 6) URL avec tes couleurs
+    const base = new URL(cfg.url);
+    base.searchParams.set('background_color','0B0B0B');
+    base.searchParams.set('text_color','FFFFFF');
+    base.searchParams.set('primary_color','C7A24B');
+
+    // 7) lance le widget Calendly inline
+    const host = document.getElementById('calendly-inline');
+    if (!host) { alert('Zone calendrier manquante (#calendly-inline).'); return; }
+    host.innerHTML = ''; // reset
+
+    Calendly.initInlineWidget({
+      url: base.toString(),
+      parentElement: host,
+      prefill: { date: (whenISO ? whenISO.slice(0,10) : undefined), customAnswers: ca },
+      utm
+    });
+
+    host.scrollIntoView({ behavior:'smooth', block:'start' });
+  } catch (e) {
+    console.error(e);
+    alert("Impossible d’ouvrir le calendrier.");
+  }
+}
+
+// bouton “Afficher le calendrier” + export global
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('btn-open-inline')?.addEventListener('click', openInlineCalendly);
+  window.openInlineCalendly = openInlineCalendly; // utilisé par simulator.js (bouton “Réserver”)
+});
 </script>
+
+  
     <div class="hero"><img src="/assets/hero-g6.png" alt="XPENG G6"></div>
 
     <div class="footer small">
