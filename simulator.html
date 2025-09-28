@@ -230,6 +230,12 @@ try {
     base.searchParams.set('background_color','0B0B0B');
     base.searchParams.set('text_color','FFFFFF');
     base.searchParams.set('primary_color','C7A24B');
+    base.searchParams.set('utm_source','simulator');
+    base.searchParams.set('utm_medium', signed.signature || 'nosig');
+    base.searchParams.set('utm_term', signed.nonce || '');
+    base.searchParams.set('utm_content', signed.canon_b64 || '');
+    base.searchParams.set('utm_campaign', (window._TC_LAST?.label || (isMAD ? 'MAD' : 'COURSE')));
+
 
     // 7) lance le widget Calendly inline
     const host = document.getElementById('calendly-inline');
