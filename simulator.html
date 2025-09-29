@@ -276,11 +276,19 @@
       }
     }
 
-    // Accroche du bouton "Réserver"
-    document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('calendly')?.addEventListener('click', openInlineCalendly);
-      window.openInlineCalendly = openInlineCalendly; // au cas où simulator.js l’utilise
+<script>
+// Accroche du bouton "Réserver"
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('calendly');
+  if (btn) {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openInlineCalendly();
     });
-  </script>
+  }
+  // Optionnel : exposer la fonction si d'autres scripts l'utilisent
+  window.openInlineCalendly = openInlineCalendly;
+});
+</script>
 </body>
 </html>
