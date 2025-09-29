@@ -105,10 +105,7 @@
           <button id="calendly" class="btn secondary" disabled>Réserver (Calendly)</button>
         </div>
 
-        <p class="small">
-          Après estimation, vous pourrez payer l’acompte <b>20 %</b> (ou <b>100 %</b>) via <b>Stancer</b> et fixer l’horaire dans Calendly.
-        </p>
-      </div>
+      
 
       <div class="card">
         <div id="map" style="height:360px;border-radius:10px;overflow:hidden;margin-bottom:10px"></div>
@@ -121,12 +118,15 @@
   <span>TTC</span>
 </div>
 
+        
      <!-- Section Calendly inline -->
   <div class="section">
     <h3>Réservation</h3>
     <p class="small">
-  Après l’estimation, cliquez sur <b>Réserver</b> pour choisir un créneau. Vous serez redirigé vers la page de paiement sécurisé.</p>
+  Après l’estimation, cliquez sur <b>Réserver</b> pour choisir un créneau. Vous serez redirigé vers la page de paiement sécurisé.
+    </p>
 
+    
    <div id="calendly-inline"
      style="width:100%;height:800px;border:1px solid #222;border-radius:12px"></div>
   </div>
@@ -146,8 +146,15 @@ const CAL = {
 
 function getVal(id){ const el=document.getElementById(id); return el?el.value.trim():''; }
 
-async function openInlineCalendly() {
+    async function openInlineCalendly() {
   try {
+    // Empêche d’ouvrir Calendly sans estimation fiable
+    if (!window._TC_LAST || window._TC_LAST.price_eur == null || !window._TC_LAST.from) {
+      alert("Faites d’abord une estimation (tarif + adresses).");
+      return;
+    }
+    // ... (la suite de ta fonction reste identique)
+
     // 1) données depuis le formulaire / dernière estimation
     const isMAD = !!document.getElementById('mode-mad')?.checked;
     const dateStr = getVal('date');
