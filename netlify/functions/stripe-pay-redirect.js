@@ -2,26 +2,6 @@
 const Stripe = require('stripe');
 const crypto = require('crypto');
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-06-20' });
-
-function verifySignedCanonFromQuery(qs) {
-  // On attend utm_content (canon en base64) + utm_medium (signature HMAC)
-  const canon_b64 = qs.utm_content || '';
-  const sig_client = qs.utm_medium || ''; // posée par le simulateur
-  if (!canon_b64 || !sig_client) return null;
-
-  let canonStr = '';
-  try { canonStr = Buffer.from(canon_b64, 'base64').toString('utf8'); }
-  catch { return null; }
-
-  const key = process.env.HMAC_SECRET;
-  if (!key) return null;
-
-  const sig_server = crypto.createHmac('sha256', key).update(canonStr).digest('hex');
-  if (sig_server !== sig_client) return null;
-
-  try { return JSON.parse(canonStr); } catch { return null; }
-}
 exports.handler = async (event) => {
   try {
     const site = process.env.SITE_URL || `https://${event.headers.host}`;
@@ -30,34 +10,47 @@ exports.handler = async (event) => {
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' },
-        body: `
-<!doctype html><meta charset="utf-8"><title>Paiement</title>
+        body: `<!doctype html><meta charset="utf-8"><title>Paiement</title>
 <body style="font-family:Inter,system-ui;padding:24px;background:#0b0b0b;color:#fff">
   <h2>Paiement temporairement indisponible</h2>
   <p>Merci, votre réservation a bien été enregistrée. Le paiement en ligne est momentanément désactivé.</p>
-  <p>Nous revenons vers vous très vite.</p>
   <p><a href="${site}/" style="color:#C7A24B">Retour à l’accueil</a></p>
 </body>`
       };
     }
-    // ... suite du code existant ...
 
-exports.handler = async (event) => {
-  try {
-    const site = process.env.SITE_URL || `https://${event.headers.host}`;
+    // -------- helpers
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-06-20' });
+
+    function verifySignedCanonFromQuery(params) {
+      const canon_b64 = params.utm_content || '';
+      const sig_client = params.utm_medium || '';
+      if (!canon_b64 || !sig_client) return null;
+
+      let canonStr;
+      try { canonStr = Buffer.from(canon_b64, 'base64').toString('utf8'); }
+      catch { return null; }
+
+      const key = process.env.HMAC_SECRET;
+      if (!key) return null;
+
+      const sig_server = crypto.createHmac('sha256', key).update(canonStr).digest('hex');
+      if (sig_server !== sig_client) return null;
+
+      try { return JSON.parse(canonStr); } catch { return null; }
+    }
+
+    // -------- query & canon signé
     const url = new URL(event.rawUrl || `${site}${event.path}${event.rawQuery ? '?' + event.rawQuery : ''}`);
+    const params = Object.fromEntries(url.searchParams.entries());
 
-    // 1) Récup canon signé depuis les UTM passés par Calendly
-    const canon = verifySignedCanonFromQuery(Object.fromEntries(url.searchParams.entries()));
+    const canon = verifySignedCanonFromQuery(params);
     if (!canon || !canon.whenISO || !canon.from) {
-      // Fallback UX propre
       const msg = 'Impossible de valider les informations de paiement (signature manquante ou invalide).';
       return {
         statusCode: 200,
         headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' },
-        body: `
-<!doctype html><meta charset="utf-8">
-<title>Paiement</title>
+        body: `<!doctype html><meta charset="utf-8"><title>Paiement</title>
 <body style="font-family:Inter,system-ui;padding:24px;background:#0b0b0b;color:#fff">
   <h2>⚠️ Paiement indisponible</h2>
   <p>${msg}</p>
@@ -66,14 +59,13 @@ exports.handler = async (event) => {
       };
     }
 
-    // 2) Décider acompte (20%) vs 100%
-    // Par défaut: acompte 20%. Si tu veux 100% pour certains cas, change la logique (ex: canon.type === 'mad' ? 20% : 100%)
+    // -------- règle d’encaissement (20% par défaut)
+    // const payFull = (canon.type !== 'mad'); // exemple : 100% pour VTC, 20% pour MAD
     const payFull = false;
 
-    // 3) Montant (EUR→cents) sécurisé (vient du canon signé)
     const base = Number(canon.price_eur || 0);
     const amount = payFull ? base : base * 0.20;
-    const cents = Math.max(Math.round(amount * 100), 50); // min 0,50 €
+    const cents = Math.max(Math.round(amount * 100), 50); // minimum 0,50 €
 
     const label =
       (payFull ? 'Paiement 100% — ' : 'Acompte 20% — ') +
@@ -84,7 +76,6 @@ exports.handler = async (event) => {
       ? `Mise à disposition ${canon.mad_hours || '?'}h — Départ: ${canon.from}`
       : `Trajet • De: ${canon.from} • À: ${canon.to || ''}`;
 
-    // 4) Création session Stripe Checkout
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       locale: 'fr',
@@ -111,15 +102,9 @@ exports.handler = async (event) => {
       }
     });
 
-    // 5) Redirection 303 vers Stripe
-    return {
-      statusCode: 303,
-      headers: { Location: session.url, 'Cache-Control': 'no-store' },
-      body: ''
-    };
-
-  } catch (e) {
-    console.error(e);
+    return { statusCode: 303, headers: { Location: session.url, 'Cache-Control': 'no-store' }, body: '' };
+  } catch (err) {
+    console.error(err);
     return { statusCode: 500, body: 'Stripe redirect error' };
   }
 };
