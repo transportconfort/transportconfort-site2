@@ -5,44 +5,34 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Simulateur & Réservation • Transport Confort</title>
 
+  <!-- Fonts + site CSS -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/style.css">
-  <style>
-  /* 2 colonnes : Forme à gauche, Carte à droite */
-  .sim-grid {
-    display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: 16px;
-    align-items: start;
-    margin: 12px 0 8px;
-  }
-  @media (max-width: 980px){
-    .sim-grid { grid-template-columns: 1fr; }
-  }
 
-  /* Actions sur une seule ligne */
-  .actions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-
-  /* Carte et encarts */
-  #map { height:360px; border-radius:10px; overflow:hidden; margin-bottom:10px; }
-  .kpi { margin:6px 0; }
-  .price { margin:8px 0; }
-  .cal-card { margin-top: 8px; }
-  #calendly-inline { width:100%; height:800px; border:1px solid #222; border-radius:12px; }
-</style>
-
-
-  <!-- App + simulateur -->
+  <!-- App + simulateur (calculs, Google Maps, etc.) -->
   <script src="/js/app.js"></script>
   <script src="/js/simulator.js" defer></script>
 
   <!-- Calendly (nécessaire pour l'embed inline) -->
   <link rel="stylesheet" href="https://assets.calendly.com/assets/external/widget.css"/>
   <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+
+  <style>
+    /* Grille locale pour cette page (évite de toucher à tout le site) */
+    .sim-grid {
+      display: grid;
+      grid-template-columns: 1fr 420px; /* formulaire à gauche, carte à droite */
+      gap: 16px;
+    }
+    @media (max-width: 960px) {
+      .sim-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 
 <body>
   <div class="container">
+    <!-- Header -->
     <div class="header">
       <div class="brand">
         <img src="/assets/logo.png" alt="Logo">
@@ -62,110 +52,37 @@
       </nav>
     </div>
 
-    <!-- === SIMULATEUR + CARTE (2 colonnes) === -->
-<div class="sim-grid section">
-  <!-- Colonne gauche : ton formulaire -->
-  <div class="sim-col">
-    <div class="card">
-      <h2>Demande de trajet</h2>
+    <!-- ===== SIMULATEUR + CARTE ===== -->
+    <div class="sim-grid section">
+      <!-- Colonne gauche : formulaire -->
+      <div class="card">
+        <h2>Demande de trajet</h2>
 
-      <div class="mode" style="margin:6px 0 10px 0;display:flex;gap:10px;align-items:center">
-        <label><input type="radio" name="mode" id="mode-course" value="course" checked> Course classique</label>
-        <label><input type="radio" name="mode" id="mode-mad" value="mad"> Mise à disposition (MAD)</label>
-      </div>
-
-      <div class="badge" style="margin:6px 0">🎉 Offre de lancement : <b>-15% jusqu’au 31/12/2025</b></div>
-
-      <label>Départ</label>
-      <input id="from" class="input" placeholder="Adresse de départ" autocomplete="off">
-
-      <label>Arrivée</label>
-      <input id="to" class="input" placeholder="Adresse d’arrivée" autocomplete="off">
-
-      <!-- Durée MAD (UN SEUL bloc avec ces IDs) -->
-      <div id="mad-row" class="row" style="display:none;gap:8px;align-items:center;margin:8px 0 0;">
-        <label for="mad-hours" style="min-width:140px;">Durée (MAD)</label>
-        <select id="mad-hours" class="input">
-          <option value="1">1 h</option>
-          <option value="2">2 h</option>
-          <option value="3">3 h</option>
-          <option value="4">4 h</option>
-          <option value="8">8 h (journée)</option>
-        </select>
-      </div>
-
-      <div class="row">
-        <div>
-          <label>Date</label>
-          <div style="display:flex;gap:6px">
-            <input id="date" class="input" type="date" required>
-            <button type="button" id="openDate" class="btn" style="padding:8px 10px">📅</button>
-          </div>
-        </div>
-        <div>
-          <label>Heure</label>
-          <select id="time" class="input"></select>
-        </div>
-      </div>
-
-      <div class="row">
-        <div>
-          <label>Passagers</label>
-          <select id="pax" class="input"><option>1</option><option>2</option><option>3</option><option>4</option></select>
-        </div>
-        <div>
-          <label>Commentaires</label>
-          <input id="note" class="input" placeholder="Infos vol, bagages, siège enfant… (optionnel)">
-        </div>
-      </div>
-
-      <div class="actions" style="margin-top:12px">
-        <button id="estimate" class="btn">Estimer</button>
-        <button id="calendly" class="btn secondary" disabled>Réserver</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Colonne droite : carte + KPIs -->
-  <div class="sim-col">
-    <div class="card">
-      <div id="map" style="height:360px;border-radius:10px;overflow:hidden;margin-bottom:10px"></div>
-      <div class="kpi"><span class="badge">Distance</span> <span id="distance" class="value">—</span></div>
-      <div class="kpi"><span class="badge">Durée</span> <span id="duration" class="value">—</span></div>
-      <div class="price" style="margin:8px 0">
-        <span>Total estimé :</span>
-        <span id="total" class="value">—</span>
-        <span id="totalLabel" class="badge" style="margin-left:6px;display:none"></span>
-        <span>TTC</span>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- === /SIMULATEUR + CARTE === -->
-
-      
         <div class="mode" style="margin:6px 0 10px 0;display:flex;gap:10px;align-items:center">
           <label><input type="radio" name="mode" id="mode-course" value="course" checked> Course classique</label>
           <label><input type="radio" name="mode" id="mode-mad" value="mad"> Mise à disposition (MAD)</label>
         </div>
 
         <div class="badge" style="margin:6px 0">🎉 Offre de lancement : <b>-15% jusqu’au 31/12/2025</b></div>
-      
+
         <label>Départ</label>
         <input id="from" class="input" placeholder="Adresse de départ" autocomplete="off">
+
         <label>Arrivée</label>
         <input id="to" class="input" placeholder="Adresse d’arrivée" autocomplete="off">
+
+        <!-- Durée MAD (un SEUL bloc, pas de doublon d'ID !) -->
         <div id="mad-row" class="row" style="display:none; gap:8px; align-items:center; margin:8px 0 0;">
-  <label for="mad-hours" style="min-width:140px;">Durée (MAD)</label>
-  <select id="mad-hours" class="input">
-    <option value="1">1 h</option>
-    <option value="2">2 h</option>
-    <option value="3">3 h</option>
-    <option value="4">4 h</option>
-    <option value="8">8 h (journée)</option>
-  </select>
-</div>
-        
+          <label for="mad-hours" style="min-width:140px;">Durée (MAD)</label>
+          <select id="mad-hours" class="input">
+            <option value="1">1 h</option>
+            <option value="2">2 h</option>
+            <option value="3">3 h</option>
+            <option value="4">4 h</option>
+            <option value="8">8 h (journée)</option>
+          </select>
+        </div>
+
         <div class="row">
           <div>
             <label>Date</label>
@@ -185,17 +102,6 @@
             <label>Passagers</label>
             <select id="pax" class="input"><option>1</option><option>2</option><option>3</option><option>4</option></select>
           </div>
-          <!-- Ligne visible uniquement en MAD -->
-<div class="row" id="mad-row" style="display:none">
-  <label for="mad-hours">Durée (MAD)</label>
-  <select id="mad-hours" class="input">
-    <option value="1">1h (100 €)</option>
-    <option value="2">2h (180 € soit 90 €/h)</option>
-    <option value="3">3h (240 € soit 80 €/h)</option>
-    <option value="4">4h (300 € soit 75 €/h)</option>
-    <option value="8">8h (560 € soit 70 €/h)</option>
-  </select>
-</div>
           <div>
             <label>Commentaires</label>
             <input id="note" class="input" placeholder="Infos vol, bagages, siège enfant… (optionnel)">
@@ -204,171 +110,160 @@
 
         <div class="actions" style="margin-top:12px">
           <button id="estimate" class="btn">Estimer</button>
-          <button id="calendly" class="btn secondary" disabled>Réserver (Calendly)</button>
+          <button id="calendly" class="btn secondary" disabled>Réserver</button>
         </div>
+      </div>
 
-      
-
+      <!-- Colonne droite : carte + indicateurs -->
       <div class="card">
         <div id="map" style="height:360px;border-radius:10px;overflow:hidden;margin-bottom:10px"></div>
         <div class="kpi"><span class="badge">Distance</span> <span id="distance" class="value">—</span></div>
         <div class="kpi"><span class="badge">Durée</span> <span id="duration" class="value">—</span></div>
         <div class="price" style="margin:8px 0">
-  <span>Total estimé :</span>
-  <span id="total" class="value">—</span>
-  <span id="totalLabel" class="badge" style="margin-left:6px;display:none"></span>
-  <span>TTC</span>
-</div>
-</div>
-        
-     <!-- Section Calendly inline -->
-  <div class="section">
-    <h3>Réservation</h3>
-    <p class="small">
-  Après l’estimation, cliquez sur <b>Réserver</b> pour choisir un créneau. Vous serez redirigé vers la page de paiement sécurisé.
-    </p>
+          <span>Total estimé :</span>
+          <span id="total" class="value">—</span>
+          <span id="totalLabel" class="badge" style="margin-left:6px;display:none"></span>
+          <span>TTC</span>
+        </div>
+      </div>
+    </div>
 
-    
-   <div id="calendly-inline"
-     style="width:100%;height:800px;border:1px solid #222;border-radius:12px"></div>
-  </div>
+    <!-- ===== Calendly inline (sous la grille) ===== -->
+    <div class="section">
+      <h3>Réservation</h3>
+      <p class="small">
+        Après l’estimation, cliquez sur <b>Réserver</b> pour choisir un créneau. Vous serez redirigé vers la page de paiement sécurisé.
+      </p>
+      <div id="calendly-inline"
+           class="calendly-inline-widget"
+           style="width:100%;height:800px;border:1px solid #222;border-radius:12px"></div>
+    </div>
 
-<script>
-// === à compléter plus tard (section D) : mets tes URLs événement + IDs de questions ===
-const CAL = {
-  mad: {
-    url: 'https://calendly.com/contact-transportconfort/reservation-chauffeur-prive-mad',
-    qid: { date:'QID_MAD_DATE', time:'QID_MAD_TIME', from:'QID_MAD_FROM', duration:'QID_MAD_DURATION', price:'QID_MAD_PRICE' }
-  },
-  course: {
-    url: 'https://calendly.com/contact-transportconfort/reservation-vtc',
-    qid: { date:'QID_VTC_DATE', time:'QID_VTC_TIME', from:'QID_VTC_FROM', to:'QID_VTC_TO', price:'QID_VTC_PRICE' }
-  }
-};
-
-function getVal(id){ const el=document.getElementById(id); return el?el.value.trim():''; }
-
-    async function openInlineCalendly() {
-  try {
-    // Empêche d’ouvrir Calendly sans estimation fiable
-    if (!window._TC_LAST || window._TC_LAST.price_eur == null || !window._TC_LAST.from) {
-      alert("Faites d’abord une estimation (tarif + adresses).");
-      return;
-    }
-    // ... (la suite de ta fonction reste identique)
-
-    // 1) données depuis le formulaire / dernière estimation
-    const isMAD = !!document.getElementById('mode-mad')?.checked;
-    const dateStr = getVal('date');
-    const timeStr = getVal('time');
-    let whenISO = (window._TC_LAST && window._TC_LAST.whenISO) || null;
-    if (!whenISO && dateStr && timeStr) whenISO = `${dateStr}T${timeStr}:00`;
-
-    const from = (window._TC_LAST?.from) || getVal('from');
-    const to   = isMAD ? '' : ((window._TC_LAST?.to) || getVal('to'));
-    const price_eur = (window._TC_LAST?.price_eur ?? null);
-    const mad_hours = isMAD ? (window._TC_LAST?.mad_hours || Number(document.getElementById('mad-hours')?.value||1)) : undefined;
-
-    if (!dateStr && !whenISO) { alert('Choisissez une date (ou faites une estimation).'); return; }
-
-    // 2) paquet canon
-    const canon = {
-      type: isMAD ? 'mad' : 'course',
-      whenISO,
-      from,
-      to,
-      price_eur,
-      mad_hours
-    };
-
-   // 3) signature serveur (Netlify function B/E)
-let signed;
-try {
-  const r = await fetch('/.netlify/functions/sim-presign', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ canon })
-  });
-
-  const canonB64Fallback = btoa(unescape(encodeURIComponent(JSON.stringify(canon))));
-
-  if (!r.ok) {
-    console.warn('presign HTTP ' + r.status + ' — fallback');
-    signed = { signature: '', nonce: '', canon_b64: canonB64Fallback };
-  } else {
-    signed = await r.json(); // { signature, canon_b64, nonce }
-  }
-} catch (e) {
-  console.warn('presign error — fallback', e);
-  const canonB64 = btoa(unescape(encodeURIComponent(JSON.stringify(canon))));
-  signed = { signature: '', nonce: '', canon_b64: canonB64 };
-}
- 
-
-    // 4) prefill questions (quand tu auras mis les IDs en section D)
-    const cfg = isMAD ? CAL.mad : CAL.course;
-    const ca = {};
-    if (cfg.qid.price && price_eur!=null) ca[cfg.qid.price] = (typeof TC!=='undefined' && TC.fmtMoney)? TC.fmtMoney(price_eur) : `${price_eur} €`;
-    if (cfg.qid.from  && from)            ca[cfg.qid.from]  = from;
-    if (!isMAD && cfg.qid.to && to)       ca[cfg.qid.to]    = to;
-    if (isMAD && cfg.qid.duration && mad_hours) ca[cfg.qid.duration] = `${mad_hours} h`;
-    if (cfg.qid.date && whenISO) ca[cfg.qid.date] = whenISO.slice(0,10);
-    if (cfg.qid.time && whenISO) ca[cfg.qid.time] = new Date(whenISO).toTimeString().slice(0,5);
-
-    // 5) UTM porteurs de preuve (non éditables)
-    const utm = {
-      utm_source: 'simulator',
-      utm_medium: signed.signature,   // HMAC
-      utm_term:   signed.nonce,       // anti-rejeu
-      utm_content: signed.canon_b64,  // canon encodé base64
-      utm_campaign: (window._TC_LAST?.label || (isMAD?'MAD':'COURSE'))
-    };
-
-    // 6) URL avec tes couleurs
-    const base = new URL(cfg.url);
-    base.searchParams.set('background_color','0B0B0B');
-    base.searchParams.set('text_color','FFFFFF');
-    base.searchParams.set('primary_color','C7A24B');
-    base.searchParams.set('utm_source','simulator');
-    base.searchParams.set('utm_medium', signed.signature || 'nosig');
-    base.searchParams.set('utm_term', signed.nonce || '');
-    base.searchParams.set('utm_content', signed.canon_b64 || '');
-    base.searchParams.set('utm_campaign', (window._TC_LAST?.label || (isMAD ? 'MAD' : 'COURSE')));
-
-
-    // 7) lance le widget Calendly inline
-    const host = document.getElementById('calendly-inline');
-    if (!host) { alert('Zone calendrier manquante (#calendly-inline).'); return; }
-    host.innerHTML = ''; // reset
-
-    Calendly.initInlineWidget({
-      url: base.toString(),
-      parentElement: host,
-      prefill: { date: (whenISO ? whenISO.slice(0,10) : undefined), customAnswers: ca },
-      utm
-    });
-
-    host.scrollIntoView({ behavior:'smooth', block:'start' });
-  } catch (e) {
-    console.error(e);
-    alert("Impossible d’ouvrir le calendrier.");
-  }
-}
-
-// bouton “Afficher le calendrier” + export global
-document.addEventListener('DOMContentLoaded', () => {
- document.getElementById('calendly')?.addEventListener('click', openInlineCalendly);
-window.openInlineCalendly = openInlineCalendly; // si simulator.js l’utilise
-});
-</script>
-
-  
+    <!-- Hero + footer -->
     <div class="hero"><img src="/assets/hero-g6.png" alt="XPENG G6"></div>
-
     <div class="footer small">
       © Transport Confort by Vincent — SIREN 990 407 397 — TVA FR71 990 407 397 — 23 rue La Bruyère, 93800 Épinay-sur-Seine — 07 49 55 62 77
     </div>
   </div>
 
+  <!-- ===== JS pour l’ouverture Calendly ===== -->
+  <script>
+    // URLs Calendly + IDs de questions (à remplacer quand tu auras créé les questions)
+    const CAL = {
+      mad: {
+        url: 'https://calendly.com/contact-transportconfort/reservation-chauffeur-prive-mad',
+        qid: { date:'QID_MAD_DATE', time:'QID_MAD_TIME', from:'QID_MAD_FROM', duration:'QID_MAD_DURATION', price:'QID_MAD_PRICE' }
+      },
+      course: {
+        url: 'https://calendly.com/contact-transportconfort/reservation-vtc',
+        qid: { date:'QID_VTC_DATE', time:'QID_VTC_TIME', from:'QID_VTC_FROM', to:'QID_VTC_TO', price:'QID_VTC_PRICE' }
+      }
+    };
+
+    function getVal(id){ const el=document.getElementById(id); return el?el.value.trim():''; }
+
+    async function openInlineCalendly() {
+      try {
+        // Empêche d’ouvrir sans estimation fiable
+        if (!window._TC_LAST || window._TC_LAST.price_eur == null || !window._TC_LAST.from) {
+          alert("Faites d’abord une estimation (tarif + adresses).");
+          return;
+        }
+
+        // 1) données depuis le formulaire / dernière estimation
+        const isMAD   = !!document.getElementById('mode-mad')?.checked;
+        const dateStr = getVal('date');
+        const timeStr = getVal('time');
+        let whenISO   = (window._TC_LAST && window._TC_LAST.whenISO) || null;
+        if (!whenISO && dateStr && timeStr) whenISO = `${dateStr}T${timeStr}:00`;
+
+        const from      = (window._TC_LAST?.from) || getVal('from');
+        const to        = isMAD ? '' : ((window._TC_LAST?.to) || getVal('to'));
+        const price_eur = (window._TC_LAST?.price_eur ?? null);
+        const mad_hours = isMAD ? (window._TC_LAST?.mad_hours || Number(document.getElementById('mad-hours')?.value||1)) : undefined;
+
+        if (!dateStr && !whenISO) { alert('Choisissez une date (ou faites une estimation).'); return; }
+
+        // 2) paquet canon
+        const canon = { type: isMAD ? 'mad' : 'course', whenISO, from, to, price_eur, mad_hours };
+
+        // 3) signature serveur (Netlify function) + fallback si 4xx/5xx
+        let signed;
+        try {
+          const r = await fetch('/.netlify/functions/sim-presign', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ canon })
+          });
+
+          const canonB64Fallback = btoa(unescape(encodeURIComponent(JSON.stringify(canon))));
+          if (!r.ok) {
+            console.warn('presign HTTP ' + r.status + ' — fallback');
+            signed = { signature: '', nonce: '', canon_b64: canonB64Fallback };
+          } else {
+            signed = await r.json(); // { signature, canon_b64, nonce }
+          }
+        } catch (e) {
+          console.warn('presign error — fallback', e);
+          const canonB64 = btoa(unescape(encodeURIComponent(JSON.stringify(canon))));
+          signed = { signature: '', nonce: '', canon_b64: canonB64 };
+        }
+
+        // 4) prefill questions
+        const cfg = isMAD ? CAL.mad : CAL.course;
+        const ca = {};
+        if (cfg.qid.price && price_eur!=null) ca[cfg.qid.price] = (typeof TC!=='undefined' && TC.fmtMoney)? TC.fmtMoney(price_eur) : `${price_eur} €`;
+        if (cfg.qid.from  && from)            ca[cfg.qid.from]  = from;
+        if (!isMAD && cfg.qid.to && to)       ca[cfg.qid.to]    = to;
+        if (isMAD && cfg.qid.duration && mad_hours) ca[cfg.qid.duration] = `${mad_hours} h`;
+        if (cfg.qid.date && whenISO) ca[cfg.qid.date] = whenISO.slice(0,10);
+        if (cfg.qid.time && whenISO) ca[cfg.qid.time] = new Date(whenISO).toTimeString().slice(0,5);
+
+        // 5) UTM scellées (preuve)
+        const utm = {
+          utm_source: 'simulator',
+          utm_medium: signed.signature,     // HMAC (peut être vide en fallback)
+          utm_term:   signed.nonce,         // anti-rejeu
+          utm_content: signed.canon_b64,    // canon encodé base64
+          utm_campaign: (window._TC_LAST?.label || (isMAD?'MAD':'COURSE'))
+        };
+
+        // 6) URL Calendly avec tes couleurs
+        const base = new URL(cfg.url);
+        base.searchParams.set('background_color','0B0B0B');
+        base.searchParams.set('text_color','FFFFFF');
+        base.searchParams.set('primary_color','C7A24B');
+        // on place aussi les UTM en query (double ce que l’API fait côté widget)
+        base.searchParams.set('utm_source', utm.utm_source);
+        base.searchParams.set('utm_medium', utm.utm_medium || 'nosig');
+        base.searchParams.set('utm_term', utm.utm_term || '');
+        base.searchParams.set('utm_content', utm.utm_content || '');
+        base.searchParams.set('utm_campaign', utm.utm_campaign || '');
+
+        // 7) lance le widget Calendly inline
+        const host = document.getElementById('calendly-inline');
+        if (!host) { alert('Zone calendrier manquante (#calendly-inline).'); return; }
+        host.innerHTML = ''; // reset
+
+        Calendly.initInlineWidget({
+          url: base.toString(),
+          parentElement: host,
+          prefill: { date: (whenISO ? whenISO.slice(0,10) : undefined), customAnswers: ca },
+          utm
+        });
+
+        host.scrollIntoView({ behavior:'smooth', block:'start' });
+      } catch (e) {
+        console.error(e);
+        alert("Impossible d’ouvrir le calendrier.");
+      }
+    }
+
+    // Accroche du bouton "Réserver"
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('calendly')?.addEventListener('click', openInlineCalendly);
+      window.openInlineCalendly = openInlineCalendly; // au cas où simulator.js l’utilise
+    });
+  </script>
 </body>
 </html>
