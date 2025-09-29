@@ -269,26 +269,19 @@
           utm
         });
 
-        host.scrollIntoView({ behavior:'smooth', block:'start' });
-      } catch (e) {
-        console.error(e);
-        alert("Impossible d’ouvrir le calendrier.");
-      }
-    }
+           host.scrollIntoView({ behavior:'smooth', block:'start' });
+  } catch (e) {
+    console.error(e);
+    alert("Impossible d’ouvrir le calendrier.");
+  }
+} // <-- bien fermer openInlineCalendly() avec uniquement une accolade
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-<script>
-// Accroche du bouton "Réserver"
+/* Accroche du bouton “Réserver” et export global */
 document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('calendly');
-  if (btn) {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      openInlineCalendly();
-    });
-  }
-  // Optionnel : exposer la fonction si d'autres scripts l'utilisent
+  if (btn) btn.addEventListener('click', openInlineCalendly);
+  // permet à simulator.js d'appeler openInlineCalendly() si besoin
   window.openInlineCalendly = openInlineCalendly;
 });
-</script>
-</body>
-</html>
+
