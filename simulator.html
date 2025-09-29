@@ -38,17 +38,18 @@
       </nav>
     </div>
 
-    <div class="grid section">
+    <div class="sim-grid section">
       <div class="card">
         <h2>Demande de trajet</h2>
-
+</div>
+      
         <div class="mode" style="margin:6px 0 10px 0;display:flex;gap:10px;align-items:center">
           <label><input type="radio" name="mode" id="mode-course" value="course" checked> Course classique</label>
           <label><input type="radio" name="mode" id="mode-mad" value="mad"> Mise à disposition (MAD)</label>
         </div>
 
         <div class="badge" style="margin:6px 0">🎉 Offre de lancement : <b>-15% jusqu’au 31/12/2025</b></div>
-
+      
         <label>Départ</label>
         <input id="from" class="input" placeholder="Adresse de départ" autocomplete="off">
         <label>Arrivée</label>
@@ -117,7 +118,7 @@
   <span id="totalLabel" class="badge" style="margin-left:6px;display:none"></span>
   <span>TTC</span>
 </div>
-
+</div>
         
      <!-- Section Calendly inline -->
   <div class="section">
@@ -255,8 +256,8 @@ try {
 
 // bouton “Afficher le calendrier” + export global
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('btn-open-inline')?.addEventListener('click', openInlineCalendly);
-  window.openInlineCalendly = openInlineCalendly; // utilisé par simulator.js (bouton “Réserver”)
+ document.getElementById('calendly')?.addEventListener('click', openInlineCalendly);
+window.openInlineCalendly = openInlineCalendly; // si simulator.js l’utilise
 });
 </script>
 
