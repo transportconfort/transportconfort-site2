@@ -27,3 +27,13 @@ a{color:var(--gold);text-decoration:none}a:hover{text-decoration:underline}
 .table{width:100%;border-collapse:collapse}.table th,.table td{border-bottom:1px solid #262626;padding:12px;text-align:left}
 .small{font-size:.92rem;color:#c6c6c6}.center{text-align:center}
 @media (max-width: 880px){.grid{grid-template-columns:1fr}.row{grid-template-columns:1fr}}
+.sim-grid{
+  display:grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap:16px;
+  align-items:start;
+}
+@media (max-width: 980px){
+  .sim-grid{ grid-template-columns:1fr; }
+}
+#calendly-section{ margin-top:16px; }
