@@ -22,6 +22,25 @@ function verifySignedCanonFromQuery(qs) {
 
   try { return JSON.parse(canonStr); } catch { return null; }
 }
+exports.handler = async (event) => {
+  try {
+    const site = process.env.SITE_URL || `https://${event.headers.host}`;
+    const enabled = (process.env.PAY_AFTER_CALENDLY || '1') === '1';
+    if (!enabled) {
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' },
+        body: `
+<!doctype html><meta charset="utf-8"><title>Paiement</title>
+<body style="font-family:Inter,system-ui;padding:24px;background:#0b0b0b;color:#fff">
+  <h2>Paiement temporairement indisponible</h2>
+  <p>Merci, votre réservation a bien été enregistrée. Le paiement en ligne est momentanément désactivé.</p>
+  <p>Nous revenons vers vous très vite.</p>
+  <p><a href="${site}/" style="color:#C7A24B">Retour à l’accueil</a></p>
+</body>`
+      };
+    }
+    // ... suite du code existant ...
 
 exports.handler = async (event) => {
   try {
