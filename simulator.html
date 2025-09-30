@@ -226,15 +226,36 @@
           signed = { signature: '', nonce: '', canon_b64: canonB64 };
         }
 
-        // 4) prefill questions
-        const cfg = isMAD ? CAL.mad : CAL.course;
-        const ca = {};
-        if (cfg.qid.price && price_eur!=null) ca[cfg.qid.price] = (typeof TC!=='undefined' && TC.fmtMoney)? TC.fmtMoney(price_eur) : `${price_eur} €`;
-        if (cfg.qid.from  && from)            ca[cfg.qid.from]  = from;
-        if (!isMAD && cfg.qid.to && to)       ca[cfg.qid.to]    = to;
-        if (isMAD && cfg.qid.duration && mad_hours) ca[cfg.qid.duration] = `${mad_hours} h`;
-        if (cfg.qid.date && whenISO) ca[cfg.qid.date] = whenISO.slice(0,10);
-        if (cfg.qid.time && whenISO) ca[cfg.qid.time] = new Date(whenISO).toTimeString().slice(0,5);
+       // 4) prefill + custom answers pour Calendly
+const cfg = isMAD ? CAL.mad : CAL.course;
+
+// Réponses aux questions personnalisées (mapper tes vrais QID_* ici)
+const customAnswers = {};
+if (cfg.qid.price && price_eur != null) {
+  customAnswers[cfg.qid.price] =
+    (typeof TC !== 'undefined' && TC.fmtMoney) ? TC.fmtMoney(price_eur) : `${price_eur} €`;
+}
+if (cfg.qid.from && from) {
+  customAnswers[cfg.qid.from] = from;
+}
+if (!isMAD && cfg.qid.to && to) {
+  customAnswers[cfg.qid.to] = to;
+}
+if (isMAD && cfg.qid.duration && mad_hours) {
+  customAnswers[cfg.qid.duration] = `${mad_hours} h`;
+}
+if (cfg.qid.date && whenISO) {
+  customAnswers[cfg.qid.date] = whenISO.slice(0, 10);            // AAAA-MM-JJ
+}
+if (cfg.qid.time && whenISO) {
+  customAnswers[cfg.qid.time] = new Date(whenISO).toTimeString().slice(0, 5); // HH:MM
+}
+
+// Prefill standard (Calendly ne prend que la date ici ; l’heure passe en custom)
+const prefill = {
+  date: whenISO ? whenISO.slice(0, 10) : undefined,
+  customAnswers
+};
 
         // 5) UTM scellées (preuve)
         const utm = {
