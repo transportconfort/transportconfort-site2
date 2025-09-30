@@ -398,23 +398,23 @@
     };
   } // fin estimate()
 
-  // ====== Calendly (déjà implémenté côté HTML via openInlineCalendly) ======
-  function calendly() {
-    if (!window._TC_LAST || window._TC_LAST.price_eur == null || !window._TC_LAST.from) {
-      alert('Faites une estimation avant de réserver.');
-      return;
-    }
-    }
-  }
-
-  // ====== Bind UI ======
-  els.estimateBtn?.addEventListener('click', (e) => {
+// ===== Bind UI =====
+if (els && els.estimateBtn) {
+  els.estimateBtn.addEventListener('click', (e) => {
     e.preventDefault();
     estimate().catch((err) => {
       console.error(err);
       alert('Estimation impossible. Réessayez.');
     });
   });
+}
 
-  });
+// (optionnel) accrocher aussi le bouton “Réserver” côté JS :
+// const reserveBtn = document.getElementById('calendly');
+// if (reserveBtn) reserveBtn.addEventListener('click', (ev) => {
+//   ev.preventDefault();
+//   if (window.openInlineCalendly) window.openInlineCalendly();
+// });
+
+// === FIN du fichier : exactement UNE seule IIFE fermée ===
 })();
