@@ -65,20 +65,51 @@ exports.handler = async (event) => {
       };
     }
 
-    // --- règle d’encaissement : acompte 20 % par défaut
-    const payFull = false; // (mets true si tu veux 100% par défaut)
-    const base = Number(canon.price_eur || 0);
-    const amount = payFull ? base : base * 0.20;
-    const cents = Math.max(Math.round(amount * 100), 50);
+    // -------- règle d’encaissement
+// signal côté client (canon) ET/OU via query ?pay=full
+const payFull =
+  (params.pay === 'full') ||
+  (canon && canon.pay_mode === 'full');
 
-    const label =
-      (payFull ? "Paiement 100% — " : "Acompte 20% — ") +
-      (canon.type === "mad" ? `MAD ${canon.mad_hours || "?"}h` : "Course") +
-      ` • ${new Date(canon.whenISO).toLocaleString("fr-FR")}`;
+const base = Number(canon.price_eur || 0);
+const amount = payFull ? base : base * 0.20;
+const cents = Math.max(Math.round(amount * 100), 50);
 
-    const desc = canon.type === "mad"
-      ? `Mise à disposition ${canon.mad_hours || "?"}h — Départ: ${canon.from}`
-      : `Trajet • De: ${canon.from} • À: ${canon.to || ""}`;
+const label =
+  (payFull ? 'Paiement 100% — ' : 'Acompte 20% — ') +
+  (canon.type === 'mad' ? `MAD ${canon.mad_hours || '?'}h` : 'Course') +
+  ` • ${new Date(canon.whenISO).toLocaleString('fr-FR')}`;
+
+const desc = canon.type === 'mad'
+  ? `Mise à disposition ${canon.mad_hours || '?'}h — Départ: ${canon.from}`
+  : `Trajet • De: ${canon.from} • À: ${canon.to || ''}`;
+
+const session = await stripe.checkout.sessions.create({
+  mode: 'payment',
+  locale: 'fr',
+  currency: 'eur',
+  line_items: [{
+    quantity: 1,
+    price_data: {
+      currency: 'eur',
+      unit_amount: cents,
+      product_data: { name: label, description: desc }
+    }
+  }],
+  success_url: `${site}/merci.html?session_id={CHECKOUT_SESSION_ID}`,
+  cancel_url: `${site}/simulator.html?canceled=1`,
+  metadata: {
+    // pour la page merci
+    pay_mode: payFull ? 'full' : 'deposit',
+    type: canon.type || '',
+    whenISO: canon.whenISO,
+    from: canon.from || '',
+    to: canon.to || '',
+    mad_hours: String(canon.mad_hours || ''),
+    price_eur: String(base || '')
+  }
+});
+
 
     // --- création de session Checkout (seul endroit où on "await")
     const session = await stripe.checkout.sessions.create({
