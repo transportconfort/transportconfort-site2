@@ -298,11 +298,18 @@ const prefill = {
 } // <-- bien fermer openInlineCalendly() avec uniquement une accolade
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+<script>
 /* Accroche du bouton “Réserver” et export global */
 document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('calendly');
-  if (btn) btn.addEventListener('click', openInlineCalendly);
-  // permet à simulator.js d'appeler openInlineCalendly() si besoin
+  if (btn) btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    openInlineCalendly();
+  });
+
+  // permet à simulator.js (ancien code) d'appeler la même fonction
   window.openInlineCalendly = openInlineCalendly;
 });
+</script>
+
 
