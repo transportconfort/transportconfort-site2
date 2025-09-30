@@ -20,6 +20,7 @@
     .row { margin:8px 0; }
     .label { display:inline-block; min-width:140px; color:#aaa; }
     .monospace { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    #note { margin-top:14px; padding:10px 12px; border-radius:10px; background:#201f1f; color:#ddd; display:none; }
   </style>
 </head>
 <body>
@@ -36,6 +37,9 @@
       <a href="/simulator.html" class="btn secondary" style="margin-left:8px;">Faire une autre réservation</a>
     </div>
 
+    <!-- Bandeau d’info (masqué par défaut, s’affiche seulement s’il y a une erreur) -->
+    <div id="note"></div>
+
     <p class="muted" style="margin-top:18px;">
       Besoin d’aide ? Contactez-nous au <a href="tel:+33749556277" class="muted">07 49 55 62 77</a>.
     </p>
@@ -51,9 +55,11 @@
     }
 
     async function load(){
-      const box = document.getElementById('box');
-      const sid = qs('session_id');
+      const box  = document.getElementById('box');
+      const note = document.getElementById('note');
+      if (note) note.style.display = 'none';
 
+      const sid = qs('session_id');
       if (!sid){
         box.innerHTML = `<p>Session de paiement introuvable.</p>
                          <p><a href="/simulator.html" class="btn secondary">Revenir au simulateur</a></p>`;
@@ -61,22 +67,23 @@
       }
 
       try {
-        // Netlify function déjà dans ton repo: /netlify/functions/stripe-session.js
-        const r = await fetch(`/.netlify/functions/stripe-session?session_id=${encodeURIComponent(sid)}`);
+        // 👉 un seul appel, endpoint sans .js, paramètre 'id'
+        const r = await fetch(`/.netlify/functions/stripe-session?id=${encodeURIComponent(sid)}`);
         if (!r.ok) throw new Error('HTTP '+r.status);
-        const s = await r.json();  // contient fields Stripe + s.metadata
+        const s = await r.json();  // { id, status, payment_status, amount_total, currency, metadata... }
 
-        // Champs utiles
-        const paid     = s.amount_total ?? 0;
-        const status   = s.payment_status || s.status || 'paid';
-        const payMode  = (s.metadata && s.metadata.pay_mode) || 'deposit';
-        const type     = (s.metadata && s.metadata.type) || '';
-        const from     = (s.metadata && s.metadata.from) || '';
-        const to       = (s.metadata && s.metadata.to) || '';
-        const whenISO  = (s.metadata && s.metadata.whenISO) || '';
-        const hours    = (s.metadata && s.metadata.mad_hours) || '';
-        const baseEUR  = (s.metadata && s.metadata.price_eur) || '';
-        const title    = (payMode==='full' ? 'Paiement 100%' : 'Acompte 20%');
+        // Champs utiles (fallbacks prudents)
+        const paidCents = s.amount_total ?? 0;
+        const status    = s.payment_status || s.status || 'paid';
+        const md        = s.metadata || {};
+        const payMode   = md.pay_mode || 'deposit';
+        const type      = md.type || '';
+        const from      = md.from || '';
+        const to        = md.to || '';
+        const whenISO   = md.whenISO || '';
+        const hours     = md.mad_hours || '';
+        const baseEUR   = md.price_eur || '';
+        const title     = (payMode === 'full' ? 'Paiement 100%' : 'Acompte 20%');
 
         const extraLine =
           (type === 'mad')
@@ -84,7 +91,7 @@
             : `<div class="row"><span class="label">Prestation</span> Course classique</div>`;
 
         box.innerHTML = `
-          <p class="ok">${title} confirmé — ${fmtEUR(paid)}</p>
+          <p class="ok">${title} confirmé — ${fmtEUR(paidCents)}</p>
           <div class="grid">
             <div>
               ${extraLine}
@@ -94,57 +101,29 @@
             </div>
             <div>
               <div class="row"><span class="label">Statut Stripe</span> ${status}</div>
-              <div class="row"><span class="label">Base estimée</span> ${baseEUR ? Number(baseEUR).toLocaleString('fr-FR', {style:'currency',currency:'EUR'}) : '—'}</div>
+              <div class="row"><span class="label">Base estimée</span> ${baseEUR ? Number(baseEUR).toLocaleString('fr-FR',{style:'currency',currency:'EUR'}) : '—'}</div>
               <div class="row"><span class="label">Session</span> <span class="monospace">${s.id || ''}</span></div>
               <div class="row"><span class="label">Mode</span> ${payMode==='full' ? '100%' : 'Acompte 20%'}</div>
             </div>
           </div>
           <p class="muted" style="margin-top:10px;">Un e-mail de confirmation Stripe vous a été envoyé. Vous recevrez un rappel avant la prestation.</p>
         `;
+
+        // Nettoie l’URL (on garde /merci.html sans les paramètres)
+        history.replaceState({}, '', location.pathname);
+
       } catch (e){
         console.error(e);
+        // petit panneau d’alerte (au lieu d’une barre qui reste)
+        if (note) {
+          note.textContent = "Impossible de vérifier la session Stripe pour le moment.";
+          note.style.display = 'block';
+        }
         box.innerHTML = `<p>Impossible de récupérer les détails du paiement.</p>
                          <p><a href="/simulator.html" class="btn secondary">Revenir au simulateur</a></p>`;
       }
     }
     load();
   </script>
-  <script>
-(async () => {
-  const box = document.getElementById('content') || (function(){
-    const d=document.createElement('div');
-    d.className='card'; d.style.margin='16px 0'; d.id='content';
-    document.body.appendChild(d); return d;
-  })();
-
-  const sp = new URLSearchParams(location.search);
-  const id = sp.get('session_id');
-  if (!id) { box.innerHTML = "Identifiant de session manquant."; return; }
-
-  try {
-    const r = await fetch('/.netlify/functions/stripe-session?id=' + encodeURIComponent(id));
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const s = await r.json(); // { id, status, payment_status, amount_total, currency, metadata... }
-
-    const paid = (s.payment_status === 'paid') || (s.status === 'complete');
-    const amount = s.amount_total ? (s.amount_total/100).toFixed(2) : '—';
-    const curr = (s.currency || 'eur').toUpperCase();
-
-    box.innerHTML = paid
-      ? `<h2>Merci, votre paiement est confirmé ✅</h2>
-         <p>Montant : <b>${amount} ${curr}</b></p>
-         <p>Référence : <code>${s.id}</code></p>`
-      : `<h2>Paiement non confirmé</h2>
-         <p>Statut : <b>${s.payment_status || s.status || 'inconnu'}</b></p>
-         <p>Si besoin, contactez-nous.</p>`;
-
-    // Nettoie l’URL (on garde /merci.html sans les paramètres)
-    history.replaceState({}, '', location.pathname);
-  } catch(e) {
-    console.error(e);
-    box.textContent = "Impossible de vérifier la session Stripe pour le moment.";
-  }
-})();
-</script>
 </body>
 </html>
