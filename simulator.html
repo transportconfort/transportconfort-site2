@@ -114,7 +114,7 @@
           <div class="row" style="margin-top:8px">
   <label style="display:flex;gap:8px;align-items:center">
     <input id="payfull" type="checkbox">
-    <span>Payer <b>100%</b> maintenant (au lieu de 20%)</span>
+    <span>Payer <b>100%</b> maintenant (ou 20% d'acompte)</span>
   </label>
 </div>
 
@@ -217,7 +217,6 @@ const canon = {
   pay_mode: payFull ? 'full' : 'deposit'
 };
 
-        const canon = { type: isMAD?'mad':'course', whenISO, from, to, price_eur, mad_hours };
         let signed;
         try{
           const r = await fetch('/.netlify/functions/sim-presign', {
@@ -232,9 +231,7 @@ const canon = {
             signed = await r.json(); // { signature, canon_b64, nonce }
           }
         }catch(e){
-          const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(canon))));
-          signed = { signature:'', nonce:'', canon_b64: b64 };
-        }
+  
 
         // 3) prefill (questions personnalisées Calendly)
         const cfg = isMAD ? CAL.mad : CAL.course;
