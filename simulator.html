@@ -283,12 +283,12 @@ const prefill = {
         if (!host) { alert('Zone calendrier manquante (#calendly-inline).'); return; }
         host.innerHTML = ''; // reset
 
-        Calendly.initInlineWidget({
-          url: base.toString(),
-          parentElement: host,
-          prefill: { date: (whenISO ? whenISO.slice(0,10) : undefined), customAnswers: ca },
-          utm
-        });
+      Calendly.initInlineWidget({
+  url: base.toString(),
+  parentElement: host,
+  prefill,   // <-- utilise l’objet 'prefill' créé juste au-dessus
+  utm
+});
 
            host.scrollIntoView({ behavior:'smooth', block:'start' });
   } catch (e) {
