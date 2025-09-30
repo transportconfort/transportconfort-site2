@@ -109,5 +109,42 @@
     }
     load();
   </script>
+  <script>
+(async () => {
+  const box = document.getElementById('content') || (function(){
+    const d=document.createElement('div');
+    d.className='card'; d.style.margin='16px 0'; d.id='content';
+    document.body.appendChild(d); return d;
+  })();
+
+  const sp = new URLSearchParams(location.search);
+  const id = sp.get('session_id');
+  if (!id) { box.innerHTML = "Identifiant de session manquant."; return; }
+
+  try {
+    const r = await fetch('/.netlify/functions/stripe-session?id=' + encodeURIComponent(id));
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const s = await r.json(); // { id, status, payment_status, amount_total, currency, metadata... }
+
+    const paid = (s.payment_status === 'paid') || (s.status === 'complete');
+    const amount = s.amount_total ? (s.amount_total/100).toFixed(2) : '—';
+    const curr = (s.currency || 'eur').toUpperCase();
+
+    box.innerHTML = paid
+      ? `<h2>Merci, votre paiement est confirmé ✅</h2>
+         <p>Montant : <b>${amount} ${curr}</b></p>
+         <p>Référence : <code>${s.id}</code></p>`
+      : `<h2>Paiement non confirmé</h2>
+         <p>Statut : <b>${s.payment_status || s.status || 'inconnu'}</b></p>
+         <p>Si besoin, contactez-nous.</p>`;
+
+    // Nettoie l’URL (on garde /merci.html sans les paramètres)
+    history.replaceState({}, '', location.pathname);
+  } catch(e) {
+    console.error(e);
+    box.textContent = "Impossible de vérifier la session Stripe pour le moment.";
+  }
+})();
+</script>
 </body>
 </html>
