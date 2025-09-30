@@ -404,10 +404,6 @@
       alert('Faites une estimation avant de réserver.');
       return;
     }
-    if (typeof window.openInlineCalendly === 'function') {
-      window.openInlineCalendly();
-    } else {
-      alert('Calendly se charge… réessayez dans 1 seconde.');
     }
   }
 
@@ -420,8 +416,5 @@
     });
   });
 
-  els.calendlyBtn?.addEventListener('click', (e) => {
-    e.preventDefault();
-    calendly();
   });
 })();
