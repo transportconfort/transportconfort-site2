@@ -101,6 +101,7 @@
             </div>
             <div>
               <div class="row"><span class="label">Statut Stripe</span> ${status}</div>
+              <div class="row"><span class="label">E-mail</span> ${email || '—'}</div>
               <div class="row"><span class="label">Base estimée</span> ${baseEUR ? Number(baseEUR).toLocaleString('fr-FR',{style:'currency',currency:'EUR'}) : '—'}</div>
               <div class="row"><span class="label">Session</span> <span class="monospace">${s.id || ''}</span></div>
               <div class="row"><span class="label">Mode</span> ${payMode==='full' ? '100%' : 'Acompte 20%'}</div>
