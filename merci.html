@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Merci • Transport Confort</title>
+
+  <!-- mêmes assets que le site -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/style.css">
+  <style>
+    .wrap { max-width: 920px; margin: 32px auto; padding: 0 16px; }
+    .card.center { text-align: center; }
+    .big { font-size: 22px; font-weight: 700; }
+    .muted { opacity: .75 }
+    .row { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:16px }
+    .btn { display:inline-block; padding:10px 14px; border-radius:10px; background:#C7A24B; color:#000; text-decoration:none }
+    .btn.ghost { background:transparent; color:#C7A24B; border:1px solid #C7A24B }
+    .kv { display:grid; grid-template-columns: 180px 1fr; gap:8px 16px; text-align:left; margin-top:18px }
+    .kv div:first-child { opacity:.8 }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="brand">
+        <img src="/assets/logo.png" alt="Logo">
+        <div>
+          <h1>Transport Confort</h1>
+          <div class="slogan">Transport haut de gamme • Confort premium</div>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="/">Accueil</a>
+        <a href="/simulator.html">Simulateur</a>
+        <a href="/tarifs.html">Tarifs</a>
+        <a href="/mentions.html">Mentions & CGV</a>
+        <a href="/a-propos.html">À propos</a>
+        <a href="/cgu.html">CGU</a>
+        <a href="/cgv.html">CGV</a>
+      </nav>
+    </div>
+
+    <div class="wrap">
+      <div class="card center" id="panel-loading">
+        <h2>Merci 🙏</h2>
+        <p class="muted">Nous vérifions les informations de votre règlement…</p>
+      </div>
+
+      <div class="card center" id="panel-ok" style="display:none">
+        <h2>Paiement confirmé ✅</h2>
+        <p class="big" id="amount"></p>
+        <p class="muted" id="kind"></p>
+
+        <div class="kv" id="kv"></div>
+
+        <div class="row">
+          <a href="/simulator.html" class="btn">Réserver un autre trajet</a>
+          <a href="/" class="btn ghost">Retour à l’accueil</a>
+        </div>
+      </div>
+
+      <div class="card center" id="panel-ko" style="display:none">
+        <h2>Nous n’avons pas pu confirmer le paiement</h2>
+        <p class="muted" id="err"></p>
+        <div class="row">
+          <a href="/simulator.html" class="btn">Réessayer</a>
+          <a href="/" class="btn ghost">Accueil</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero"><img src="/assets/hero-g6.png" alt="XPENG G6"></div>
+    <div class="footer small">
+      © Transport Confort by Vincent — SIREN 990 407 397 — TVA FR71 990 407 397 — 23 rue La Bruyère, 93800 Épinay-sur-Seine — 07 49 55 62 77
+    </div>
+  </div>
+
+  <script>
+    function €(v){ try{ return new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(v/100); }catch(_){ return (v/100).toFixed(2)+' €'; } }
+    function qs(k){ return new URLSearchParams(location.search).get(k); }
+
+    (async function(){
+      const session_id = qs('session_id');
+      const pLoad = document.getElementById('panel-loading');
+      const pOk   = document.getElementById('panel-ok');
+      const pKo   = document.getElementById('panel-ko');
+
+      if(!session_id){
+        pLoad.style.display='none'; pKo.style.display='block';
+        document.getElementById('err').textContent = 'Identifiant de paiement manquant.';
+        return;
+      }
+
+      try{
+        const r = await fetch('/.netlify/functions/stripe-session?session_id='+encodeURIComponent(session_id));
+        if(!r.ok){ throw new Error('Réponse serveur '+r.status); }
+        const data = await r.json();
+
+        if(data.error){ throw new Error(data.error); }
+
+        // Montant payé (amount_total) et nature (20% ou 100%)
+        document.getElementById('amount').textContent = 'Montant réglé : '+ €(data.amount_total);
+        const pct = Number(data.metadata?.charge_pct || '0');
+        const kind = (pct === 100) ? 'Paiement de 100 %' : (pct === 20 ? 'Acompte de 20 %' : 'Paiement');
+        document.getElementById('kind').textContent = kind;
+
+        // Détails
+        const kv = document.getElementById('kv');
+        const add = (k,v)=>{ if(v){ const a=document.createElement('div'); a.textContent=k; const b=document.createElement('div'); b.textContent=v; kv.append(a,b); } };
+
+        add('Référence', data.id);
+        add('Statut', data.payment_status==='paid' ? 'Payé' : data.payment_status);
+        add('Email', data.customer_details?.email || data.customer_email || '');
+        add('Type', (data.metadata?.type || '').toUpperCase());
+        add('Trajet', [data.metadata?.from, data.metadata?.to].filter(Boolean).join(' → '));
+        add('Date/Heure', (data.metadata?.whenISO || '').replace('T',' à ').replace('Z',''));
+        if(data.metadata?.mad_hours) add('Durée (MAD)', data.metadata.mad_hours+' h');
+        if(data.metadata?.price_total_eur) add('Total course', Number(data.metadata.price_total_eur).toFixed(2)+' €');
+
+        pLoad.style.display='none'; pOk.style.display='block';
+      }catch(e){
+        console.error(e);
+        pLoad.style.display='none'; pKo.style.display='block';
+        document.getElementById('err').textContent = e.message || 'Erreur inconnue.';
+      }
+    })();
+  </script>
+</body>
+</html>
