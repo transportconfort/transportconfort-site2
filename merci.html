@@ -2,129 +2,112 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Merci • Transport Confort</title>
-
-  <!-- mêmes assets que le site -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <title>Paiement confirmé • Transport Confort</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/style.css">
   <style>
-    .wrap { max-width: 920px; margin: 32px auto; padding: 0 16px; }
-    .card.center { text-align: center; }
-    .big { font-size: 22px; font-weight: 700; }
-    .muted { opacity: .75 }
-    .row { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:16px }
-    .btn { display:inline-block; padding:10px 14px; border-radius:10px; background:#C7A24B; color:#000; text-decoration:none }
-    .btn.ghost { background:transparent; color:#C7A24B; border:1px solid #C7A24B }
-    .kv { display:grid; grid-template-columns: 180px 1fr; gap:8px 16px; text-align:left; margin-top:18px }
-    .kv div:first-child { opacity:.8 }
+    body { background:#0b0b0b; color:#fff; font-family:Inter,system-ui; }
+    .container { max-width:960px; margin:32px auto; padding:0 16px; }
+    .card { background:#151515; border-radius:12px; padding:20px; }
+    .ok { color:#16c784; font-weight:700; }
+    .muted { color:#aaa; }
+    .grid { display:grid; gap:12px; grid-template-columns: 1fr 1fr; }
+    @media (max-width:800px){ .grid{grid-template-columns:1fr;} }
+    .btn { display:inline-block; padding:10px 14px; border-radius:10px; background:#c7a24b; color:#121212; font-weight:600; text-decoration:none; }
+    .btn.secondary { background:#222; color:#fff; border:1px solid #333; }
+    .row { margin:8px 0; }
+    .label { display:inline-block; min-width:140px; color:#aaa; }
+    .monospace { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="header">
-      <div class="brand">
-        <img src="/assets/logo.png" alt="Logo">
-        <div>
-          <h1>Transport Confort</h1>
-          <div class="slogan">Transport haut de gamme • Confort premium</div>
-        </div>
-      </div>
-      <nav class="nav">
-        <a href="/">Accueil</a>
-        <a href="/simulator.html">Simulateur</a>
-        <a href="/tarifs.html">Tarifs</a>
-        <a href="/mentions.html">Mentions & CGV</a>
-        <a href="/a-propos.html">À propos</a>
-        <a href="/cgu.html">CGU</a>
-        <a href="/cgv.html">CGV</a>
-      </nav>
+    <h1>Merci pour votre paiement ✅</h1>
+    <p class="muted">Votre réservation a bien été enregistrée. Vous recevez un e-mail de confirmation Stripe dans quelques instants.</p>
+
+    <div id="box" class="card" role="status">
+      Chargement des détails du paiement…
     </div>
 
-    <div class="wrap">
-      <div class="card center" id="panel-loading">
-        <h2>Merci 🙏</h2>
-        <p class="muted">Nous vérifions les informations de votre règlement…</p>
-      </div>
-
-      <div class="card center" id="panel-ok" style="display:none">
-        <h2>Paiement confirmé ✅</h2>
-        <p class="big" id="amount"></p>
-        <p class="muted" id="kind"></p>
-
-        <div class="kv" id="kv"></div>
-
-        <div class="row">
-          <a href="/simulator.html" class="btn">Réserver un autre trajet</a>
-          <a href="/" class="btn ghost">Retour à l’accueil</a>
-        </div>
-      </div>
-
-      <div class="card center" id="panel-ko" style="display:none">
-        <h2>Nous n’avons pas pu confirmer le paiement</h2>
-        <p class="muted" id="err"></p>
-        <div class="row">
-          <a href="/simulator.html" class="btn">Réessayer</a>
-          <a href="/" class="btn ghost">Accueil</a>
-        </div>
-      </div>
+    <div class="row" style="margin-top:16px;">
+      <a href="/" class="btn">Retour à l’accueil</a>
+      <a href="/simulator.html" class="btn secondary" style="margin-left:8px;">Faire une autre réservation</a>
     </div>
 
-    <div class="hero"><img src="/assets/hero-g6.png" alt="XPENG G6"></div>
-    <div class="footer small">
-      © Transport Confort by Vincent — SIREN 990 407 397 — TVA FR71 990 407 397 — 23 rue La Bruyère, 93800 Épinay-sur-Seine — 07 49 55 62 77
-    </div>
+    <p class="muted" style="margin-top:18px;">
+      Besoin d’aide ? Contactez-nous au <a href="tel:+33749556277" class="muted">07 49 55 62 77</a>.
+    </p>
   </div>
 
   <script>
-    function €(v){ try{ return new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(v/100); }catch(_){ return (v/100).toFixed(2)+' €'; } }
-    function qs(k){ return new URLSearchParams(location.search).get(k); }
+    function qs(name){ return new URLSearchParams(location.search).get(name) || ''; }
+    function fmtEUR(cents){
+      return (cents/100).toLocaleString('fr-FR', { style:'currency', currency:'EUR' });
+    }
+    function fmtDate(iso){
+      try { return new Date(iso).toLocaleString('fr-FR'); } catch(e){ return iso || '—'; }
+    }
 
-    (async function(){
-      const session_id = qs('session_id');
-      const pLoad = document.getElementById('panel-loading');
-      const pOk   = document.getElementById('panel-ok');
-      const pKo   = document.getElementById('panel-ko');
+    async function load(){
+      const box = document.getElementById('box');
+      const sid = qs('session_id');
 
-      if(!session_id){
-        pLoad.style.display='none'; pKo.style.display='block';
-        document.getElementById('err').textContent = 'Identifiant de paiement manquant.';
+      if (!sid){
+        box.innerHTML = `<p>Session de paiement introuvable.</p>
+                         <p><a href="/simulator.html" class="btn secondary">Revenir au simulateur</a></p>`;
         return;
       }
 
-      try{
-        const r = await fetch('/.netlify/functions/stripe-session?session_id='+encodeURIComponent(session_id));
-        if(!r.ok){ throw new Error('Réponse serveur '+r.status); }
-        const data = await r.json();
+      try {
+        // Netlify function déjà dans ton repo: /netlify/functions/stripe-session.js
+        const r = await fetch(`/.netlify/functions/stripe-session?session_id=${encodeURIComponent(sid)}`);
+        if (!r.ok) throw new Error('HTTP '+r.status);
+        const s = await r.json();  // contient fields Stripe + s.metadata
 
-        if(data.error){ throw new Error(data.error); }
+        // Champs utiles
+        const paid     = s.amount_total ?? 0;
+        const status   = s.payment_status || s.status || 'paid';
+        const payMode  = (s.metadata && s.metadata.pay_mode) || 'deposit';
+        const type     = (s.metadata && s.metadata.type) || '';
+        const from     = (s.metadata && s.metadata.from) || '';
+        const to       = (s.metadata && s.metadata.to) || '';
+        const whenISO  = (s.metadata && s.metadata.whenISO) || '';
+        const hours    = (s.metadata && s.metadata.mad_hours) || '';
+        const baseEUR  = (s.metadata && s.metadata.price_eur) || '';
+        const title    = (payMode==='full' ? 'Paiement 100%' : 'Acompte 20%');
 
-        // Montant payé (amount_total) et nature (20% ou 100%)
-        document.getElementById('amount').textContent = 'Montant réglé : '+ €(data.amount_total);
-        const pct = Number(data.metadata?.charge_pct || '0');
-        const kind = (pct === 100) ? 'Paiement de 100 %' : (pct === 20 ? 'Acompte de 20 %' : 'Paiement');
-        document.getElementById('kind').textContent = kind;
+        const extraLine =
+          (type === 'mad')
+            ? `<div class="row"><span class="label">Prestation</span> Mise à disposition ${hours || '?'} h</div>`
+            : `<div class="row"><span class="label">Prestation</span> Course classique</div>`;
 
-        // Détails
-        const kv = document.getElementById('kv');
-        const add = (k,v)=>{ if(v){ const a=document.createElement('div'); a.textContent=k; const b=document.createElement('div'); b.textContent=v; kv.append(a,b); } };
-
-        add('Référence', data.id);
-        add('Statut', data.payment_status==='paid' ? 'Payé' : data.payment_status);
-        add('Email', data.customer_details?.email || data.customer_email || '');
-        add('Type', (data.metadata?.type || '').toUpperCase());
-        add('Trajet', [data.metadata?.from, data.metadata?.to].filter(Boolean).join(' → '));
-        add('Date/Heure', (data.metadata?.whenISO || '').replace('T',' à ').replace('Z',''));
-        if(data.metadata?.mad_hours) add('Durée (MAD)', data.metadata.mad_hours+' h');
-        if(data.metadata?.price_total_eur) add('Total course', Number(data.metadata.price_total_eur).toFixed(2)+' €');
-
-        pLoad.style.display='none'; pOk.style.display='block';
-      }catch(e){
+        box.innerHTML = `
+          <p class="ok">${title} confirmé — ${fmtEUR(paid)}</p>
+          <div class="grid">
+            <div>
+              ${extraLine}
+              <div class="row"><span class="label">Départ</span> ${from || '—'}</div>
+              ${type==='mad' ? '' : `<div class="row"><span class="label">Arrivée</span> ${to || '—'}</div>`}
+              <div class="row"><span class="label">Date/heure</span> ${fmtDate(whenISO)}</div>
+            </div>
+            <div>
+              <div class="row"><span class="label">Statut Stripe</span> ${status}</div>
+              <div class="row"><span class="label">Base estimée</span> ${baseEUR ? Number(baseEUR).toLocaleString('fr-FR', {style:'currency',currency:'EUR'}) : '—'}</div>
+              <div class="row"><span class="label">Session</span> <span class="monospace">${s.id || ''}</span></div>
+              <div class="row"><span class="label">Mode</span> ${payMode==='full' ? '100%' : 'Acompte 20%'}</div>
+            </div>
+          </div>
+          <p class="muted" style="margin-top:10px;">Un e-mail de confirmation Stripe vous a été envoyé. Vous recevrez un rappel avant la prestation.</p>
+        `;
+      } catch (e){
         console.error(e);
-        pLoad.style.display='none'; pKo.style.display='block';
-        document.getElementById('err').textContent = e.message || 'Erreur inconnue.';
+        box.innerHTML = `<p>Impossible de récupérer les détails du paiement.</p>
+                         <p><a href="/simulator.html" class="btn secondary">Revenir au simulateur</a></p>`;
       }
-    })();
+    }
+    load();
   </script>
 </body>
 </html>
