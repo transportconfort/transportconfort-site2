@@ -148,167 +148,128 @@
 
   <!-- ===== JS pour l’ouverture Calendly ===== -->
   <script>
-    // URLs Calendly + IDs de questions (à remplacer quand tu auras créé les questions)
-    const CAL = {
-      mad: {
-        url: 'https://calendly.com/contact-transportconfort/reservation-chauffeur-prive-mad',
-        qid: { date:'QID_MAD_DATE', time:'QID_MAD_TIME', from:'QID_MAD_FROM', duration:'QID_MAD_DURATION', price:'QID_MAD_PRICE' }
-      },
-      course: {
-        url: 'https://calendly.com/contact-transportconfort/reservation-vtc',
-        qid: { date:'QID_VTC_DATE', time:'QID_VTC_TIME', from:'QID_VTC_FROM', to:'QID_VTC_TO', price:'QID_VTC_PRICE' }
-      }
-    };
+// === Config URLs + IDs de questions ===
+const CAL = {
+  mad: {
+    url: 'https://calendly.com/contact-transportconfort/reservation-chauffeur-prive-mad',
+    qid: { date:'QID_MAD_DATE', time:'QID_MAD_TIME', from:'QID_MAD_FROM', duration:'QID_MAD_DURATION', price:'QID_MAD_PRICE' }
+  },
+  course: {
+    url: 'https://calendly.com/contact-transportconfort/reservation-vtc',
+    qid: { date:'QID_VTC_DATE', time:'QID_VTC_TIME', from:'QID_VTC_FROM', to:'QID_VTC_TO', price:'QID_VTC_PRICE' }
+  }
+};
 
-    function getVal(id){ const el=document.getElementById(id); return el?el.value.trim():''; }
+function getVal(id){ const el=document.getElementById(id); return el?el.value.trim():''; }
 
-    function waitForCalendly(maxMs = 10000) {
-  return new Promise((resolve, reject) => {
-    if (window.Calendly) return resolve();
+// attend que Calendly soit chargé (script async)
+function waitForCalendly(maxMs=15000){
+  return new Promise((resolve, reject)=>{
     const t0 = Date.now();
-    const timer = setInterval(() => {
-      if (window.Calendly) {
-        clearInterval(timer);
-        resolve();
-      } else if (Date.now() - t0 > maxMs) {
-        clearInterval(timer);
-        reject(new Error('Calendly not loaded'));
-      }
+    const iv = setInterval(()=>{
+      if (window.Calendly){ clearInterval(iv); resolve(); }
+      else if (Date.now()-t0 > maxMs){ clearInterval(iv); reject(new Error('Calendly not loaded')); }
     }, 100);
   });
 }
 
-    async function openInlineCalendly() {
-      try {
-        await waitForCalendly(); // s’assurer que Calendly est prêt
-        // Empêche d’ouvrir sans estimation fiable
-        if (!window._TC_LAST || window._TC_LAST.price_eur == null || !window._TC_LAST.from) {
-          alert("Faites d’abord une estimation (tarif + adresses).");
-          return;
-        }
+async function openInlineCalendly(){
+  try {
+    await waitForCalendly();
 
-        // 1) données depuis le formulaire / dernière estimation
-        const isMAD   = !!document.getElementById('mode-mad')?.checked;
-        const dateStr = getVal('date');
-        const timeStr = getVal('time');
-        let whenISO   = (window._TC_LAST && window._TC_LAST.whenISO) || null;
-        if (!whenISO && dateStr && timeStr) whenISO = `${dateStr}T${timeStr}:00`;
+    // empêcher l’ouverture si pas d’estimation
+    if (!window._TC_LAST || window._TC_LAST.price_eur == null || !window._TC_LAST.from) {
+      alert('Faites d’abord une estimation (tarif + adresses).');
+      return;
+    }
 
-        const from      = (window._TC_LAST?.from) || getVal('from');
-        const to        = isMAD ? '' : ((window._TC_LAST?.to) || getVal('to'));
-        const price_eur = (window._TC_LAST?.price_eur ?? null);
-        const mad_hours = isMAD ? (window._TC_LAST?.mad_hours || Number(document.getElementById('mad-hours')?.value||1)) : undefined;
+    // 1) lire les valeurs
+    const isMAD   = !!document.getElementById('mode-mad')?.checked;
+    const dateStr = getVal('date');
+    const timeStr = getVal('time');
 
-        if (!dateStr && !whenISO) { alert('Choisissez une date (ou faites une estimation).'); return; }
+    let whenISO = window._TC_LAST?.whenISO || null;
+    if (!whenISO && dateStr && timeStr) whenISO = `${dateStr}T${timeStr}:00`;
 
-        // 2) paquet canon
-        const canon = { type: isMAD ? 'mad' : 'course', whenISO, from, to, price_eur, mad_hours };
+    const from       = window._TC_LAST?.from || getVal('from');
+    const to         = isMAD ? '' : (window._TC_LAST?.to || getVal('to'));
+    const price_eur  = window._TC_LAST?.price_eur ?? null;
+    const mad_hours  = isMAD ? (window._TC_LAST?.mad_hours || Number(document.getElementById('mad-hours')?.value || 1)) : undefined;
 
-        // 3) signature serveur (Netlify function) + fallback si 4xx/5xx
-        let signed;
-        try {
-          const r = await fetch('/.netlify/functions/sim-presign', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ canon })
-          });
+    // 2) canon + presign (fallback base64 si la function est KO)
+    const canon = { type: isMAD?'mad':'course', whenISO, from, to, price_eur, mad_hours };
+    let signed;
+    try{
+      const r = await fetch('/.netlify/functions/sim-presign', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ canon })
+      });
+      if (!r.ok){
+        const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(canon))));
+        signed = { signature:'', nonce:'', canon_b64: b64 };
+      } else {
+        signed = await r.json(); // { signature, canon_b64, nonce }
+      }
+    }catch(e){
+      const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(canon))));
+      signed = { signature:'', nonce:'', canon_b64: b64 };
+    }
 
-          const canonB64Fallback = btoa(unescape(encodeURIComponent(JSON.stringify(canon))));
-          if (!r.ok) {
-            console.warn('presign HTTP ' + r.status + ' — fallback');
-            signed = { signature: '', nonce: '', canon_b64: canonB64Fallback };
-          } else {
-            signed = await r.json(); // { signature, canon_b64, nonce }
-          }
-        } catch (e) {
-          console.warn('presign error — fallback', e);
-          const canonB64 = btoa(unescape(encodeURIComponent(JSON.stringify(canon))));
-          signed = { signature: '', nonce: '', canon_b64: canonB64 };
-        }
+    // 3) prefill (questions personnalisées)
+    const cfg = isMAD ? CAL.mad : CAL.course;
+    const ca  = {};
+    if (cfg.qid.price && price_eur!=null) ca[cfg.qid.price] = (typeof TC!=='undefined' && TC.fmtMoney)? TC.fmtMoney(price_eur) : `${price_eur} €`;
+    if (cfg.qid.from  && from)            ca[cfg.qid.from]  = from;
+    if (!isMAD && cfg.qid.to && to)       ca[cfg.qid.to]    = to;
+    if (isMAD && cfg.qid.duration && mad_hours) ca[cfg.qid.duration] = `${mad_hours} h`;
+    const prefill = {
+      date: whenISO ? whenISO.slice(0,10) : undefined,
+      customAnswers: ca
+    };
 
-       // 4) prefill + custom answers pour Calendly
-const cfg = isMAD ? CAL.mad : CAL.course;
+    // 4) UTM (preuve)
+    const utm = {
+      utm_source:  'simulator',
+      utm_medium:  signed.signature || 'nosig',
+      utm_term:    signed.nonce || '',
+      utm_content: signed.canon_b64 || '',
+      utm_campaign: (window._TC_LAST?.label || (isMAD?'MAD':'COURSE'))
+    };
 
-// Réponses aux questions personnalisées (mapper tes vrais QID_* ici)
-const customAnswers = {};
-if (cfg.qid.price && price_eur != null) {
-  customAnswers[cfg.qid.price] =
-    (typeof TC !== 'undefined' && TC.fmtMoney) ? TC.fmtMoney(price_eur) : `${price_eur} €`;
-}
-if (cfg.qid.from && from) {
-  customAnswers[cfg.qid.from] = from;
-}
-if (!isMAD && cfg.qid.to && to) {
-  customAnswers[cfg.qid.to] = to;
-}
-if (isMAD && cfg.qid.duration && mad_hours) {
-  customAnswers[cfg.qid.duration] = `${mad_hours} h`;
-}
-if (cfg.qid.date && whenISO) {
-  customAnswers[cfg.qid.date] = whenISO.slice(0, 10);            // AAAA-MM-JJ
-}
-if (cfg.qid.time && whenISO) {
-  customAnswers[cfg.qid.time] = new Date(whenISO).toTimeString().slice(0, 5); // HH:MM
-}
+    // 5) URL Calendly + couleurs
+    const base = new URL(cfg.url);
+    base.searchParams.set('background_color','0B0B0B');
+    base.searchParams.set('text_color','FFFFFF');
+    base.searchParams.set('primary_color','C7A24B');
+    // on duplique les UTM pour l’UI Calendly
+    base.searchParams.set('utm_source', utm.utm_source);
+    base.searchParams.set('utm_medium', utm.utm_medium);
+    base.searchParams.set('utm_term', utm.utm_term);
+    base.searchParams.set('utm_content', utm.utm_content);
+    base.searchParams.set('utm_campaign', utm.utm_campaign);
 
-// Prefill standard (Calendly ne prend que la date ici ; l’heure passe en custom)
-const prefill = {
-  date: whenISO ? whenISO.slice(0, 10) : undefined,
-  customAnswers
-};
+    // 6) host + init widget
+    const host = document.getElementById('calendly-inline');
+    if (!host){ alert('Zone calendrier manquante (#calendly-inline).'); return; }
+    host.innerHTML = '';
 
-        // 5) UTM scellées (preuve)
-        const utm = {
-          utm_source: 'simulator',
-          utm_medium: signed.signature,     // HMAC (peut être vide en fallback)
-          utm_term:   signed.nonce,         // anti-rejeu
-          utm_content: signed.canon_b64,    // canon encodé base64
-          utm_campaign: (window._TC_LAST?.label || (isMAD?'MAD':'COURSE'))
-        };
+    Calendly.initInlineWidget({
+      url: base.toString(),
+      parentElement: host,
+      prefill,
+      utm
+    });
 
-        // 6) URL Calendly avec tes couleurs
-        const base = new URL(cfg.url);
-        base.searchParams.set('background_color','0B0B0B');
-        base.searchParams.set('text_color','FFFFFF');
-        base.searchParams.set('primary_color','C7A24B');
-        // on place aussi les UTM en query (double ce que l’API fait côté widget)
-        base.searchParams.set('utm_source', utm.utm_source);
-        base.searchParams.set('utm_medium', utm.utm_medium || 'nosig');
-        base.searchParams.set('utm_term', utm.utm_term || '');
-        base.searchParams.set('utm_content', utm.utm_content || '');
-        base.searchParams.set('utm_campaign', utm.utm_campaign || '');
-
-        // 7) lance le widget Calendly inline
-        const host = document.getElementById('calendly-inline');
-        if (!host) { alert('Zone calendrier manquante (#calendly-inline).'); return; }
-        host.innerHTML = ''; // reset
-
-      Calendly.initInlineWidget({
-  url: base.toString(),
-  parentElement: host,
-  prefill,   // <-- utilise l’objet 'prefill' créé juste au-dessus
-  utm
-});
-
-           host.scrollIntoView({ behavior:'smooth', block:'start' });
-  } catch (e) {
+    host.scrollIntoView({ behavior:'smooth', block:'start' });
+  } catch (e){
     console.error(e);
-    alert("Impossible d’ouvrir le calendrier.");
+    alert('Impossible d’ouvrir le calendrier.');
   }
-} // <-- bien fermer openInlineCalendly() avec uniquement une accolade
-// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+}
 
-<script>
-/* Accroche du bouton “Réserver” et export global */
+// Accroche du bouton + export global (pour l’ancien code)
 document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('calendly');
-  if (btn) btn.addEventListener('click', (e) => {
-    e.preventDefault();
-    openInlineCalendly();
-
-  // permet à simulator.js (ancien code) d'appeler la même fonction
+  if (btn) btn.addEventListener('click', (ev)=>{ ev.preventDefault(); openInlineCalendly(); });
   window.openInlineCalendly = openInlineCalendly;
 });
 </script>
-
-
