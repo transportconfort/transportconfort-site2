@@ -111,6 +111,13 @@
         <div class="actions" style="margin-top:12px">
           <button id="estimate" class="btn">Estimer</button>
           <button id="calendly" class="btn secondary" disabled>Réserver</button>
+          <div class="row" style="margin-top:8px">
+  <label style="display:flex;gap:8px;align-items:center">
+    <input id="payfull" type="checkbox">
+    <span>Payer <b>100%</b> maintenant (au lieu de 20%)</span>
+  </label>
+</div>
+
         </div>
       </div>
 
@@ -197,6 +204,19 @@
         const mad_hours  = isMAD ? (window._TC_LAST?.mad_hours || Number(document.getElementById('mad-hours')?.value || 1)) : undefined;
 
         // 2) canon + presign (fallback base64 si la function est KO)
+        const payFull = !!document.getElementById('payfull')?.checked;
+
+const canon = {
+  type: isMAD ? 'mad' : 'course',
+  whenISO,
+  from,
+  to,
+  price_eur,
+  mad_hours,
+  // NEW: on transporte le choix jusqu’au serveur
+  pay_mode: payFull ? 'full' : 'deposit'
+};
+
         const canon = { type: isMAD?'mad':'course', whenISO, from, to, price_eur, mad_hours };
         let signed;
         try{
