@@ -203,8 +203,8 @@
         const price_eur  = window._TC_LAST?.price_eur ?? null;
         const mad_hours  = isMAD ? (window._TC_LAST?.mad_hours || Number(document.getElementById('mad-hours')?.value || 1)) : undefined;
 
-        // 2) canon + presign (fallback base64 si la function est KO)
-        const payFull = !!document.getElementById('payfull')?.checked;
+// 2) canon + presign (fallback base64 si la function est KO)
+const payFull = !!document.getElementById('payfull')?.checked;
 
 const canon = {
   type: isMAD ? 'mad' : 'course',
@@ -213,24 +213,30 @@ const canon = {
   to,
   price_eur,
   mad_hours,
-  // NEW: on transporte le choix jusqu’au serveur
+  // NEW: choix d’encaissement
   pay_mode: payFull ? 'full' : 'deposit'
 };
 
-        let signed;
-        try{
-          const r = await fetch('/.netlify/functions/sim-presign', {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({ canon })
-          });
-          if (!r.ok){
-            const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(canon))));
-            signed = { signature:'', nonce:'', canon_b64: b64 };
-          } else {
-            signed = await r.json(); // { signature, canon_b64, nonce }
-          }
-        }catch(e){
+let signed;
+try {
+  const r = await fetch('/.netlify/functions/sim-presign', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ canon })
+  });
+
+  if (!r.ok) {
+    const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(canon))));
+    signed = { signature: '', nonce: '', canon_b64: b64 };
+  } else {
+    signed = await r.json(); // { signature, canon_b64, nonce }
+  }
+} catch (e) {
+  console.warn('presign error — fallback', e);
+  const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(canon))));
+  signed = { signature: '', nonce: '', canon_b64: b64 };
+}
+
   
 
         // 3) prefill (questions personnalisées Calendly)
