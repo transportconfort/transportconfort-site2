@@ -74,101 +74,125 @@
           <p class="note">TVA : 10% (courses classiques & forfaits) • 20% (mises à disposition).</p>
         </header>
 
-        <!-- Bloc principal tarifs -->
-        <div class="card" style="margin-top:10px">
-          <div class="table-wrap" role="region" aria-label="Grille des tarifs">
-            <table>
-              <thead>
-                <tr>
-                  <th style="width:240px">Prestation</th>
-                  <th>Détails</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="k">Courses classiques</td>
-                  <td>
-                    <div class="prices">
-                      <span class="price">Prise en charge minimale&nbsp;: <strong>10 €</strong></span> •
-                      <span class="price">Kilomètre&nbsp;: <strong>1,60 € / km</strong></span> •
-                      <span class="price">Minute&nbsp;: <strong>0,55 € / min</strong></span>
-                    </div>
-                    <div class="note" style="margin-top:6px">Majoration +20% appliquée la nuit et le week-end.</div>
-                  </td>
-                </tr>
+<!-- ===== Bloc principal tarifs (version clean) ===== -->
+<div class="card tcv-tarifs-card">
+  <style>
+    /* Surcouche "clean" locale */
+    .tcv-tarifs .price{font-variant-numeric: tabular-nums}
+    .tcv-tarifs .chip{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.03)
+    }
+    .tcv-tarifs .chip b{font-weight:700}
+    .tcv-tarifs .chip + .chip{margin-left:8px}
+    .tcv-tarifs .row{display:flex;flex-wrap:wrap;gap:10px}
+    .tcv-tarifs .sep{width:100%;height:1px;background:var(--line);margin:14px 0}
+    .tcv-tarifs .col{min-width:260px;flex:1}
+    .tcv-tarifs .title{color:#fff;font-weight:700;margin:0 0 6px}
+    .tcv-tarifs .hint{color:var(--muted);font-size:.93rem;margin-top:8px}
+    .tcv-tarifs .pill{display:inline-block;padding:.22rem .55rem;border:1px solid var(--line);border-radius:999px;font-size:.8rem;color:var(--muted)}
+    .tcv-tarifs dl{display:grid;grid-template-columns: 160px 1fr;gap:8px 16px;margin:0}
+    .tcv-tarifs dt{color:var(--muted)}
+    .tcv-tarifs dd{margin:0}
+    @media (max-width: 720px){
+      .tcv-tarifs .col{min-width:100%}
+      .tcv-tarifs dl{grid-template-columns: 1fr}
+    }
+  </style>
 
-                <tr>
-                  <td class="k">Forfaits aéroports</td>
-                  <td>
-                    <div class="grid grid-2" style="margin-top:6px">
-                      <div>
-                        <div class="pill">Jour</div>
-                        <ul style="margin:.4rem 0 .2rem 1rem">
-                          <li class="price"><strong>Orly</strong> : 60 €</li>
-                          <li class="price"><strong>Charles-de-Gaulle</strong> : 80 €</li>
-                          <li class="price"><strong>Beauvais</strong> : 150 €</li>
-                        </ul>
-                      </div>
-                      <div>
-                        <div class="pill">Nuit & week-end</div>
-                        <ul style="margin:.4rem 0 .2rem 1rem">
-                          <li class="price"><strong>Orly</strong> : 70 €</li>
-                          <li class="price"><strong>Charles-de-Gaulle</strong> : 90 €</li>
-                          <li class="price"><strong>Beauvais</strong> : 170 €</li>
-                        </ul>
-                      </div>
-                    </div>
-                    <div class="note">Forfaits fixes par sens (départ ou arrivée). Pas de majoration additionnelle.</div>
-                  </td>
-                </tr>
+  <!-- Courses classiques -->
+  <div>
+    <div class="title">Courses classiques</div>
+    <div class="row">
+      <span class="chip price"><span>Prise en charge</span><b>10&nbsp;€</b></span>
+      <span class="chip price"><span>Kilomètre</span><b>1,60&nbsp;€&nbsp;/&nbsp;km</b></span>
+      <span class="chip price"><span>Minute</span><b>0,55&nbsp;€&nbsp;/&nbsp;min</b></span>
+    </div>
+    <div class="hint">Majoration <b>+20%</b> appliquée la nuit et le week-end.</div>
+  </div>
 
-                <tr>
-                  <td class="k">Mise à disposition (MAD)</td>
-                  <td>
-                    <div class="prices">
-                      <span class="price">1 h&nbsp;: <strong>100 €</strong></span> •
-                      <span class="price">2 h&nbsp;: <strong>180 €</strong> (90 €/h)</span> •
-                      <span class="price">3 h&nbsp;: <strong>240 €</strong> (80 €/h)</span> •
-                      <span class="price">4 h&nbsp;: <strong>300 €</strong> (75 €/h)</span> •
-                      <span class="price">8 h&nbsp;: <strong>560 €</strong> (70 €/h)</span>
-                    </div>
-                    <div class="note" style="margin-top:6px">TVA 20%. Pas de majoration nuit/week-end.</div>
-                  </td>
-                </tr>
+  <div class="sep" role="separator" aria-hidden="true"></div>
 
-                <tr>
-                  <td class="k">Forfaits Enghien (Casino / Théâtre)</td>
-                  <td>
-                    <div class="grid grid-2" style="margin-top:6px">
-                      <div>
-                        <div class="pill">Jour</div>
-                        <div class="price">5 km&nbsp;: <strong>15 €</strong> • 10 km&nbsp;: <strong>25 €</strong> • 20 km&nbsp;: <strong>50 €</strong> • 30 km&nbsp;: <strong>70 €</strong></div>
-                      </div>
-                      <div>
-                        <div class="pill">Nuit & week-end</div>
-                        <div class="price">5 km&nbsp;: <strong>20 €</strong> • 10 km&nbsp;: <strong>30 €</strong> • 20 km&nbsp;: <strong>60 €</strong> • 30 km&nbsp;: <strong>80 €</strong></div>
-                      </div>
-                    </div>
-                    <div class="note">Au-delà de 30 km : tarification « courses classiques » (km + minute).</div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+  <!-- Forfaits aéroports -->
+  <div>
+    <div class="title">Forfaits aéroports</div>
+    <div class="row">
+      <div class="col">
+        <div class="pill">Jour</div>
+        <dl class="price" style="margin-top:8px">
+          <dt>Orly</dt><dd><b>60&nbsp;€</b></dd>
+          <dt>Charles-de-Gaulle</dt><dd><b>80&nbsp;€</b></dd>
+          <dt>Beauvais</dt><dd><b>150&nbsp;€</b></dd>
+        </dl>
+      </div>
+      <div class="col">
+        <div class="pill">Nuit & week-end</div>
+        <dl class="price" style="margin-top:8px">
+          <dt>Orly</dt><dd><b>70&nbsp;€</b></dd>
+          <dt>Charles-de-Gaulle</dt><dd><b>90&nbsp;€</b></dd>
+          <dt>Beauvais</dt><dd><b>170&nbsp;€</b></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="hint">Forfaits fixes par sens (départ ou arrivée). <b>Aucune</b> majoration additionnelle.</div>
+  </div>
 
-          <!-- Bandeau action -->
-          <div style="display:flex;justify-content:center;margin-top:14px">
-            <a class="btn" href="/simulator.html" style="display:inline-block;padding:12px 18px;border-radius:14px;font-weight:600;text-decoration:none;background:var(--gold);color:#0B0B0B;box-shadow:0 6px 18px rgba(0,0,0,.25)">Simuler & Réserver</a>
-          </div>
+  <div class="sep" role="separator" aria-hidden="true"></div>
 
-          <!-- Mentions tarifaires -->
-          <div class="card" style="margin-top:16px">
-            <p class="note" style="margin:0">
-              🎁 <strong>-15% jusqu’au 31/12/2025</strong> — la remise s’applique automatiquement dans le simulateur au moment du calcul. <br>
-              ℹ️ Les tarifs incluent la TVA. Les conditions d’annulation et de paiement (acompte 20%, solde à bord) sont détaillées dans les <a href="/mentions.html#cgv" style="color:var(--gold)">CGV</a>.
-            </p>
-          </div>
-        </div>
+  <!-- Mises à disposition -->
+  <div>
+    <div class="title">Mise à disposition (MAD)</div>
+    <div class="row">
+      <span class="chip price"><span>1&nbsp;h</span><b>100&nbsp;€</b></span>
+      <span class="chip price"><span>2&nbsp;h</span><b>180&nbsp;€</b><span style="opacity:.7">(90&nbsp;€/h)</span></span>
+      <span class="chip price"><span>3&nbsp;h</span><b>240&nbsp;€</b><span style="opacity:.7">(80&nbsp;€/h)</span></span>
+      <span class="chip price"><span>4&nbsp;h</span><b>300&nbsp;€</b><span style="opacity:.7">(75&nbsp;€/h)</span></span>
+      <span class="chip price"><span>8&nbsp;h</span><b>560&nbsp;€</b><span style="opacity:.7">(70&nbsp;€/h)</span></span>
+    </div>
+    <div class="hint">TVA <b>20%</b>. Pas de majoration nuit/week-end.</div>
+  </div>
+
+  <div class="sep" role="separator" aria-hidden="true"></div>
+
+  <!-- Enghien -->
+  <div>
+    <div class="title">Forfaits Enghien (Casino / Théâtre)</div>
+    <div class="row">
+      <div class="col">
+        <div class="pill">Jour</div>
+        <dl class="price" style="margin-top:8px">
+          <dt>5&nbsp;km</dt><dd><b>15&nbsp;€</b></dd>
+          <dt>10&nbsp;km</dt><dd><b>25&nbsp;€</b></dd>
+          <dt>20&nbsp;km</dt><dd><b>50&nbsp;€</b></dd>
+          <dt>30&nbsp;km</dt><dd><b>70&nbsp;€</b></dd>
+        </dl>
+      </div>
+      <div class="col">
+        <div class="pill">Nuit & week-end</div>
+        <dl class="price" style="margin-top:8px">
+          <dt>5&nbsp;km</dt><dd><b>20&nbsp;€</b></dd>
+          <dt>10&nbsp;km</dt><dd><b>30&nbsp;€</b></dd>
+          <dt>20&nbsp;km</dt><dd><b>60&nbsp;€</b></dd>
+          <dt>30&nbsp;km</dt><dd><b>80&nbsp;€</b></dd>
+        </dl>
+      </div>
+    </div>
+    <div class="hint">Au-delà de 30&nbsp;km : tarification «&nbsp;courses classiques&nbsp;» (km + minute).</div>
+  </div>
+
+  <!-- CTA -->
+  <div style="display:flex;justify-content:center;margin-top:16px">
+    <a class="btn" href="/simulator.html" style="display:inline-block;padding:12px 18px;border-radius:14px;font-weight:600;text-decoration:none;background:var(--gold);color:#0B0B0B;box-shadow:0 6px 18px rgba(0,0,0,.25)">Simuler & Réserver</a>
+  </div>
+
+  <!-- Mentions -->
+  <div class="card" style="margin-top:16px">
+    <p class="note" style="margin:0">
+      🎁 <strong>-15% jusqu’au 31/12/2025</strong> — la remise s’applique automatiquement dans le simulateur lors du calcul. <br>
+      ℹ️ Détails des conditions de paiement et d’annulation dans les <a href="/mentions.html#cgv" style="color:var(--gold)">CGV</a>.
+    </p>
+  </div>
+</div>
       </div>
     </section>
 
