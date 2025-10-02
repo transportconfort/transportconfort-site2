@@ -1,17 +1,179 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tarifs • Transport Confort</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="/assets/style.css"></head><body><div class="container"><div class="header"><div class="brand"><img src="/assets/logo.png" alt="Logo"><div><h1>Transport Confort</h1>
-<div class="badge" style="margin:6px 0">🎉 Offre de lancement : <b>-15% jusqu’au 31/12/2025</b></div><div class="slogan">Transport haut de gamme • Confort premium</div></div></div><nav class="nav"><a href="/">Accueil</a><a href="/simulator.html">Simulateur</a><a href="/tarifs.html">Tarifs</a><a href="/a-propos.html">À propos</a><a href="/mentions.html">Mentions légales</a></nav></div>
-<div class="section center">
-  <img src="/assets/logo.png" style="height:110px;display:block;margin:8px auto 16px" alt="Logo">
-  <h2>Grille Tarifaire Premium (TTC)</h2>
-  <p class="small">Tarifs transparents — sans surprise. Majoration nuit & week-end +20 % (nuit 23:00→07:00 ; week-end sam.→dim.).</p>
-  <table class="table"><thead><tr><th>Prestation</th><th>Détails</th></tr></thead>
-    <tbody>
-      <tr><td><b>Courses classiques</b></td><td>Prise en charge minimale 10 € • 1,60 €/km • 0,55 €/min</td></tr>
-      <tr><td><b>Forfaits aéroports</b></td><td>Orly 60€ (jour) / 70€ (soir et WE) • CDG 80€ (jour) / 90€ (soir et WE) • Beauvais 150€ (jou) / 170€ (soir et WE)</td></tr>
-      <tr><td><b>Mise à disposition</b></td><td>1h 100 € • 2h 180€ soit 90€/h • 3h 240€ soit 80€/h • 4h 300€ soit 75€/h • 8h 560€ soit 70€/h</td></tr>
-    <tr><td><b>Forfaits Casino / Théâtre d’Enghien-les-Bains</b></td>
-<td>5 km : 15€ (jour) / 20€ (soir et WE) • 10 km : 25€ (jour) / 30€ (soir et WE) • 20 km : 50€ (jour) / 60€ (soir et WE) • 30 km : 70€ (jour) / 80€ (soir et WE) — Au-delà : tarification classique (km + minute)</td></tr>
-</tbody></table>
-  <div class="actions" style="justify-content:center;margin-top:14px"><a class="btn" href="/simulator.html">Simuler & Réserver</a></div>
-</div>
-<div class="footer small">© Transport Confort by Vincent — SIREN 990 407 397 — TVA FR71 990 407 397 — 23 rue La Bruyère, 93800 Épinay-sur-Seine — 07 49 55 62 77</div></div></body></html>
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Tarifs • Transport Confort</title>
+  <link rel="stylesheet" href="/assets/style.css"><!-- conserve ta feuille globale -->
+</head>
+<body>
+  <div class="container">
+    <!-- ===== Header (inchangé) ===== -->
+    <div class="header">
+      <div class="brand">
+        <img src="/assets/logo.png" alt="Logo">
+        <div>
+          <h1>Transport Confort</h1>
+          <div class="badge" style="margin:6px 0">🎉 Offre de lancement : <b>-15% jusqu’au 31/12/2025</b></div>
+          <div class="slogan">Transport haut de gamme • Confort premium</div>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="/">Accueil</a>
+        <a href="/simulator.html">Simulateur</a>
+        <a href="/tarifs.html" aria-current="page">Tarifs</a>
+        <a href="/a-propos.html">À propos</a>
+        <a href="/mentions.html">Mentions légales</a>
+      </nav>
+    </div>
+
+    <!-- ===== TARIFS harmonisés ===== -->
+    <section id="tcv-tarifs" class="tcv-tarifs" aria-labelledby="tarifs-title">
+      <style>
+        /* === Transport Confort — Section Tarifs (namespace .tcv-tarifs) === */
+        .tcv-tarifs{--bg:#0B0B0B;--fg:#F5F5F5;--muted:#CFCFCF;--gold:#C7A24B;--line:#1F1F1F;--card:#111111;
+          font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+          background:var(--bg);color:var(--fg);border-radius:18px;padding:28px;margin-top:18px;
+          box-shadow:0 10px 30px rgba(0,0,0,.35);line-height:1.6;letter-spacing:.2px}
+        .tcv-tarifs *{box-sizing:border-box}
+        .tcv-tarifs .container{max-width:1120px;margin:0 auto;padding:0}
+        .tcv-tarifs h2{font-size:1.9rem;margin:0 0 .5rem;color:var(--gold);letter-spacing:.4px;text-align:center}
+        .tcv-tarifs .lede{color:var(--muted);text-align:center;margin:0 0 14px}
+        .tcv-tarifs .note{color:var(--muted);font-size:.95rem}
+        .tcv-tarifs .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 10px 24px rgba(0,0,0,.25)}
+        .tcv-tarifs .grid{display:grid;gap:18px}
+        @media (min-width:900px){ .tcv-tarifs .grid-2{grid-template-columns:1fr 1fr} }
+        /* Tables */
+        .tcv-tarifs .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}
+        .tcv-tarifs table{width:100%;border-collapse:collapse;min-width:640px;background:transparent}
+        .tcv-tarifs th,.tcv-tarifs td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+        .tcv-tarifs thead th{position:sticky;top:0;background:#0d0d0d;color:var(--gold);text-align:left;font-weight:700}
+        .tcv-tarifs tbody tr:hover{background:rgba(255,255,255,.03)}
+        .tcv-tarifs .k{white-space:nowrap;font-weight:600}
+        .tcv-tarifs .pill{display:inline-block;padding:.25rem .55rem;border:1px solid var(--line);border-radius:999px;font-size:.8rem;color:var(--muted)}
+        .tcv-tarifs .price{font-variant-numeric:tabular-nums}
+        .tcv-tarifs .prices{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+        .tcv-tarifs .old{opacity:.6;text-decoration:line-through}
+        .tcv-tarifs .new{color:#fff;font-weight:700}
+        /* Compact mobile */
+        @media (max-width:720px){
+          .tcv-tarifs{padding:20px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.28)}
+          .tcv-tarifs h2{font-size:1.5rem}
+          .tcv-tarifs th,.tcv-tarifs td{padding:10px 12px}
+        }
+      </style>
+
+      <div class="container">
+        <header style="text-align:center">
+          <img src="/assets/logo.png" alt="Logo Transport Confort" style="height:90px;display:block;margin:8px auto 12px">
+          <h2 id="tarifs-title">Grille Tarifaire Premium (TTC)</h2>
+          <p class="lede">Tarifs transparents — sans surprise. <br>
+            Courses classiques : <strong>+20% nuit & week-end</strong> (nuit 23:00→07:00 ; week-end sam. 00:00 → dim. 23:59).<br>
+            <span class="note">Forfaits aéroports : <strong>pas de +20%</strong> — tarifs <em>jour</em> et <em>nuit/WE</em> dédiés.</span>
+          </p>
+          <p class="note">TVA : 10% (courses classiques & forfaits) • 20% (mises à disposition).</p>
+        </header>
+
+        <!-- Bloc principal tarifs -->
+        <div class="card" style="margin-top:10px">
+          <div class="table-wrap" role="region" aria-label="Grille des tarifs">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:240px">Prestation</th>
+                  <th>Détails</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="k">Courses classiques</td>
+                  <td>
+                    <div class="prices">
+                      <span class="price">Prise en charge minimale&nbsp;: <strong>10 €</strong></span> •
+                      <span class="price">Kilomètre&nbsp;: <strong>1,60 € / km</strong></span> •
+                      <span class="price">Minute&nbsp;: <strong>0,55 € / min</strong></span>
+                    </div>
+                    <div class="note" style="margin-top:6px">Majoration +20% appliquée la nuit et le week-end.</div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="k">Forfaits aéroports</td>
+                  <td>
+                    <div class="grid grid-2" style="margin-top:6px">
+                      <div>
+                        <div class="pill">Jour</div>
+                        <ul style="margin:.4rem 0 .2rem 1rem">
+                          <li class="price"><strong>Orly</strong> : 60 €</li>
+                          <li class="price"><strong>Charles-de-Gaulle</strong> : 80 €</li>
+                          <li class="price"><strong>Beauvais</strong> : 150 €</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <div class="pill">Nuit & week-end</div>
+                        <ul style="margin:.4rem 0 .2rem 1rem">
+                          <li class="price"><strong>Orly</strong> : 70 €</li>
+                          <li class="price"><strong>Charles-de-Gaulle</strong> : 90 €</li>
+                          <li class="price"><strong>Beauvais</strong> : 170 €</li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div class="note">Forfaits fixes par sens (départ ou arrivée). Pas de majoration additionnelle.</div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="k">Mise à disposition (MAD)</td>
+                  <td>
+                    <div class="prices">
+                      <span class="price">1 h&nbsp;: <strong>100 €</strong></span> •
+                      <span class="price">2 h&nbsp;: <strong>180 €</strong> (90 €/h)</span> •
+                      <span class="price">3 h&nbsp;: <strong>240 €</strong> (80 €/h)</span> •
+                      <span class="price">4 h&nbsp;: <strong>300 €</strong> (75 €/h)</span> •
+                      <span class="price">8 h&nbsp;: <strong>560 €</strong> (70 €/h)</span>
+                    </div>
+                    <div class="note" style="margin-top:6px">TVA 20%. Pas de majoration nuit/week-end.</div>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td class="k">Forfaits Enghien (Casino / Théâtre)</td>
+                  <td>
+                    <div class="grid grid-2" style="margin-top:6px">
+                      <div>
+                        <div class="pill">Jour</div>
+                        <div class="price">5 km&nbsp;: <strong>15 €</strong> • 10 km&nbsp;: <strong>25 €</strong> • 20 km&nbsp;: <strong>50 €</strong> • 30 km&nbsp;: <strong>70 €</strong></div>
+                      </div>
+                      <div>
+                        <div class="pill">Nuit & week-end</div>
+                        <div class="price">5 km&nbsp;: <strong>20 €</strong> • 10 km&nbsp;: <strong>30 €</strong> • 20 km&nbsp;: <strong>60 €</strong> • 30 km&nbsp;: <strong>80 €</strong></div>
+                      </div>
+                    </div>
+                    <div class="note">Au-delà de 30 km : tarification « courses classiques » (km + minute).</div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Bandeau action -->
+          <div style="display:flex;justify-content:center;margin-top:14px">
+            <a class="btn" href="/simulator.html" style="display:inline-block;padding:12px 18px;border-radius:14px;font-weight:600;text-decoration:none;background:var(--gold);color:#0B0B0B;box-shadow:0 6px 18px rgba(0,0,0,.25)">Simuler & Réserver</a>
+          </div>
+
+          <!-- Mentions tarifaires -->
+          <div class="card" style="margin-top:16px">
+            <p class="note" style="margin:0">
+              🎁 <strong>-15% jusqu’au 31/12/2025</strong> — la remise s’applique automatiquement dans le simulateur au moment du calcul. <br>
+              ℹ️ Les tarifs incluent la TVA. Les conditions d’annulation et de paiement (acompte 20%, solde à bord) sont détaillées dans les <a href="/mentions.html#cgv" style="color:var(--gold)">CGV</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Footer ===== -->
+    <div class="footer small">© Transport Confort by Vincent — SIREN 990 407 397 — TVA FR71 990 407 397 — 23 rue La Bruyère, 93800 Épinay-sur-Seine — 07 49 55 62 77</div>
+  </div>
+</body>
+</html>
