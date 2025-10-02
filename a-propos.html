@@ -1,236 +1,245 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>À propos — Transport Confort</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="/assets/style.css"></head><body><div class="container"><div class="header"><div class="brand"><img src="/assets/logo.png" alt="Logo"><div><h1>Transport Confort</h1><div class="slogan">Transport haut de gamme • Confort premium</div></div></div><nav class="nav"><a href="/index.html">Accueil</a><a href="/simulator.html">Réservation</a><a href="/tarifs.html">Tarifs</a><a href="/a-propos.html">À propos</a><a href="/mentions.html">Mentions légales</a></nav></div>
-<div class="section">
-  <h2>À propos</h2>
-  <p>Je m’appelle Vincent, fondateur de <b>Transport Confort by Vincent</b>. j’ai choisi d’offrir un service de transport <b>haut de gamme, sécurisé et confidentiel</b> en Île-de-France et au-delà.</p>
-  <div class="grid">
-    <div class="card">
-      <h3>Mes valeurs</h3>
-      <ul>
-        <li>🕑 Ponctualité & fiabilité</li>
-        <li>🔒 Sécurité & sérénité</li>
-        <li>🤝 Discrétion & confidentialité</li>
-        <li>✨ Confort & élégance</li>
-      </ul>
-    </div>
-    <div class="card">
-      <h3>Le véhicule</h3>
-      <p>XPeng G6 — SUV 100% électrique, espace lounge à l’arrière, silence, toit panoramique, ambiance lumineuse. </p>
-    </div>
-  </div>
-  <div class="card">
-    <p>Le G6 utilise une <b>caméra extérieure</b> en lieu et place d’un rétroviseur intérieur : aucun regard intrusif. Conduite apaisée et respectueuse.</p>
-  </div>
-</div>
-  <!--
-  Storytelling + "Pourquoi choisir" + FAQ blocks
-  Brand: Transport Confort by Vincent
-  Palette: noir #0B0B0B (fond), or #C7A24B (titres/accents), blanc #FFFFFF (texte)
-  Intégration: copier/coller tout le <section id="tc-blocks"> dans votre page.
-  - Remplacez les href des boutons par vos liens (simulateur / réservation Calendly / ancre locale)
-  - Texte optimisé pour rassurer + conversion
--->
-<section id="tc-blocks" aria-label="Storytelling et FAQ Transport Confort by Vincent">
-  <style>
-    /* ====== Design tokens (scopés au wrapper) ====== */
-    #tc-blocks { --tc-bg: #0B0B0B; --tc-gold: #C7A24B; --tc-text: #FFFFFF; --tc-muted: #CFCFCF; --tc-card:#111111; --tc-border: #1F1F1F; }
-    #tc-blocks { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; color: var(--tc-text); background: var(--tc-bg); }
-    #tc-blocks .container { max-width: 1120px; margin: 0 auto; padding: 32px 20px; }
-    #tc-blocks h2, #tc-blocks h3 { color: var(--tc-gold); letter-spacing: .2px; }
-    #tc-blocks .lede { color: var(--tc-muted); }
-    #tc-blocks .btn {
-      display: inline-block; padding: 12px 18px; border-radius: 14px; font-weight: 600; text-decoration: none; transition: transform .15s ease, box-shadow .15s ease, background-color .2s ease;
-      background: var(--tc-gold); color: #0B0B0B; box-shadow: 0 6px 18px rgba(0,0,0,.25);
-    }
-    #tc-blocks .btn:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(0,0,0,.35); }
-    #tc-blocks .btn-outline { background: transparent; color: var(--tc-gold); border: 1px solid var(--tc-gold); }
-    #tc-blocks .btn-outline:hover { background: rgba(199,162,75,.08); }
-    #tc-blocks .grid { display: grid; gap: 20px; }
-    @media (min-width: 900px){ #tc-blocks .grid-2 { grid-template-columns: 1.1fr .9fr;} #tc-blocks .grid-3 { grid-template-columns: repeat(3, 1fr); } }
-    #tc-blocks .card { background: var(--tc-card); border: 1px solid var(--tc-border); border-radius: 18px; padding: 18px; box-shadow: 0 10px 24px rgba(0,0,0,.25); }
-    #tc-blocks .badge { display:inline-block; padding: 6px 10px; border:1px solid var(--tc-border); border-radius: 999px; color: var(--tc-muted); font-size: 12px; }
-    #tc-blocks .check { width: 18px; height: 18px; border-radius: 50%; border:2px solid var(--tc-gold); display:inline-flex; align-items:center; justify-content:center; margin-right:10px; }
-    #tc-blocks .check::after { content:""; width:8px; height:8px; background: var(--tc-gold); border-radius:50%; display:block; }
-    #tc-blocks .faq-item { border-bottom: 1px solid var(--tc-border); }
-    #tc-blocks .faq-q { width: 100%; text-align: left; background: transparent; color: var(--tc-text); border: none; padding: 18px 0; cursor: pointer; display:flex; align-items: center; justify-content: space-between; font-weight: 600; }
-    #tc-blocks .faq-q span { color: var(--tc-gold); margin-right: 12px; font-weight: 700; }
-    #tc-blocks .faq-a { max-height: 0; overflow: hidden; transition: max-height .25s ease; color: var(--tc-muted); }
-    #tc-blocks .faq-item.open .faq-a { max-height: 300px; padding-bottom: 14px; }
-    #tc-blocks .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; background:#131313; border:1px solid var(--tc-border); border-radius: 8px; padding: 2px 6px; color: var(--tc-muted); }
-  </style>
-
-  <!-- ====== HERO STORYTELLING ====== -->
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>À propos — Transport Confort</title>
+  <link rel="stylesheet" href="/assets/style.css"><!-- conserve ta feuille globale -->
+</head>
+<body>
   <div class="container">
-    <div class="grid grid-2" style="align-items:center; gap:28px;">
-      <div>
-        <div class="badge">Service VTC premium – Enghien‑les‑Bains & Île‑de‑France</div>
-        <h2 style="font-size:clamp(28px,4vw,40px); margin:14px 0 8px;">Le confort, la sérénité, et un gain de temps réel.</h2>
-        <p class="lede" style="font-size: clamp(16px,2.2vw,18px); line-height:1.6;">
-          Après plusieurs années dans le secteur bancaire/financier, et dans l’investissement, j’ai créé <strong>Transport Confort by Vincent</strong> pour proposer une alternative claire aux plateformes : un service <em>personnalisé</em>, <em>précis</em> et <em>orienté détail</em>. Simulez votre tarif, réservez en ligne, et voyagez l’esprit libre – vous savez <em>qui</em> vous conduit, et <em>comment</em>.
-        </p>
-        <div style="margin-top:18px; display:flex; gap:12px; flex-wrap:wrap;">
-          <a class="btn" href="#tc-simulateur" aria-label="Simuler un tarif">Simuler mon tarif</a>
-          <a class="btn btn-outline" href="#tc-reserver" aria-label="Réserver maintenant">Réserver maintenant</a>
-        </div>
-        <p style="margin-top:10px; color:var(--tc-muted); font-size:14px;">Prix affiché = prix payé. Facture avec TVA récupérable (clients pros).</p>
-      </div>
-      <div>
-        <div class="card" style="padding:22px;">
-          <h3 style="margin:0 0 10px; font-size:20px;">Engagements clés</h3>
-          <ul style="list-style:none; padding:0; margin:0; display:grid; gap:10px;">
-            <li><span class="check"></span> Ponctualité et discrétion garanties</li>
-            <li><span class="check"></span> SUV électrique nouvelle génération (silence & élégance)</li>
-            <li><span class="check"></span> Relation directe : pas d’intermédiaire</li>
-            <li><span class="check"></span> Eau et chargeurs à disposition</li>
-            <li><span class="check"></span> Personnalisation selon vos besoins (dans la mesure du possible)</li>
-          </ul>
+    <!-- ===== Header existant (inchangé) ===== -->
+    <div class="header">
+      <div class="brand">
+        <img src="/assets/logo.png" alt="Logo">
+        <div>
+          <h1>Transport Confort</h1>
+          <div class="slogan">Transport haut de gamme • Confort premium</div>
         </div>
       </div>
+      <nav class="nav">
+        <a href="/index.html">Accueil</a>
+        <a href="/simulator.html">Réservation</a>
+        <a href="/tarifs.html">Tarifs</a>
+        <a href="/a-propos.html" aria-current="page">À propos</a>
+        <a href="/mentions.html">Mentions légales</a>
+      </nav>
     </div>
-  </div>
 
-  <!-- ====== POURQUOI CHOISIR ====== -->
-  <div class="container">
-    <h2 style="font-size:clamp(24px,3.2vw,32px); margin-bottom:14px;">Pourquoi choisir <em>Transport Confort by Vincent</em> ?</h2>
-    <div class="grid grid-3">
-      <article class="card">
-        <h3 style="font-size:18px; margin:0 0 6px;">Réservation instantanée & transparente</h3>
-        <p class="lede">Simulez votre tarif, réservez, payez en quelques clics. Pas de surprise : le prix affiché est le prix payé.</p>
-      </article>
-      <article class="card">
-        <h3 style="font-size:18px; margin:0 0 6px;">Service premium, pensé pour vous</h3>
-        <p class="lede">Espace, silence, SUV électrique nouvelle génération. Accueil attentionné, ambiance soignée.</p>
-      </article>
-      <article class="card">
-        <h3 style="font-size:18px; margin:0 0 6px;">Relation directe & fiable</h3>
-        <p class="lede">Pas de chauffeur aléatoire : je gère personnellement chaque réservation pour une expérience cohérente.</p>
-      </article>
-      <article class="card">
-        <h3 style="font-size:18px; margin:0 0 6px;">Ponctualité = sérénité</h3>
-        <p class="lede">Je prévois une marge à chaque prise en charge pour absorber les imprévus et réduire votre stress.</p>
-      </article>
-      <article class="card">
-        <h3 style="font-size:18px; margin:0 0 6px;">Flexibilité & personnalisation</h3>
-        <p class="lede">Besoin d’une presse spécifique, d’une boisson, d’un itinéraire ? Mentionnez-le : j’adapte dans la mesure du possible.</p>
-      </article>
-      <article class="card">
-        <h3 style="font-size:18px; margin:0 0 6px;">Orienté long terme</h3>
-        <p class="lede">Objectif fidélisation : qualité > quantité. Un partenaire transport, plus qu’un simple trajet.</p>
-      </article>
-    </div>
-    <div style="margin-top:18px;"><a class="btn" href="#tc-reserver">Réserver en 1 minute</a></div>
-  </div>
+    <!-- ===== À PROPOS harmonisé ===== -->
+    <section id="tcv-about" class="tcv-about" aria-labelledby="about-title">
+      <style>
+        /* === Transport Confort — Section À propos (namespace .tcv-about) === */
+        .tcv-about{--bg:#0B0B0B;--fg:#F5F5F5;--muted:#CFCFCF;--gold:#C7A24B;--line:#2A2A2A;--card:#111111;
+          font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+          background:var(--bg);color:var(--fg);border-radius:18px;padding:28px;margin-top:18px;
+          box-shadow:0 10px 30px rgba(0,0,0,.35);line-height:1.6;letter-spacing:.2px}
+        .tcv-about *{box-sizing:border-box}
+        .tcv-about .container{max-width:1120px;margin:0 auto;padding:0}
+        .tcv-about h2{font-size:1.9rem;margin:0 0 .5rem;color:var(--gold);letter-spacing:.4px}
+        .tcv-about h3{font-size:1.15rem;margin:.2rem 0 .6rem;color:var(--gold)}
+        .tcv-about p{margin:.4rem 0}
+        .tcv-about .lede{color:var(--muted)}
+        .tcv-about .grid{display:grid;gap:18px}
+        @media (min-width:900px){ .tcv-about .grid-2{grid-template-columns:1.1fr .9fr} .tcv-about .grid-3{grid-template-columns:repeat(3,1fr)} }
+        .tcv-about .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 10px 24px rgba(0,0,0,.25)}
+        .tcv-about .badge{display:inline-block;padding:6px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:12px}
+        .tcv-about .check{width:18px;height:18px;border-radius:50%;border:2px solid var(--gold);display:inline-flex;align-items:center;justify-content:center;margin-right:10px}
+        .tcv-about .check::after{content:"";width:8px;height:8px;background:var(--gold);border-radius:50%}
+        .tcv-about .btn{display:inline-block;padding:12px 18px;border-radius:14px;font-weight:600;text-decoration:none;
+          transition:transform .15s ease,box-shadow .15s ease;background:var(--gold);color:#0B0B0B;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+        .tcv-about .btn:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(0,0,0,.35)}
+        .tcv-about .btn-outline{background:transparent;color:var(--gold);border:1px solid var(--gold)}
+        .tcv-about .btn-outline:hover{background:rgba(199,162,75,.08)}
+        .tcv-about .faq-item{border-bottom:1px solid var(--line)}
+        .tcv-about .faq-q{width:100%;text-align:left;background:transparent;color:var(--fg);border:none;padding:18px 0;cursor:pointer;
+          display:flex;align-items:center;justify-content:space-between;font-weight:600}
+        .tcv-about .faq-q span{color:var(--gold);margin-right:12px;font-weight:700}
+        .tcv-about .faq-a{max-height:0;overflow:hidden;transition:max-height .25s ease;color:var(--muted)}
+        .tcv-about .faq-item.open .faq-a{max-height:320px;padding-bottom:14px}
+        .tcv-about .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#131313;border:1px solid var(--line);border-radius:8px;padding:2px 6px;color:var(--muted)}
+        .tcv-about .dl{display:grid;grid-template-columns:220px 1fr;gap:8px 18px}
+        .tcv-about .dl dt{color:var(--muted)} .tcv-about .dl dd{margin:0}
+        @media (max-width:720px){ .tcv-about{padding:20px} .tcv-about .dl{grid-template-columns:1fr} }
+      </style>
 
-  <!-- ====== FAQ ====== -->
-  <div class="container">
-    <h2 style="font-size:clamp(24px,3.2vw,32px); margin-bottom:10px;">Questions fréquentes</h2>
-    <div class="card">
-      <div class="faq-item">
-        <button class="faq-q" aria-expanded="false">
-          <div><span>Q1</span>Pourquoi êtes‑vous plus cher qu’une plateforme ?</div>
-          <div class="kbd">ouvrir</div>
-        </button>
-        <div class="faq-a" aria-hidden="true">
-          <p>Je ne propose pas un service de masse : véhicule premium, ponctualité, accueil personnalisé et relation directe. La différence se ressent dès la prise en charge.</p>
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" aria-expanded="false">
-          <div><span>Q2</span>Puis‑je demander un magazine, une boisson ou un service particulier ?</div>
-          <div class="kbd">ouvrir</div>
-        </button>
-        <div class="faq-a" aria-hidden="true">
-          <p>Oui. Indiquez‑le lors de la réservation et je ferai tout mon possible pour y répondre (dans la mesure du possible).</p>
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" aria-expanded="false">
-          <div><span>Q3</span>Proposez‑vous des tours touristiques de Paris ?</div>
-          <div class="kbd">ouvrir</div>
-        </button>
-        <div class="faq-a" aria-hidden="true">
-          <p>Oui. Je propose des <strong>mises à disposition à l’heure</strong> pour découvrir la capitale dans le confort et sans stress. Itinéraire sur mesure possible.</p>
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" aria-expanded="false">
-          <div><span>Q4</span>Puis‑je réserver un long trajet (ex. Sud de la France) ?</div>
-          <div class="kbd">ouvrir</div>
-        </button>
-        <div class="faq-a" aria-hidden="true">
-          <p>Oui, sur demande. Transferts inter‑villes et trajets longue distance possibles avec devis clair et horaires planifiés.</p>
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" aria-expanded="false">
-          <div><span>Q5</span>Êtes‑vous adapté aux professionnels ?</div>
-          <div class="kbd">ouvrir</div>
-        </button>
-        <div class="faq-a" aria-hidden="true">
-          <p>Oui. Facture claire avec TVA récupérable, communication directe, rigueur horaire et discrétion.
+      <div class="container">
+        <!-- HERO -->
+        <header>
+          <div class="badge">À propos — Service VTC premium</div>
+          <h2 id="about-title">Le confort, la sérénité et une relation directe.</h2>
+          <p class="lede">
+            Je m’appelle Vincent, fondateur de <strong>Transport Confort by Vincent</strong>.
+            Mon parti pris : un service de transport <em>haut de gamme, sécurisé et discret</em> en Île-de-France et au-delà,
+            avec un suivi personnel de chaque trajet.
           </p>
-        </div>
-      </div>      <div class="faq-item">
-        <button class="faq-q" aria-expanded="false">
-          <div><span>Q6</span>Pourquoi un acompte est-il demandé à la réservation&nbsp;?</div>
-          <div class="kbd">ouvrir</div>
-        </button>
-        <div class="faq-a" aria-hidden="true">
-          <p>L’acompte permet de <strong>bloquer le créneau</strong>, d’assurer la <strong>ponctualité</strong> et de couvrir les annulations de dernière minute. Il est <strong>déduit</strong> du prix final. Le paiement est sécurisé (Stripe/Stancer). Les <strong>conditions d’annulation</strong> sont affichées lors du paiement&nbsp;; remboursement possible si vous annulez dans les délais indiqués.</p>
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q" aria-expanded="false">
-          <div><span>Q7</span>Besoin d’une course le jour même mais aucune dispo sur Calendly&nbsp;?</div>
-          <div class="kbd">ouvrir</div>
-        </button>
-        <div class="faq-a" aria-hidden="true">
-          <p>Contactez‑moi <strong>directement</strong> : un créneau peut se libérer entre deux trajets. Téléphone/SMS&nbsp;: <a href="tel:+33XXXXXXXXX" class="lede">+33&nbsp;X&nbsp;XX&nbsp;XX&nbsp;XX&nbsp;XX</a> • Email&nbsp;: <a href="mailto:contact@transportconfort.com" class="lede">contact@transportconfort.com</a>. Vous pouvez aussi préciser votre besoin via la réservation&nbsp;: si je peux, je m’adapte.</p>
-        </div>
-      </div>
-    </div>
-        <div class=\"faq-item\">
-        <button class=\"faq-q\" aria-expanded="false">
-          <div><span>Q8</span>J’ai un imprévu et je dois annuler&nbsp;: suis‑je remboursé de mon acompte&nbsp;?</div>
-          <div class=\"kbd\">ouvrir</div>
-        </button>
-        <div class=\"faq-a\" aria-hidden=\"true\">
-          <p>Oui, selon la <strong>politique d’annulation</strong> : <br>• Annulation ≥ 24h avant le départ : <strong>remboursement intégral</strong>. <br>• Annulation < 24h avant le départ : <strong>50% remboursé</strong>. <br>• Non‑présentation sans prévenir : <strong>non remboursable</strong>. <br>Cette politique est indiquée lors de la réservation et confirmée par email.</p>
-        </div>
-      </div>
-    </div>
+          <div style="margin-top:14px;display:flex;gap:12px;flex-wrap:wrap">
+            <a href="/simulator.html" class="btn" aria-label="Simuler un tarif">Simuler mon tarif</a>
+            <a href="/simulator.html#calendly" class="btn btn-outline" aria-label="Réserver maintenant">Réserver maintenant</a>
+          </div>
+          <p style="margin-top:10px;color:var(--muted);font-size:14px">Prix affiché = prix payé. Facture avec TVA récupérable (clients pros).</p>
+        </header>
 
-  <!-- ====== CONDITIONS D’ANNULATION ====== -->
-  <div class="container" id="tc-conditions">
-    <div class="card" style="border-left:4px solid var(--tc-gold);">
-      <h2 style="font-size:clamp(20px,3vw,26px); margin:0 0 8px;">Conditions d’annulation</h2>
-      <p class="lede" style="margin:0 0 10px;">Transparence totale avant la réservation. Ces conditions s’appliquent aux acomptes et aux paiements en ligne.</p>
-      <ul style="margin:0; padding-left:18px; line-height:1.7;">
-        <li><strong>Annulation ≥ 24h</strong> avant l’heure de prise en charge : <strong>remboursement intégral</strong> de l’acompte.</li>
-        <li><strong>Annulation &lt; 24h</strong> avant l’heure de prise en charge : <strong>50% remboursé</strong>.</li>
-        <li><strong>Non‑présentation</strong> sans information préalable : <strong>non remboursable</strong>.</li>
-      </ul>
-      <p style="color:var(--tc-muted); margin-top:10px;">Pour annuler, répondez au mail de confirmation ou contactez‑moi directement : <a href="tel:+33XXXXXXXXX">+33 X XX XX XX XX</a> • <a href="mailto:contact@transportconfort.com">contact@transportconfort.com</a>. Les remboursements sont effectués sur le moyen de paiement d’origine.</p>
+        <!-- VALEURS + VÉHICULE -->
+        <div class="grid grid-2" style="margin-top:20px;align-items:start">
+          <section class="card" aria-labelledby="valeurs-title">
+            <h3 id="valeurs-title">Mes valeurs</h3>
+            <ul style="list-style:none;padding:0;margin:0;display:grid;gap:10px">
+              <li><span class="check"></span> Ponctualité & fiabilité</li>
+              <li><span class="check"></span> Sécurité & sérénité</li>
+              <li><span class="check"></span> Discrétion & confidentialité</li>
+              <li><span class="check"></span> Confort & élégance</li>
+            </ul>
+          </section>
+
+          <section class="card" aria-labelledby="vehicule-title">
+            <h3 id="vehicule-title">Le véhicule</h3>
+            <p>
+              <strong>XPeng G6</strong> — SUV 100% électrique : silence, espace « lounge » à l’arrière, toit panoramique, ambiance lumineuse.
+              Accueil attentif, <em>bouteille d’eau et chargeurs</em> à disposition. Conduite apaisée et respectueuse.
+            </p>
+            <p class="lede" style="margin-top:8px">
+              Le G6 embarque une <strong>caméra extérieure</strong> jouant le rôle du rétroviseur intérieur : aucun regard intrusif dans l’habitacle.
+            </p>
+          </section>
+        </div>
+
+        <!-- ENGAGEMENTS CLÉS -->
+        <section class="card" style="margin-top:18px" aria-labelledby="engagements-title">
+          <h3 id="engagements-title">Engagements clés</h3>
+          <div class="grid grid-3">
+            <div>
+              <h4 style="margin:.2rem 0 .4rem;color:var(--fg);font-size:1rem">Transparence & réservation simple</h4>
+              <p class="lede">Simulateur clair, acompte sécurisé, confirmation immédiate.</p>
+            </div>
+            <div>
+              <h4 style="margin:.2rem 0 .4rem;color:var(--fg);font-size:1rem">Service premium</h4>
+              <p class="lede">Silence, espace, attentions utiles. Relation directe, sans intermédiaire.</p>
+            </div>
+            <div>
+              <h4 style="margin:.2rem 0 .4rem;color:var(--fg);font-size:1rem">Ponctualité</h4>
+              <p class="lede">Marge horaire intégrée pour absorber les imprévus et réduire votre stress.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- CONDITIONS CLÉS (alignées CGV) -->
+        <section class="card" style="margin-top:18px" aria-labelledby="conditions-title">
+          <h3 id="conditions-title">Conditions importantes</h3>
+          <div class="dl" aria-label="Synthèse conditions">
+            <dt>Acompte</dt><dd>20% TTC à la réservation (Stripe). Solde à bord : CB (terminal) ou espèces (min. 100 €, max. 1 000 €).</dd>
+            <dt>Annulation</dt><dd><strong>≥ 24h</strong> : <strong>remboursement intégral</strong> de l’acompte. <strong>&lt; 24h</strong> : acompte conservé.</dd>
+            <dt>Tarifs</dt><dd>Prix TTC publiés (simulateur/grilles). Courses classiques : +20% nuit/WE. Forfaits aéroports : colonnes <em>jour</em> vs <em>nuit/WE</em> (pas de +20%). MAD : TVA 20%, pas de majoration nuit/WE.</dd>
+          </div>
+          <p class="lede" style="margin-top:8px">Détails complets : <a href="/mentions.html#cgv" style="color:var(--gold)">CGV</a>.</p>
+        </section>
+
+        <!-- FAQ -->
+        <section style="margin-top:18px" aria-labelledby="faq-title">
+          <h3 id="faq-title">Questions fréquentes</h3>
+          <div class="card">
+            <div class="faq-item">
+              <button class="faq-q" aria-expanded="false">
+                <div><span>Q1</span>Pourquoi êtes-vous plus cher qu’une plateforme ?</div>
+                <div class="kbd">ouvrir</div>
+              </button>
+              <div class="faq-a" aria-hidden="true">
+                <p>Service non-massifié : véhicule premium, ponctualité, accueil personnalisé, relation directe. La différence se ressent dès la prise en charge.</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-q" aria-expanded="false">
+                <div><span>Q2</span>Puis-je demander un magazine, une boisson ou un service particulier ?</div>
+                <div class="kbd">ouvrir</div>
+              </button>
+              <div class="faq-a" aria-hidden="true">
+                <p>Oui. Indiquez-le lors de la réservation ; j’adapte dans la mesure du possible.</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-q" aria-expanded="false">
+                <div><span>Q3</span>Proposez-vous des tours touristiques de Paris ?</div>
+                <div class="kbd">ouvrir</div>
+              </button>
+              <div class="faq-a" aria-hidden="true">
+                <p>Oui, via des <strong>mises à disposition à l’heure</strong> pour découvrir la capitale dans le confort, itinéraire sur mesure possible.</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-q" aria-expanded="false">
+                <div><span>Q4</span>Puis-je réserver un long trajet (ex. Sud de la France) ?</div>
+                <div class="kbd">ouvrir</div>
+              </button>
+              <div class="faq-a" aria-hidden="true">
+                <p>Oui, sur demande. Transferts inter-villes et longues distances possibles avec devis clair et horaires planifiés.</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-q" aria-expanded="false">
+                <div><span>Q5</span>Pourquoi un acompte est-il demandé à la réservation ?</div>
+                <div class="kbd">ouvrir</div>
+              </button>
+              <div class="faq-a" aria-hidden="true">
+                <p>Pour <strong>bloquer le créneau</strong>, assurer la ponctualité et couvrir les annulations tardives. L’acompte est <strong>déduit</strong> du prix final. Paiement sécurisé via Stripe.</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-q" aria-expanded="false">
+                <div><span>Q6</span>J’ai un imprévu, suis-je remboursé de mon acompte ?</div>
+                <div class="kbd">ouvrir</div>
+              </button>
+              <div class="faq-a" aria-hidden="true">
+                <p><strong>Oui si vous annulez ≥ 24h</strong> avant l’heure de prise en charge : remboursement intégral de l’acompte. <strong>Moins de 24h</strong> : l’acompte est conservé.</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-q" aria-expanded="false">
+                <div><span>Q7</span>Besoin d’une course le jour même mais aucune dispo sur Calendly ?</div>
+                <div class="kbd">ouvrir</div>
+              </button>
+              <div class="faq-a" aria-hidden="true">
+                <p>Contact direct : téléphone/SMS <a href="tel:+33749556277" class="lede">07 49 55 62 77</a> ou email <a href="mailto:contact@transportconfort.com" class="lede">contact@transportconfort.com</a>. Un créneau peut se libérer.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- JS accordéon FAQ -->
+        <script>
+          (function(){
+            const root = document.getElementById('tcv-about');
+            root.querySelectorAll('.faq-item').forEach(item=>{
+              const btn = item.querySelector('.faq-q');
+              const ans = item.querySelector('.faq-a');
+              btn.addEventListener('click', ()=>{
+                const open = item.classList.toggle('open');
+                btn.setAttribute('aria-expanded', String(open));
+                ans.setAttribute('aria-hidden', String(!open));
+                if(open){
+                  root.querySelectorAll('.faq-item').forEach(other=>{
+                    if(other!==item){ other.classList.remove('open');
+                      other.querySelector('.faq-q').setAttribute('aria-expanded','false');
+                      other.querySelector('.faq-a').setAttribute('aria-hidden','true');
+                    }
+                  });
+                }
+              });
+            });
+          })();
+        </script>
+      </div>
+    </section>
+
+    <!-- ===== Footer (tu peux conserver le tien) ===== -->
+    <div class="footer small">
+      © Transport Confort by Vincent — SIREN 990 407 397 — Siège : 23 rue la Bruyère, 93800 Épinay-sur-Seine — 07 49 55 62 77
     </div>
   </div>
-
-  <!-- ====== JS minimal pour l'accordéon FAQ (scopé) ====== -->
-  <script>
-    (function(){
-      const root = document.querySelector('#tc-blocks');
-      root.querySelectorAll('.faq-item').forEach(item => {
-        const btn = item.querySelector('.faq-q');
-        const ans = item.querySelector('.faq-a');
-        btn.addEventListener('click', () => {
-          const open = item.classList.toggle('open');
-          btn.setAttribute('aria-expanded', String(open));
-          ans.setAttribute('aria-hidden', String(!open));
-          // Fermer les autres pour une UX propre
-          if(open){
-            root.querySelectorAll('.faq-item').forEach(other => { if(other!==item){ other.classList.remove('open'); other.querySelector('.faq-q').setAttribute('aria-expanded','false'); other.querySelector('.faq-a').setAttribute('aria-hidden','true'); }});
-          }
-        });
-      });
-    })();
-  </script>
-</section>
-<div class="footer small">© Transport Confort by Vincent — SIREN 990 407 397 — Siège : 23 rue la Bruyère, 93800 Épinay-sur-Seine — 07 49 55 62 77</div></div></body></html>
+</body>
+</html>
