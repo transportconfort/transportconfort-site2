@@ -113,31 +113,44 @@
 
   <div class="sep" role="separator" aria-hidden="true"></div>
 
-  <!-- Forfaits aéroports -->
-  <div>
-    <div class="title">Forfaits aéroports</div>
-    <div class="row">
-      <div class="col">
-        <div class="pill">Jour</div>
-        <dl class="price" style="margin-top:8px">
-          <dt>Orly</dt><dd><b>60&nbsp;€</b></dd>
-          <dt>Charles-de-Gaulle</dt><dd><b>80&nbsp;€</b></dd>
-          <dt>Beauvais</dt><dd><b>150&nbsp;€</b></dd>
-        </dl>
-      </div>
-      <div class="col">
-        <div class="pill">Nuit & week-end</div>
-        <dl class="price" style="margin-top:8px">
-          <dt>Orly</dt><dd><b>70&nbsp;€</b></dd>
-          <dt>Charles-de-Gaulle</dt><dd><b>90&nbsp;€</b></dd>
-          <dt>Beauvais</dt><dd><b>170&nbsp;€</b></dd>
-        </dl>
+<!-- ===== Forfaits aéroports (version plate) ===== -->
+<div>
+  <style>
+    /* Neutralise tout style “bulle” hérité */
+    .tcv-tarifs .col, .tcv-tarifs .col *{background:transparent!important; border:0!important; box-shadow:none!important; border-radius:0!important}
+    /* Liste plate alignée */
+    .tcv-tarifs .rows{display:grid;gap:0}
+    .tcv-tarifs .r{display:grid;grid-template-columns:1fr auto;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+    .tcv-tarifs .r:last-child{border-bottom:0}
+    .tcv-tarifs .r .label{color:#fff;font-weight:600}
+    .tcv-tarifs .r .val{font-variant-numeric:tabular-nums;font-weight:700}
+    .tcv-tarifs .col-title{display:inline-block;margin-bottom:6px;padding:.22rem .55rem;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:.8rem}
+    @media (max-width:720px){ .tcv-tarifs .r{padding:10px 0} }
+  </style>
+
+  <div class="title">Forfaits aéroports</div>
+  <div class="row">
+    <div class="col">
+      <span class="col-title">Jour</span>
+      <div class="rows price" style="margin-top:6px">
+        <div class="r"><div class="label">Orly</div><div class="val">60&nbsp;€</div></div>
+        <div class="r"><div class="label">Charles-de-Gaulle</div><div class="val">80&nbsp;€</div></div>
+        <div class="r"><div class="label">Beauvais</div><div class="val">150&nbsp;€</div></div>
       </div>
     </div>
-    <div class="hint">Forfaits fixes par sens (départ ou arrivée). <b>Aucune</b> majoration additionnelle.</div>
+    <div class="col">
+      <span class="col-title">Nuit & week-end</span>
+      <div class="rows price" style="margin-top:6px">
+        <div class="r"><div class="label">Orly</div><div class="val">70&nbsp;€</div></div>
+        <div class="r"><div class="label">Charles-de-Gaulle</div><div class="val">90&nbsp;€</div></div>
+        <div class="r"><div class="label">Beauvais</div><div class="val">170&nbsp;€</div></div>
+      </div>
+    </div>
   </div>
+  <div class="hint">Forfaits fixes par sens (départ ou arrivée). <b>Aucune</b> majoration additionnelle.</div>
+</div>
 
-  <div class="sep" role="separator" aria-hidden="true"></div>
+<div class="sep" role="separator" aria-hidden="true"></div>
 
   <!-- Mises à disposition -->
   <div>
@@ -154,31 +167,31 @@
 
   <div class="sep" role="separator" aria-hidden="true"></div>
 
-  <!-- Enghien -->
-  <div>
-    <div class="title">Forfaits Enghien (Casino / Théâtre)</div>
-    <div class="row">
-      <div class="col">
-        <div class="pill">Jour</div>
-        <dl class="price" style="margin-top:8px">
-          <dt>5&nbsp;km</dt><dd><b>15&nbsp;€</b></dd>
-          <dt>10&nbsp;km</dt><dd><b>25&nbsp;€</b></dd>
-          <dt>20&nbsp;km</dt><dd><b>50&nbsp;€</b></dd>
-          <dt>30&nbsp;km</dt><dd><b>70&nbsp;€</b></dd>
-        </dl>
-      </div>
-      <div class="col">
-        <div class="pill">Nuit & week-end</div>
-        <dl class="price" style="margin-top:8px">
-          <dt>5&nbsp;km</dt><dd><b>20&nbsp;€</b></dd>
-          <dt>10&nbsp;km</dt><dd><b>30&nbsp;€</b></dd>
-          <dt>20&nbsp;km</dt><dd><b>60&nbsp;€</b></dd>
-          <dt>30&nbsp;km</dt><dd><b>80&nbsp;€</b></dd>
-        </dl>
+  <!-- ===== Forfaits Enghien (version plate) ===== -->
+<div>
+  <div class="title">Forfaits Enghien (Casino / Théâtre)</div>
+  <div class="row">
+    <div class="col">
+      <span class="col-title">Jour</span>
+      <div class="rows price" style="margin-top:6px">
+        <div class="r"><div class="label">5&nbsp;km</div><div class="val">15&nbsp;€</div></div>
+        <div class="r"><div class="label">10&nbsp;km</div><div class="val">25&nbsp;€</div></div>
+        <div class="r"><div class="label">20&nbsp;km</div><div class="val">50&nbsp;€</div></div>
+        <div class="r"><div class="label">30&nbsp;km</div><div class="val">70&nbsp;€</div></div>
       </div>
     </div>
-    <div class="hint">Au-delà de 30&nbsp;km : tarification «&nbsp;courses classiques&nbsp;» (km + minute).</div>
+    <div class="col">
+      <span class="col-title">Nuit & week-end</span>
+      <div class="rows price" style="margin-top:6px">
+        <div class="r"><div class="label">5&nbsp;km</div><div class="val">20&nbsp;€</div></div>
+        <div class="r"><div class="label">10&nbsp;km</div><div class="val">30&nbsp;€</div></div>
+        <div class="r"><div class="label">20&nbsp;km</div><div class="val">60&nbsp;€</div></div>
+        <div class="r"><div class="label">30&nbsp;km</div><div class="val">80&nbsp;€</div></div>
+      </div>
+    </div>
   </div>
+  <div class="hint">Au-delà de 30&nbsp;km : tarification «&nbsp;courses classiques&nbsp;» (km + minute).</div>
+</div>
 
   <!-- CTA -->
   <div style="display:flex;justify-content:center;margin-top:16px">
