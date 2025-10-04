@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Accueil • Transport Confort</title>
-  <link rel="stylesheet" href="/assets/style.css"><!-- conserve ta feuille globale -->
+  <link rel="stylesheet" href="/assets/style.css">
 </head>
 <body>
   <div class="container">
-    <!-- ===== Header (inchangé) ===== -->
+    <!-- ===== Header ===== -->
     <div class="header">
       <div class="brand">
         <img src="/assets/logo.png" alt="Logo">
@@ -26,106 +26,123 @@
       </nav>
     </div>
 
-    <!-- ===== HOME harmonisée ===== -->
+    <!-- ===== Section principale ===== -->
     <section id="tcv-home" class="tcv-home" aria-labelledby="home-title">
       <style>
-        /* === Transport Confort — Accueil (namespace .tcv-home) === */
-        .tcv-home{--bg:#0B0B0B;--fg:#F5F5F5;--muted:#CFCFCF;--gold:#C7A24B;--line:#1F1F1F;--card:#111111;
+        /* === Thème principal === */
+        .tcv-home{
+          --bg:#0B0B0B;--fg:#F5F5F5;--muted:#CFCFCF;--gold:#C7A24B;
+          --line:#1F1F1F;--card:#111111;
           font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-          background:var(--bg);color:var(--fg);border-radius:18px;padding:28px;margin-top:18px;
-          box-shadow:0 10px 30px rgba(0,0,0,.35);line-height:1.6;letter-spacing:.2px}
+          background:var(--bg);color:var(--fg);
+          border-radius:18px;padding:28px;margin-top:18px;
+          box-shadow:0 10px 30px rgba(0,0,0,.35);
+          line-height:1.6;letter-spacing:.2px
+        }
         .tcv-home *{box-sizing:border-box}
         .tcv-home .wrap{max-width:1120px;margin:0 auto}
-        .tcv-home h2{font-size:1.9rem;margin:0 0 .5rem;color:var(--gold);letter-spacing:.4px}
+        .tcv-home h2{font-size:1.9rem;margin:0 0 .5rem;color:var(--gold)}
         .tcv-home h3{font-size:1.15rem;margin:.2rem 0 .6rem;color:var(--gold)}
         .tcv-home p{margin:.4rem 0}
         .tcv-home .lede{color:var(--muted)}
         .tcv-home .grid{display:grid;gap:18px}
         .tcv-home .grid-2{grid-template-columns:1.1fr .9fr}
         .tcv-home .grid-4{grid-template-columns:repeat(4,1fr)}
-        @media (max-width:980px){ .tcv-home .grid-2{grid-template-columns:1fr} .tcv-home .grid-4{grid-template-columns:1fr 1fr} }
-        @media (max-width:640px){ .tcv-home .grid-4{grid-template-columns:1fr} }
-        .tcv-home .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 10px 24px rgba(0,0,0,.25)}
-        .tcv-home .btn{display:inline-block;padding:12px 18px;border-radius:14px;font-weight:600;text-decoration:none;
-          background:var(--gold);color:#0B0B0B;box-shadow:0 6px 18px rgba(0,0,0,.25);transition:transform .15s, box-shadow .15s}
+        @media (min-width:980px){.tcv-home .grid-2.equal-cols{grid-template-columns:1fr 1fr}}
+        @media (max-width:980px){.tcv-home .grid-2{grid-template-columns:1fr} .tcv-home .grid-4{grid-template-columns:1fr 1fr}}
+        @media (max-width:640px){.tcv-home .grid-4{grid-template-columns:1fr}}
+        .tcv-home .card{
+          background:var(--card);border:1px solid var(--line);
+          border-radius:14px;padding:18px;
+          box-shadow:0 10px 24px rgba(0,0,0,.25)
+        }
+        .tcv-home .btn{
+          display:inline-block;padding:12px 18px;border-radius:14px;font-weight:600;text-decoration:none;
+          background:var(--gold);color:#0B0B0B;
+          box-shadow:0 6px 18px rgba(0,0,0,.25);
+          transition:transform .15s,box-shadow .15s
+        }
         .tcv-home .btn:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(0,0,0,.35)}
         .tcv-home .btn-outline{background:transparent;color:var(--gold);border:1px solid var(--gold)}
         .tcv-home .btn-outline:hover{background:rgba(199,162,75,.08)}
         .tcv-home .badge{display:inline-block;padding:6px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:12px}
-        .tcv-home .hero{border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 12px 28px rgba(0,0,0,.35)}
-        .tcv-home .hero img{width:100%;height:auto;display:block}
         .tcv-home .list{list-style:none;padding:0;margin:0;display:grid;gap:10px}
-        .tcv-home .check{width:18px;height:18px;border-radius:50%;border:2px solid var(--gold);display:inline-flex;align-items:center;justify-content:center;margin-right:10px}
+        .tcv-home .check{width:18px;height:18px;border-radius:50%;border:2px solid var(--gold);
+          display:inline-flex;align-items:center;justify-content:center;margin-right:10px}
         .tcv-home .check::after{content:"";width:8px;height:8px;background:var(--gold);border-radius:50%}
         .tcv-home .tile h4{margin:.2rem 0 .4rem;color:#fff;font-size:1rem}
         .tcv-home .note{color:var(--muted);font-size:.95rem}
-        /* Mobile compact */
+
+        /* Colonne images */
+        .tcv-home .images-card{display:flex;flex-direction:column}
+        .tcv-home .images-card .stack{display:grid;gap:14px;grid-template-rows:1fr 1fr}
+        .tcv-home .images-card .ph{
+          margin:0;padding:0;border-radius:12px;overflow:hidden;
+          border:1px solid var(--line);box-shadow:0 8px 22px rgba(0,0,0,.35)
+        }
+        .tcv-home .images-card img{
+          display:block;width:100%;aspect-ratio:16/9;object-fit:cover;
+          transition:transform .25s ease
+        }
+        .tcv-home .images-card img:hover{transform:scale(1.03)}
+        @media (min-width:980px){
+          .tcv-home .images-card .stack{min-height:560px}
+          .tcv-home .images-card img{min-height:260px}
+        }
         @media (max-width:720px){
+          .tcv-home .images-card img{aspect-ratio:16/10}
           .tcv-home{padding:20px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.28)}
-          .tcv-home h2{font-size:1.5rem}
           .tcv-home .card{padding:12px}
         }
+
+        /* === Bandeau promo === */
+        .tcv-promo{--bg:#0B0B0B;--fg:#F5F5F5;--gold:#C7A24B;--line:#1F1F1F;
+          position:sticky;top:0;z-index:999;background:linear-gradient(0deg, rgba(11,11,11,.92), rgba(11,11,11,.98));
+          border-bottom:1px solid var(--line); box-shadow:0 8px 24px rgba(0,0,0,.35)}
+        .tcv-promo.hidden{display:none}
+        .tcv-promo .wrap{max-width:1120px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+        .tcv-promo .tag{display:inline-block;padding:6px 10px;border:1px solid var(--gold);
+          border-radius:999px;color:var(--gold);font-weight:700;font-size:.9rem;white-space:nowrap}
+        .tcv-promo .txt{color:var(--fg);font-size:.98rem}
+        .tcv-promo .txt b{color:var(--gold)}
+        .tcv-promo .btn{margin-left:auto;background:var(--gold);color:#0B0B0B;border:none;border-radius:12px;padding:8px 12px;font-weight:700;cursor:pointer}
+        .tcv-promo .close{margin-left:8px;background:transparent;color:#bbb;border:1px solid var(--line);
+          border-radius:999px;padding:4px 10px;cursor:pointer}
+        @media (max-width:720px){.tcv-promo .wrap{padding:8px 12px}.tcv-promo .txt{font-size:.92rem}}
       </style>
 
       <div class="wrap">
-       <!-- === Bandeau Promo Sticky — Transport Confort === -->
-<div id="tcv-promo" class="tcv-promo hidden" role="region" aria-label="Promotion -15%">
-  <style>
-    .tcv-promo{--bg:#0B0B0B;--fg:#F5F5F5;--gold:#C7A24B;--line:#1F1F1F;
-      position:sticky;top:0;z-index:999;background:linear-gradient(0deg, rgba(11,11,11,.92), rgba(11,11,11,.98));
-      border-bottom:1px solid var(--line); box-shadow:0 8px 24px rgba(0,0,0,.35)}
-    .tcv-promo.hidden{display:none}
-    .tcv-promo .wrap{max-width:1120px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
-    .tcv-promo .tag{display:inline-block;padding:6px 10px;border:1px solid var(--gold);border-radius:999px;color:var(--gold);font-weight:700;font-size:.9rem;white-space:nowrap}
-    .tcv-promo .txt{color:var(--fg);font-size:.98rem}
-    .tcv-promo .txt b{color:var(--gold)}
-    .tcv-promo .btn{margin-left:auto;background:var(--gold);color:#0B0B0B;border:none;border-radius:12px;padding:8px 12px;font-weight:700;cursor:pointer}
-    .tcv-promo .close{margin-left:8px;background:transparent;color:#bbb;border:1px solid var(--line);border-radius:999px;padding:4px 10px;cursor:pointer}
-    @media (max-width:720px){ .tcv-promo .wrap{padding:8px 12px} .tcv-promo .txt{font-size:.92rem} }
-  </style>
 
-  <div class="wrap">
-    <span class="tag">🎁 –15%</span>
-    <div class="txt">Offre de lancement : <b>–15% sur vos réservations</b> jusqu’au <b>31/12/2025</b>. Prix affiché = prix payé.</div>
-    <a class="btn" href="/simulator.html" aria-label="Simuler et réserver maintenant">Réserver</a>
-    <button class="close" type="button" aria-label="Fermer cette annonce">×</button>
-  </div>
+        <!-- Bandeau promo -->
+        <div id="tcv-promo" class="tcv-promo hidden" role="region" aria-label="Promotion -15%">
+          <div class="wrap">
+            <span class="tag">🎁 –15%</span>
+            <div class="txt">Offre de lancement : <b>–15% sur vos réservations</b> jusqu’au <b>31/12/2025</b>. Prix affiché = prix payé.</div>
+            <a class="btn" href="/simulator.html">Réserver</a>
+            <button class="close" type="button" aria-label="Fermer cette annonce">×</button>
+          </div>
+          <script>
+            (function(){
+              const END_ISO='2025-12-31T23:59:59+01:00';
+              const KEY_HIDE='tcv_promo_hidden_v1';
+              const root=document.getElementById('tcv-promo');
+              if(!root)return;
+              const hidden=localStorage.getItem(KEY_HIDE)==='1';
+              const expired=new Date()>new Date(END_ISO);
+              if(!hidden&&!expired){root.classList.remove('hidden')}
+              root.querySelector('.close')?.addEventListener('click',()=>{
+                localStorage.setItem(KEY_HIDE,'1');
+                root.classList.add('hidden');
+              });
+            })();
+          </script>
+        </div>
 
-  <script>
-    (function(){
-      // Paramètres
-      const END_ISO = '2025-12-31T23:59:59+01:00'; // Europe/Paris (hiver)
-      const KEY_HIDE = 'tcv_promo_hidden_v1';
-
-      const root = document.getElementById('tcv-promo');
-      if(!root) return;
-
-      // Déjà masqué par l’utilisateur ?
-      const hidden = localStorage.getItem(KEY_HIDE)==='1';
-      // Promo expirée ?
-      const now = new Date();
-      const end = new Date(END_ISO);
-      const expired = now > end;
-
-      if (!hidden && !expired){
-        root.classList.remove('hidden');
-      }
-
-      // Fermer manuellement
-      root.querySelector('.close')?.addEventListener('click', ()=>{
-        localStorage.setItem(KEY_HIDE,'1');
-        root.classList.add('hidden');
-      });
-    })();
-  </script>
-</div>
-<!-- === /Bandeau Promo Sticky === -->
-        <!-- HERO -->
+        <!-- Hero principal -->
         <header class="card" style="padding:22px">
           <div class="badge">Service VTC premium — Enghien-les-Bains & Île-de-France</div>
           <h2 id="home-title" style="margin-top:8px">Le confort, la sérénité et un gain de temps réel.</h2>
-          <p class="lede">
-            Réservation en ligne, acompte sécurisé <strong>(20%)</strong>, prix transparents, véhicule 100% électrique.
+          <p class="lede">Réservation en ligne, acompte sécurisé <strong>(20%)</strong>, prix transparents, véhicule 100% électrique.
             Vous savez <em>qui</em> vous conduit, et <em>comment</em>.
           </p>
           <div style="margin-top:14px;display:flex;gap:12px;flex-wrap:wrap">
@@ -134,11 +151,9 @@
           </div>
         </header>
 
-
-
-        <!-- SERVICES + AVANTAGES + PHOTOS -->
-        <div class="grid grid-2" style="align-items:start">
-          <!-- Col gauche : Services + Avantages -->
+        <!-- SERVICES + IMAGES -->
+        <div class="grid grid-2 equal-cols" style="align-items:start">
+          <!-- Col gauche -->
           <section class="card">
             <h3>Services</h3>
             <p class="lede">Courses privées, transferts aéroports, soirées & événements, <strong>mise à disposition (MAD)</strong> avec chauffeur.</p>
@@ -151,22 +166,10 @@
 
             <h3>Ce que vous obtenez</h3>
             <div class="grid grid-4 tile">
-              <div class="card">
-                <h4>Confort premium</h4>
-                <p class="note">XPeng G6 • espace lounge • toit panoramique.</p>
-              </div>
-              <div class="card">
-                <h4>Sécurité & sérénité</h4>
-                <p class="note">Conduite apaisée • aides à la conduite • caméra rétroviseur.</p>
-              </div>
-              <div class="card">
-                <h4>Technologie</h4>
-                <p class="note">Audio XOpera 2.0 (18 HP) • commandes vocales • OTA.</p>
-              </div>
-              <div class="card">
-                <h4>Performance</h4>
-                <p class="note">Plateforme 800V • recharge 10→80% ~12 min • autonomie.</p>
-              </div>
+              <div class="card"><h4>Confort premium</h4><p class="note">XPeng G6 • espace lounge • toit panoramique.</p></div>
+              <div class="card"><h4>Sécurité & sérénité</h4><p class="note">Conduite apaisée • aides à la conduite • caméra rétroviseur.</p></div>
+              <div class="card"><h4>Technologie</h4><p class="note">Audio XOpera 2.0 (18 HP) • commandes vocales • OTA.</p></div>
+              <div class="card"><h4>Performance</h4><p class="note">Plateforme 800V • recharge 10→80% ~12 min • autonomie.</p></div>
             </div>
 
             <hr style="border:none;border-top:1px solid var(--line);margin:16px 0">
@@ -180,17 +183,21 @@
             </ul>
           </section>
 
-          <!-- Col droite : Photos empilées -->
-          <section class="card">
+          <!-- Col droite : Images agrandies -->
+          <section class="card images-card">
             <h3>En images</h3>
-            <div class="grid" style="gap:12px">
-              <img class="stack-photo" src="/assets/hero-airport.png" alt="Transport Confort — Aéroport" style="width:100%;height:auto;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.35)">
-              <img class="stack-photo" src="/assets/hero-g6-alt.png" alt="Transport Confort — Hôtel de nuit" style="width:100%;height:auto;border-radius:12px;box-shadow:0 6px 24px rgba(0,0,0,.35)">
+            <div class="stack">
+              <figure class="ph">
+                <img loading="lazy" src="/assets/hero-airport.png" alt="Transport Confort — Aéroport">
+              </figure>
+              <figure class="ph">
+                <img loading="lazy" src="/assets/hero-g6-alt.png" alt="Transport Confort — Hôtel de nuit">
+              </figure>
             </div>
           </section>
         </div>
 
-        <!-- Rappel règles clés -->
+        <!-- Conditions importantes -->
         <section class="card" style="margin:18px 0 0">
           <h3>Conditions importantes</h3>
           <div style="display:grid;grid-template-columns:220px 1fr;gap:8px 18px" class="note">
@@ -203,9 +210,8 @@
       </div>
     </section>
 
-    <!-- ===== Footer (inchangé) ===== -->
+    <!-- ===== Footer ===== -->
     <div class="footer small">© Transport Confort by Vincent — SIREN 990 407 397 — TVA FR71 990 407 397 — 23 rue La Bruyère, 93800 Épinay-sur-Seine — 07 49 55 62 77</div>
   </div>
 </body>
 </html>
-
