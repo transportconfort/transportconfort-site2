@@ -68,6 +68,33 @@
     .check{width:16px;height:16px;border-radius:50%;border:2px solid var(--gold);display:inline-flex;align-items:center;justify-content:center;margin-right:8px}
     .check::after{content:"";width:7px;height:7px;background:var(--gold);border-radius:50%}
     hr{border:none;border-top:1px solid var(--line);margin:14px 0}
+
+    /* === Premium cards (magazine luxe) === */
+    .tcv-home .card.tile{background:transparent;border:none;box-shadow:none;padding:0}
+    .tcv-home .tile .feature-card{
+      background: rgba(17,17,17,.65);
+      border: 1px solid rgba(199,162,75,.25); /* doré doux */
+      border-radius: 12px;
+      padding: 14px;
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    }
+    .tcv-home .tile .feature-card:hover{
+      transform: translateY(-3px);
+      border-color: var(--gold);
+      box-shadow: 0 12px 26px rgba(0,0,0,.45);
+    }
+    .tcv-home .title-premium{position:relative;padding-top:10px;margin-bottom:.6rem}
+    .tcv-home .title-premium::before{
+      content:"";display:block;width:56px;height:2px;background:var(--gold);
+      border-radius:2px;margin-bottom:8px
+    }
+    .tcv-home .feature-card h4{margin:.2rem 0 .35rem;color:#fff;font-size:1rem}
+    .tcv-home .feature-card p.note{color:var(--muted);font-size:.95rem;margin:0}
+    @media (max-width:420px){
+      .tcv-home .feature-card{padding:12px;border-radius:10px}
+      .tcv-home .feature-card h4{font-size:.98rem}
+      .tcv-home .feature-card p.note{font-size:.94rem}
+    }
   </style>
 </head>
 <body>
@@ -129,29 +156,28 @@
           <section class="card">
             <h3>Services</h3>
             <p class="lede">Courses privées, transferts aéroports, soirées & événements, <strong>mise à disposition (MAD)</strong> avec chauffeur.</p>
-            <div style="margin-top:8px;display:flex;gap:10px;flex-wrap:wrap">
-            </div>
 
             <hr>
 
-            <h3>Ce que vous obtenez</h3>
-            <div class="grid tile">
-              <div class="card">
-                <h4 style="margin:.2rem 0 .4rem;color:#fff;font-size:1rem">Confort premium</h4>
-                <p class="note">XPeng G6 • espace lounge • toit panoramique.</p>
-              </div>
-              <div class="card">
-                <h4 style="margin:.2rem 0 .4rem;color:#fff;font-size:1rem">Sécurité & sérénité</h4>
-                <p class="note">Conduite apaisée • aides à la conduite • caméra rétroviseur.</p>
-              </div>
-              <div class="card">
-                <h4 style="margin:.2rem 0 .4rem;color:#fff;font-size:1rem">Technologie</h4>
-                <p class="note">Audio XOpera 2.0 (18 HP) • commandes vocales • OTA.</p>
-              </div>
-              <div class="card">
-                <h4 style="margin:.2rem 0 .4rem;color:#fff;font-size:1rem">Performance</h4>
-                <p class="note">Plateforme 800V • recharge 10→80% ~12 min • autonomie.</p>
-              </div>
+            <!-- Bloc premium revisité -->
+            <h3 class="title-premium">Une expérience pensée dans les moindres détails</h3>
+            <div class="grid tile card">
+              <article class="feature-card">
+                <h4>Confort exclusif</h4>
+                <p class="note">Sièges massants, silence total et espace lounge pour voyager comme à la maison.</p>
+              </article>
+              <article class="feature-card">
+                <h4>Sérénité absolue</h4>
+                <p class="note">Ponctualité, conduite fluide et sécurité maximale. Rien n’est laissé au hasard.</p>
+              </article>
+              <article class="feature-card">
+                <h4>Technologie discrète</h4>
+                <p class="note">Audio immersif, éclairage d’ambiance, tablette à portée — le luxe sans ostentation.</p>
+              </article>
+              <article class="feature-card">
+                <h4>Performance maîtrisée</h4>
+                <p class="note">SUV électrique nouvelle génération : 0 bruit, 0 émission, 100% raffinement.</p>
+              </article>
             </div>
 
             <hr>
