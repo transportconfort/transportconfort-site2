@@ -68,6 +68,58 @@
       </style>
 
       <div class="wrap">
+       <!-- === Bandeau Promo Sticky — Transport Confort === -->
+<div id="tcv-promo" class="tcv-promo hidden" role="region" aria-label="Promotion -15%">
+  <style>
+    .tcv-promo{--bg:#0B0B0B;--fg:#F5F5F5;--gold:#C7A24B;--line:#1F1F1F;
+      position:sticky;top:0;z-index:999;background:linear-gradient(0deg, rgba(11,11,11,.92), rgba(11,11,11,.98));
+      border-bottom:1px solid var(--line); box-shadow:0 8px 24px rgba(0,0,0,.35)}
+    .tcv-promo.hidden{display:none}
+    .tcv-promo .wrap{max-width:1120px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+    .tcv-promo .tag{display:inline-block;padding:6px 10px;border:1px solid var(--gold);border-radius:999px;color:var(--gold);font-weight:700;font-size:.9rem;white-space:nowrap}
+    .tcv-promo .txt{color:var(--fg);font-size:.98rem}
+    .tcv-promo .txt b{color:var(--gold)}
+    .tcv-promo .btn{margin-left:auto;background:var(--gold);color:#0B0B0B;border:none;border-radius:12px;padding:8px 12px;font-weight:700;cursor:pointer}
+    .tcv-promo .close{margin-left:8px;background:transparent;color:#bbb;border:1px solid var(--line);border-radius:999px;padding:4px 10px;cursor:pointer}
+    @media (max-width:720px){ .tcv-promo .wrap{padding:8px 12px} .tcv-promo .txt{font-size:.92rem} }
+  </style>
+
+  <div class="wrap">
+    <span class="tag">🎁 –15%</span>
+    <div class="txt">Offre de lancement : <b>–15% sur vos réservations</b> jusqu’au <b>31/12/2025</b>. Prix affiché = prix payé.</div>
+    <a class="btn" href="/simulator.html" aria-label="Simuler et réserver maintenant">Réserver</a>
+    <button class="close" type="button" aria-label="Fermer cette annonce">×</button>
+  </div>
+
+  <script>
+    (function(){
+      // Paramètres
+      const END_ISO = '2025-12-31T23:59:59+01:00'; // Europe/Paris (hiver)
+      const KEY_HIDE = 'tcv_promo_hidden_v1';
+
+      const root = document.getElementById('tcv-promo');
+      if(!root) return;
+
+      // Déjà masqué par l’utilisateur ?
+      const hidden = localStorage.getItem(KEY_HIDE)==='1';
+      // Promo expirée ?
+      const now = new Date();
+      const end = new Date(END_ISO);
+      const expired = now > end;
+
+      if (!hidden && !expired){
+        root.classList.remove('hidden');
+      }
+
+      // Fermer manuellement
+      root.querySelector('.close')?.addEventListener('click', ()=>{
+        localStorage.setItem(KEY_HIDE,'1');
+        root.classList.add('hidden');
+      });
+    })();
+  </script>
+</div>
+<!-- === /Bandeau Promo Sticky === -->
         <!-- HERO -->
         <header class="card" style="padding:22px">
           <div class="badge">Service VTC premium — Enghien-les-Bains & Île-de-France</div>
@@ -160,55 +212,3 @@
 </body>
 </html>
 
-<!-- === Bandeau Promo Sticky — Transport Confort === -->
-<div id="tcv-promo" class="tcv-promo hidden" role="region" aria-label="Promotion -15%">
-  <style>
-    .tcv-promo{--bg:#0B0B0B;--fg:#F5F5F5;--gold:#C7A24B;--line:#1F1F1F;
-      position:sticky;top:0;z-index:999;background:linear-gradient(0deg, rgba(11,11,11,.92), rgba(11,11,11,.98));
-      border-bottom:1px solid var(--line); box-shadow:0 8px 24px rgba(0,0,0,.35)}
-    .tcv-promo.hidden{display:none}
-    .tcv-promo .wrap{max-width:1120px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
-    .tcv-promo .tag{display:inline-block;padding:6px 10px;border:1px solid var(--gold);border-radius:999px;color:var(--gold);font-weight:700;font-size:.9rem;white-space:nowrap}
-    .tcv-promo .txt{color:var(--fg);font-size:.98rem}
-    .tcv-promo .txt b{color:var(--gold)}
-    .tcv-promo .btn{margin-left:auto;background:var(--gold);color:#0B0B0B;border:none;border-radius:12px;padding:8px 12px;font-weight:700;cursor:pointer}
-    .tcv-promo .close{margin-left:8px;background:transparent;color:#bbb;border:1px solid var(--line);border-radius:999px;padding:4px 10px;cursor:pointer}
-    @media (max-width:720px){ .tcv-promo .wrap{padding:8px 12px} .tcv-promo .txt{font-size:.92rem} }
-  </style>
-
-  <div class="wrap">
-    <span class="tag">🎁 –15%</span>
-    <div class="txt">Offre de lancement : <b>–15% sur vos réservations</b> jusqu’au <b>31/12/2025</b>. Prix affiché = prix payé.</div>
-    <a class="btn" href="/simulator.html" aria-label="Simuler et réserver maintenant">Réserver</a>
-    <button class="close" type="button" aria-label="Fermer cette annonce">×</button>
-  </div>
-
-  <script>
-    (function(){
-      // Paramètres
-      const END_ISO = '2025-12-31T23:59:59+01:00'; // Europe/Paris (hiver)
-      const KEY_HIDE = 'tcv_promo_hidden_v1';
-
-      const root = document.getElementById('tcv-promo');
-      if(!root) return;
-
-      // Déjà masqué par l’utilisateur ?
-      const hidden = localStorage.getItem(KEY_HIDE)==='1';
-      // Promo expirée ?
-      const now = new Date();
-      const end = new Date(END_ISO);
-      const expired = now > end;
-
-      if (!hidden && !expired){
-        root.classList.remove('hidden');
-      }
-
-      // Fermer manuellement
-      root.querySelector('.close')?.addEventListener('click', ()=>{
-        localStorage.setItem(KEY_HIDE,'1');
-        root.classList.add('hidden');
-      });
-    })();
-  </script>
-</div>
-<!-- === /Bandeau Promo Sticky === -->
