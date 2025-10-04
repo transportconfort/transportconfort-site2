@@ -2,9 +2,73 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Accueil • Transport Confort</title>
   <link rel="stylesheet" href="/assets/style.css">
+  <style>
+    /* ===== Mobile-first — Thème harmonisé ===== */
+    :root{
+      --bg:#0B0B0B; --fg:#F5F5F5; --muted:#CFCFCF; --gold:#C7A24B; --line:#1F1F1F; --card:#111111;
+    }
+    body{background:var(--bg);color:var(--fg);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;line-height:1.55}
+    .container{max-width:1120px;margin:0 auto;padding:0 16px}
+    .header{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
+    .brand{display:flex;gap:10px;align-items:center}
+    .brand img{height:38px;width:auto}
+    .brand h1{margin:0;font-size:clamp(18px,4.6vw,28px)}
+    .slogan{color:var(--muted);font-size:clamp(12px,3.4vw,14px)}
+    .nav{display:flex;gap:12px;flex-wrap:wrap}
+    .nav a{color:var(--fg);text-decoration:none;font-size:14px}
+    .nav a[aria-current="page"]{color:var(--gold);font-weight:600}
+
+    /* ===== Section HOME ===== */
+    .tcv-home{background:var(--bg);border-radius:16px;padding:16px;margin:10px 0 24px;border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.28)}
+    .wrap{max-width:1120px;margin:0 auto}
+    h2{color:var(--gold);font-size:clamp(22px,5.5vw,30px);margin:.2rem 0 .4rem}
+    h3{color:var(--gold);font-size:clamp(16px,4.5vw,18px);margin:.2rem 0 .5rem}
+    .lede{color:var(--muted);font-size:clamp(14px,3.8vw,16px)}
+    .note{color:var(--muted);font-size:clamp(12px,3.3vw,14px)}
+    .badge{display:inline-block;padding:6px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:12px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:0 8px 20px rgba(0,0,0,.22)}
+    .btn{display:inline-block;padding:10px 14px;border-radius:12px;font-weight:600;text-decoration:none;background:var(--gold);color:#0B0B0B;box-shadow:0 6px 16px rgba(0,0,0,.25)}
+    .btn-outline{background:transparent;color:var(--gold);border:1px solid var(--gold)}
+    .grid{display:grid;gap:12px}
+
+    /* === Layout mobile d’abord === */
+    .grid-2{grid-template-columns:1fr}           /* mobile: 1 colonne */
+    .tile{grid-template-columns:1fr}             /* tuiles: 1 col en très petit */
+    @media (min-width:420px){ .tile{grid-template-columns:1fr 1fr} }  /* 2 colonnes dès 420px */
+    @media (min-width:960px){
+      .grid-2{grid-template-columns:1fr 1fr}     /* desktop: 2 colonnes équilibrées */
+      .tcv-home{padding:22px;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+      .card{padding:18px}
+    }
+
+    /* === Bandeau promo compact === */
+    .tcv-promo{position:sticky;top:0;z-index:40;background:linear-gradient(0deg,rgba(11,11,11,.9),rgba(11,11,11,.98));border:1px solid var(--line);border-radius:12px;padding:8px 10px;display:flex;align-items:center;gap:8px}
+    .tcv-promo.hidden{display:none}
+    .tcv-promo .tag{border:1px solid var(--gold);border-radius:999px;color:var(--gold);font-weight:700;font-size:.85rem;padding:4px 8px}
+    .tcv-promo .txt{font-size:.9rem}
+    .tcv-promo .txt b{color:var(--gold)}
+    .tcv-promo .btn{margin-left:auto;padding:8px 10px;border-radius:10px}
+    .tcv-promo .close{margin-left:6px;background:transparent;color:#bbb;border:1px solid var(--line);border-radius:999px;padding:2px 8px;line-height:1}
+
+    /* === Colonne images empilées (grand visuel mobile) === */
+    .images-card .stack{display:grid;gap:10px}
+    .images-card .ph{margin:0;padding:0;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+    .images-card img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;transition:transform .25s}
+    .images-card img:hover{transform:scale(1.02)}
+    @media (min-width:960px){
+      .images-card .stack{grid-template-rows:1fr 1fr;min-height:520px}
+      .images-card img{aspect-ratio:16/9;min-height:240px}
+    }
+
+    /* === Listes & séparateurs plus aérés en mobile */
+    .list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+    .check{width:16px;height:16px;border-radius:50%;border:2px solid var(--gold);display:inline-flex;align-items:center;justify-content:center;margin-right:8px}
+    .check::after{content:"";width:7px;height:7px;background:var(--gold);border-radius:50%}
+    hr{border:none;border-top:1px solid var(--line);margin:14px 0}
+  </style>
 </head>
 <body>
   <div class="container">
@@ -26,153 +90,73 @@
       </nav>
     </div>
 
-    <!-- ===== Section principale ===== -->
+    <!-- ===== HOME ===== -->
     <section id="tcv-home" class="tcv-home" aria-labelledby="home-title">
-      <style>
-        /* === Thème principal === */
-        .tcv-home{
-          --bg:#0B0B0B;--fg:#F5F5F5;--muted:#CFCFCF;--gold:#C7A24B;
-          --line:#1F1F1F;--card:#111111;
-          font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-          background:var(--bg);color:var(--fg);
-          border-radius:18px;padding:28px;margin-top:18px;
-          box-shadow:0 10px 30px rgba(0,0,0,.35);
-          line-height:1.6;letter-spacing:.2px
-        }
-        .tcv-home *{box-sizing:border-box}
-        .tcv-home .wrap{max-width:1120px;margin:0 auto}
-        .tcv-home h2{font-size:1.9rem;margin:0 0 .5rem;color:var(--gold)}
-        .tcv-home h3{font-size:1.15rem;margin:.2rem 0 .6rem;color:var(--gold)}
-        .tcv-home p{margin:.4rem 0}
-        .tcv-home .lede{color:var(--muted)}
-        .tcv-home .grid{display:grid;gap:18px}
-        .tcv-home .grid-2{grid-template-columns:1.1fr .9fr}
-        .tcv-home .grid-4{grid-template-columns:repeat(4,1fr)}
-        @media (min-width:980px){.tcv-home .grid-2.equal-cols{grid-template-columns:1fr 1fr}}
-        @media (max-width:980px){.tcv-home .grid-2{grid-template-columns:1fr} .tcv-home .grid-4{grid-template-columns:1fr 1fr}}
-        @media (max-width:640px){.tcv-home .grid-4{grid-template-columns:1fr}}
-        .tcv-home .card{
-          background:var(--card);border:1px solid var(--line);
-          border-radius:14px;padding:18px;
-          box-shadow:0 10px 24px rgba(0,0,0,.25)
-        }
-        .tcv-home .btn{
-          display:inline-block;padding:12px 18px;border-radius:14px;font-weight:600;text-decoration:none;
-          background:var(--gold);color:#0B0B0B;
-          box-shadow:0 6px 18px rgba(0,0,0,.25);
-          transition:transform .15s,box-shadow .15s
-        }
-        .tcv-home .btn:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(0,0,0,.35)}
-        .tcv-home .btn-outline{background:transparent;color:var(--gold);border:1px solid var(--gold)}
-        .tcv-home .btn-outline:hover{background:rgba(199,162,75,.08)}
-        .tcv-home .badge{display:inline-block;padding:6px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:12px}
-        .tcv-home .list{list-style:none;padding:0;margin:0;display:grid;gap:10px}
-        .tcv-home .check{width:18px;height:18px;border-radius:50%;border:2px solid var(--gold);
-          display:inline-flex;align-items:center;justify-content:center;margin-right:10px}
-        .tcv-home .check::after{content:"";width:8px;height:8px;background:var(--gold);border-radius:50%}
-        .tcv-home .tile h4{margin:.2rem 0 .4rem;color:#fff;font-size:1rem}
-        .tcv-home .note{color:var(--muted);font-size:.95rem}
-
-        /* Colonne images */
-        .tcv-home .images-card{display:flex;flex-direction:column}
-        .tcv-home .images-card .stack{display:grid;gap:14px;grid-template-rows:1fr 1fr}
-        .tcv-home .images-card .ph{
-          margin:0;padding:0;border-radius:12px;overflow:hidden;
-          border:1px solid var(--line);box-shadow:0 8px 22px rgba(0,0,0,.35)
-        }
-        .tcv-home .images-card img{
-          display:block;width:100%;aspect-ratio:16/9;object-fit:cover;
-          transition:transform .25s ease
-        }
-        .tcv-home .images-card img:hover{transform:scale(1.03)}
-        @media (min-width:980px){
-          .tcv-home .images-card .stack{min-height:560px}
-          .tcv-home .images-card img{min-height:260px}
-        }
-        @media (max-width:720px){
-          .tcv-home .images-card img{aspect-ratio:16/10}
-          .tcv-home{padding:20px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.28)}
-          .tcv-home .card{padding:12px}
-        }
-
-        /* === Bandeau promo === */
-        .tcv-promo{--bg:#0B0B0B;--fg:#F5F5F5;--gold:#C7A24B;--line:#1F1F1F;
-          position:sticky;top:0;z-index:999;background:linear-gradient(0deg, rgba(11,11,11,.92), rgba(11,11,11,.98));
-          border-bottom:1px solid var(--line); box-shadow:0 8px 24px rgba(0,0,0,.35)}
-        .tcv-promo.hidden{display:none}
-        .tcv-promo .wrap{max-width:1120px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
-        .tcv-promo .tag{display:inline-block;padding:6px 10px;border:1px solid var(--gold);
-          border-radius:999px;color:var(--gold);font-weight:700;font-size:.9rem;white-space:nowrap}
-        .tcv-promo .txt{color:var(--fg);font-size:.98rem}
-        .tcv-promo .txt b{color:var(--gold)}
-        .tcv-promo .btn{margin-left:auto;background:var(--gold);color:#0B0B0B;border:none;border-radius:12px;padding:8px 12px;font-weight:700;cursor:pointer}
-        .tcv-promo .close{margin-left:8px;background:transparent;color:#bbb;border:1px solid var(--line);
-          border-radius:999px;padding:4px 10px;cursor:pointer}
-        @media (max-width:720px){.tcv-promo .wrap{padding:8px 12px}.tcv-promo .txt{font-size:.92rem}}
-      </style>
-
       <div class="wrap">
 
-        <!-- Bandeau promo -->
+        <!-- Promo sticky (compact) -->
         <div id="tcv-promo" class="tcv-promo hidden" role="region" aria-label="Promotion -15%">
-          <div class="wrap">
-            <span class="tag">🎁 –15%</span>
-            <div class="txt">Offre de lancement : <b>–15% sur vos réservations</b> jusqu’au <b>31/12/2025</b>. Prix affiché hors remise.</div>
-            <a class="btn" href="/simulator.html">Réserver</a>
-            <button class="close" type="button" aria-label="Fermer cette annonce">×</button>
-          </div>
-          <script>
-            (function(){
-              const END_ISO='2025-12-31T23:59:59+01:00';
-              const KEY_HIDE='tcv_promo_hidden_v1';
-              const root=document.getElementById('tcv-promo');
-              if(!root)return;
-              const hidden=localStorage.getItem(KEY_HIDE)==='1';
-              const expired=new Date()>new Date(END_ISO);
-              if(!hidden&&!expired){root.classList.remove('hidden')}
-              root.querySelector('.close')?.addEventListener('click',()=>{
-                localStorage.setItem(KEY_HIDE,'1');
-                root.classList.add('hidden');
-              });
-            })();
-          </script>
+          <span class="tag">🎁 –15%</span>
+          <div class="txt">Offre de lancement : <b>–15%</b> jusqu’au <b>31/12/2025</b>. Prix affiché = prix payé.</div>
+          <a class="btn" href="/simulator.html">Réserver</a>
+          <button class="close" type="button" aria-label="Fermer">×</button>
         </div>
 
-        <!-- Hero principal -->
-        <header class="card" style="padding:22px">
+        <script>
+          (function(){
+            const END_ISO='2025-12-31T23:59:59+01:00', KEY='tcv_promo_hidden_v1';
+            const root=document.getElementById('tcv-promo'); if(!root) return;
+            const hidden=localStorage.getItem(KEY)==='1', expired=(new Date()>new Date(END_ISO));
+            if(!hidden && !expired) root.classList.remove('hidden');
+            root.querySelector('.close')?.addEventListener('click',()=>{ localStorage.setItem(KEY,'1'); root.classList.add('hidden'); });
+          })();
+        </script>
+
+        <!-- Hero -->
+        <header class="card" style="padding:16px">
           <div class="badge">Service VTC premium — Enghien-les-Bains & Île-de-France</div>
-          <h2 id="home-title" style="margin-top:8px">Le confort, la sérénité et un gain de temps réel.</h2>
-          <p class="lede">Réservation en ligne, acompte sécurisé <strong>(20%)</strong>, prix transparents, véhicule 100% électrique.
-            Vous savez <em>qui</em> vous conduit, et <em>comment</em>.
-          </p>
-          <div style="margin-top:14px;display:flex;gap:12px;flex-wrap:wrap">
+          <h2 id="home-title">Le confort, la sérénité et un gain de temps réel.</h2>
+          <p class="lede">Réservation en ligne, acompte sécurisé <strong>(20%)</strong>, prix transparents, véhicule 100% électrique. Vous savez <em>qui</em> vous conduit, et <em>comment</em>.</p>
+          <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
             <a class="btn" href="/simulator.html">Simuler un trajet</a>
             <a class="btn btn-outline" href="/tarifs.html">Voir les tarifs</a>
           </div>
         </header>
 
-        <!-- SERVICES + IMAGES -->
-        <div class="grid grid-2 equal-cols" style="align-items:start">
-          <!-- Col gauche -->
+        <!-- Services + Images (mobile: 1 colonne, desktop: 2 colonnes équilibrées) -->
+        <div class="grid grid-2" style="align-items:start">
+          <!-- Services -->
           <section class="card">
             <h3>Services</h3>
             <p class="lede">Courses privées, transferts aéroports, soirées & événements, <strong>mise à disposition (MAD)</strong> avec chauffeur.</p>
-            <div style="margin-top:10px;display:flex;gap:12px;flex-wrap:wrap">
+            <div style="margin-top:8px;display:flex;gap:10px;flex-wrap:wrap">
               <a class="btn" href="/simulator.html">Réserver</a>
               <a class="btn btn-outline" href="/tarifs.html">Grille tarifaire</a>
             </div>
 
-            <hr style="border:none;border-top:1px solid var(--line);margin:16px 0">
+            <hr>
 
             <h3>Ce que vous obtenez</h3>
-            <div class="grid grid-4 tile">
-              <div class="card"><h4>Confort premium</h4><p class="note">XPeng G6 • espace lounge • toit panoramique.</p></div>
-              <div class="card"><h4>Sécurité & sérénité</h4><p class="note">Conduite apaisée • aides à la conduite • caméra rétroviseur.</p></div>
-              <div class="card"><h4>Technologie</h4><p class="note">Audio XOpera 2.0 (18 HP) • commandes vocales • OTA.</p></div>
-              <div class="card"><h4>Performance</h4><p class="note">Plateforme 800V • recharge 10→80% ~12 min • autonomie.</p></div>
+            <div class="grid tile">
+              <div class="card">
+                <h4 style="margin:.2rem 0 .4rem;color:#fff;font-size:1rem">Confort premium</h4>
+                <p class="note">XPeng G6 • espace lounge • toit panoramique.</p>
+              </div>
+              <div class="card">
+                <h4 style="margin:.2rem 0 .4rem;color:#fff;font-size:1rem">Sécurité & sérénité</h4>
+                <p class="note">Conduite apaisée • aides à la conduite • caméra rétroviseur.</p>
+              </div>
+              <div class="card">
+                <h4 style="margin:.2rem 0 .4rem;color:#fff;font-size:1rem">Technologie</h4>
+                <p class="note">Audio XOpera 2.0 (18 HP) • commandes vocales • OTA.</p>
+              </div>
+              <div class="card">
+                <h4 style="margin:.2rem 0 .4rem;color:#fff;font-size:1rem">Performance</h4>
+                <p class="note">Plateforme 800V • recharge 10→80% ~12 min • autonomie.</p>
+              </div>
             </div>
 
-            <hr style="border:none;border-top:1px solid var(--line);margin:16px 0">
+            <hr>
 
             <h3>Engagements</h3>
             <ul class="list">
@@ -183,24 +167,26 @@
             </ul>
           </section>
 
-          <!-- Col droite : Images agrandies -->
+          <!-- Images empilées (grandes) -->
           <section class="card images-card">
             <h3>En images</h3>
             <div class="stack">
               <figure class="ph">
-                <img loading="lazy" src="/assets/hero-airport.png" alt="Transport Confort — Aéroport">
+                <img loading="lazy" src="/assets/hero-airport.png" alt="Transport Confort — Aéroport"
+                     sizes="(max-width: 960px) 100vw, 540px">
               </figure>
               <figure class="ph">
-                <img loading="lazy" src="/assets/hero-g6-alt.png" alt="Transport Confort — Hôtel de nuit">
+                <img loading="lazy" src="/assets/hero-g6-alt.png" alt="Transport Confort — Hôtel de nuit"
+                     sizes="(max-width: 960px) 100vw, 540px">
               </figure>
             </div>
           </section>
         </div>
 
-        <!-- Conditions importantes -->
-        <section class="card" style="margin:18px 0 0">
+        <!-- Règles clés -->
+        <section class="card" style="margin:12px 0 0">
           <h3>Conditions importantes</h3>
-          <div style="display:grid;grid-template-columns:220px 1fr;gap:8px 18px" class="note">
+          <div class="note" style="display:grid;grid-template-columns:140px 1fr;gap:8px 12px">
             <div style="color:var(--muted)">Acompte</div><div>20% TTC à la réservation (Stripe). Solde à bord : CB (terminal) ou espèces (min. 100 €, max. 1 000 €).</div>
             <div style="color:var(--muted)">Annulation</div><div><strong>≥ 24h</strong> : remboursement intégral • <strong>&lt; 24h</strong> : acompte conservé.</div>
             <div style="color:var(--muted)">Tarifs</div><div>Courses classiques : +20% nuit/WE • Forfaits aéroports : <em>jour</em> / <em>nuit-WE</em> sans +20% • MAD : TVA 20%.</div>
@@ -211,7 +197,10 @@
     </section>
 
     <!-- ===== Footer ===== -->
-    <div class="footer small">© Transport Confort by Vincent — SIREN 990 407 397 — TVA FR71 990 407 397 — 23 rue La Bruyère, 93800 Épinay-sur-Seine — 07 49 55 62 77</div>
+    <div class="footer small" style="margin-bottom:14px">
+      © Transport Confort by Vincent — SIREN 990 407 397 — TVA FR71 990 407 397 —
+      23 rue La Bruyère, 93800 Épinay-sur-Seine — 07 49 55 62 77
+    </div>
   </div>
 </body>
 </html>
