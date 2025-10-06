@@ -2,11 +2,10 @@
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Simulateur & Réservation • Transport Confort</title>
 
-  <!-- Fonts + site CSS -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- Feuille globale (conserve) -->
   <link rel="stylesheet" href="/assets/style.css">
 
   <!-- App + simulateur (calculs, Google Maps, etc.) -->
@@ -18,60 +17,107 @@
   <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
 
   <style>
-    /* Grille locale pour cette page (évite de toucher à tout le site) */
-    .sim-grid {
-      display: grid;
-      grid-template-columns: 1fr 420px; /* formulaire à gauche, carte à droite */
-      gap: 16px;
+    /* ===== Thème harmonisé (mobile-first) ===== */
+    :root{ --bg:#0B0B0B; --fg:#F5F5F5; --muted:#CFCFCF; --gold:#C7A24B; --line:#1F1F1F; --card:#111111 }
+    html,body{background:var(--bg);color:var(--fg);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;line-height:1.55}
+    .container{max-width:1120px;margin:0 auto;padding:0 16px}
+
+    /* ===== Masthead harmonisé ===== */
+    .masthead{padding:12px 0;border-bottom:1px solid var(--line);background:var(--bg)}
+    .brand-block{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center}
+    .brand-logo{height:56px;width:auto;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+    .slogan{color:var(--muted);font-size:clamp(13px,3.6vw,15px);line-height:1.35}
+    .nav-scroller{
+      margin-top:10px;display:flex;gap:16px;white-space:nowrap;overflow-x:auto;overscroll-behavior-x:contain;
+      padding-bottom:6px;scrollbar-width:none;border-top:1px solid var(--line);padding-top:10px
     }
-    @media (max-width: 960px) {
-      .sim-grid { grid-template-columns: 1fr; }
+    .nav-scroller::-webkit-scrollbar{display:none}
+    .nav-scroller a{color:var(--fg);text-decoration:none;font-size:15px;opacity:.92}
+    .nav-scroller a[aria-current="page"]{color:var(--gold);font-weight:600;opacity:1}
+    @media (min-width:960px){ .brand-logo{height:64px} .nav-scroller{gap:20px} }
+
+    /* ===== UI générique ===== */
+    .section{margin:16px 0}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 10px 24px rgba(0,0,0,.25)}
+    h2{color:var(--gold);font-size:clamp(20px,5vw,26px);margin:.2rem 0 .6rem}
+    h3{color:var(--gold);font-size:clamp(16px,4.2vw,18px);margin:.2rem 0 .5rem}
+    .badge{display:inline-block;padding:.3rem .6rem;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:.85rem}
+    .btn{display:inline-block;padding:10px 14px;border-radius:12px;font-weight:700;text-decoration:none;border:none;cursor:pointer;background:var(--gold);color:#0B0B0B;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+    .btn.secondary{background:transparent;color:var(--gold);border:1px solid var(--gold)}
+    .row{display:grid;gap:8px}
+    .grid{display:grid;gap:16px}
+    .kpi{display:flex;align-items:center;gap:8px;margin:6px 0}
+    .value{font-variant-numeric:tabular-nums;font-weight:700}
+
+    /* Inputs */
+    label{display:block;margin:8px 0 6px;color:#fff;font-weight:600;font-size:.95rem}
+    .input, select.input, textarea.input{
+      width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#0f0f0f;color:#fff;
+      outline:none;transition:border-color .2s ease, box-shadow .2s ease
     }
+    .input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(199,162,75,.15)}
+    textarea.input{min-height:84px;resize:vertical}
+
+    /* ===== Grille locale simulateur ===== */
+    .sim-grid{display:grid;grid-template-columns:1fr 420px;gap:16px}
+    @media (max-width:1000px){ .sim-grid{grid-template-columns:1fr} }
+
+    /* Bloc prix */
+    .price{display:flex;align-items:center;gap:8px;font-size:1.05rem}
+    .price .value{font-size:1.1rem}
+
+    /* Calendly container */
+    #calendly-inline{width:100%;min-height:680px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+
+    /* Footer */
+    .footer{color:var(--muted);margin:14px 0}
   </style>
 </head>
 
 <body>
   <div class="container">
-    <!-- Header -->
-    <div class="header">
-      <div class="brand">
-        <img src="/assets/logo.png" alt="Logo">
-        <div>
-          <h1>Transport Confort</h1>
+    <!-- ===== Header harmonisé ===== -->
+    <header class="masthead" role="banner">
+      <div class="brand-block">
+        <img class="brand-logo" src="/assets/logo.png" alt="Transport Confort">
+        <div class="brand-text">
           <div class="slogan">Transport haut de gamme • Confort premium</div>
         </div>
       </div>
-      <nav class="nav">
+      <nav class="nav-scroller" role="navigation" aria-label="Navigation principale">
         <a href="/">Accueil</a>
-        <a href="/simulator.html">Simulateur</a>
+        <a href="/simulator.html" aria-current="page">Simulateur</a>
         <a href="/tarifs.html">Tarifs</a>
         <a href="/a-propos.html">À propos</a>
         <a href="/mentions.html">Mentions légales</a>
       </nav>
-    </div>
+    </header>
 
     <!-- ===== SIMULATEUR + CARTE ===== -->
-    <div class="sim-grid section">
+    <div class="sim-grid section" aria-label="Simulateur et carte">
       <!-- Colonne gauche : formulaire -->
-      <div class="card">
-        <h2>Demande de trajet</h2>
+      <section class="card" aria-labelledby="form-title">
+        <h2 id="form-title">Demande de trajet</h2>
 
-        <div class="mode" style="margin:6px 0 10px 0;display:flex;gap:10px;align-items:center">
-          <label><input type="radio" name="mode" id="mode-course" value="course" checked> Course classique</label>
-          <label><input type="radio" name="mode" id="mode-mad" value="mad"> Mise à disposition (MAD)</label>
+        <div class="mode" style="margin:6px 0 10px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+          <label style="display:flex;gap:8px;align-items:center">
+            <input type="radio" name="mode" id="mode-course" value="course" checked> <span>Course classique</span>
+          </label>
+          <label style="display:flex;gap:8px;align-items:center">
+            <input type="radio" name="mode" id="mode-mad" value="mad"> <span>Mise à disposition (MAD)</span>
+          </label>
+          <span class="badge">🎁 –15% jusqu’au 31/12/2025 (appliqué sur facture)</span>
         </div>
 
-        <div class="badge" style="margin:6px 0">🎉 Offre de lancement : <b>-15% jusqu’au 31/12/2025</b></div>
-
-        <label>Départ</label>
+        <label for="from">Départ</label>
         <input id="from" class="input" placeholder="Adresse de départ" autocomplete="off">
 
-        <label>Arrivée</label>
+        <label for="to">Arrivée</label>
         <input id="to" class="input" placeholder="Adresse d’arrivée" autocomplete="off">
 
-        <!-- Durée MAD (un SEUL bloc, pas de doublon d'ID !) -->
-        <div id="mad-row" class="row" style="display:none; gap:8px; align-items:center; margin:8px 0 0;">
-          <label for="mad-hours" style="min-width:140px;">Durée (MAD)</label>
+        <!-- Durée MAD -->
+        <div id="mad-row" class="row" style="display:none;grid-template-columns:160px 1fr;align-items:center">
+          <label for="mad-hours" style="margin:0">Durée (MAD)</label>
           <select id="mad-hours" class="input">
             <option value="1">1 h</option>
             <option value="2">2 h</option>
@@ -81,51 +127,54 @@
           </select>
         </div>
 
-        <div class="row">
+        <div class="row" style="grid-template-columns:1fr 1fr">
           <div>
-            <label>Date</label>
+            <label for="date">Date</label>
             <div style="display:flex;gap:6px">
               <input id="date" class="input" type="date" required>
               <button type="button" id="openDate" class="btn" style="padding:8px 10px">📅</button>
             </div>
           </div>
           <div>
-            <label>Heure</label>
+            <label for="time">Heure</label>
             <select id="time" class="input"></select>
           </div>
         </div>
 
-        <div class="row">
+        <div class="row" style="grid-template-columns:1fr 1fr">
           <div>
-            <label>Passagers</label>
+            <label for="pax">Passagers</label>
             <select id="pax" class="input"><option>1</option><option>2</option><option>3</option><option>4</option></select>
           </div>
           <div>
-           <label>Commentaires</label>
-<textarea id="note" class="input" rows="3" placeholder="Infos vol, bagages, demandes specifiques (optionnel)"></textarea>
+            <label for="note">Commentaires</label>
+            <textarea id="note" class="input" rows="3" placeholder="Infos vol, bagages, demandes spécifiques (optionnel)"></textarea>
           </div>
         </div>
 
-        <div class="actions" style="margin-top:12px">
-          <button id="estimate" class="btn">Estimer</button>
-          <button id="calendly" class="btn secondary" disabled>Réserver</button>
-          <div class="row" style="margin-top:8px">
-  <label style="display:flex;gap:8px;align-items:center">
-    <input id="payfull" type="checkbox">
-    <span>Payer <b>100%</b> maintenant (ou 20% d'acompte)</span>
-  </label>
-   <p style="font-size:.9rem;color:#CFCFCF;margin:.5rem 0 1rem">
-  ⚠️ La réservation n’est confirmée qu’après paiement de <strong>l’acompte de 20%</strong> via Stripe.
-  Tout créneau Calendly sans règlement pourra être <strong>annulé d’office</strong>. Conditions d’annulation : <strong>remboursement 100% ≥ 24h</strong>, sinon acompte conservé.
-</p>         
-</div>
+        <div class="row" style="margin-top:12px">
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <button id="estimate" class="btn">Estimer</button>
+            <button id="calendly" class="btn secondary" disabled>Réserver</button>
+          </div>
 
+          <label style="display:flex;gap:8px;align-items:center;margin-top:8px">
+            <input id="payfull" type="checkbox">
+            <span>Payer <b>100%</b> maintenant (ou 20% d’acompte)</span>
+          </label>
+
+          <p style="font-size:.9rem;color:var(--muted);margin:.5rem 0 0">
+            ⚠️ La réservation n’est confirmée qu’après paiement de <strong>l’acompte de 20%</strong> via Stripe.
+            Tout créneau Calendly sans règlement pourra être <strong>annulé d’office</strong>.<br>
+            Politique d’annulation : <strong>remboursement 100% si ≥ 24h</strong>, sinon acompte conservé.
+          </p>
         </div>
-      </div>
+      </section>
 
       <!-- Colonne droite : carte + indicateurs -->
-      <div class="card">
-        <div id="map" style="height:360px;border-radius:10px;overflow:hidden;margin-bottom:10px"></div>
+      <aside class="card" aria-labelledby="map-title">
+        <h3 id="map-title" style="margin-top:0">Votre itinéraire</h3>
+        <div id="map" style="height:360px;border-radius:10px;overflow:hidden;margin-bottom:10px;background:#0f0f0f"></div>
         <div class="kpi"><span class="badge">Distance</span> <span id="distance" class="value">—</span></div>
         <div class="kpi"><span class="badge">Durée</span> <span id="duration" class="value">—</span></div>
         <div class="price" style="margin:8px 0">
@@ -134,29 +183,26 @@
           <span id="totalLabel" class="badge" style="margin-left:6px;display:none"></span>
           <span>TTC</span>
         </div>
-      </div>
+      </aside>
     </div>
 
-    <!-- ===== Calendly inline (sous la grille) ===== -->
-    <div class="section">
-      <h3>Réservation</h3>
-      <p class="small">
-        Après l’estimation, cliquez sur <b>Réserver</b> pour choisir un créneau. Vous serez redirigé vers la page de paiement sécurisé.
-      </p>
-      <div id="calendly-inline"
-           style="width:100%;height:800px;border:1px solid #222;border-radius:12px"></div>
-    </div>
+    <!-- ===== Calendly inline ===== -->
+    <section class="section" aria-labelledby="res-title">
+      <h3 id="res-title">Réservation</h3>
+      <p class="badge" style="display:inline-block;margin:0 0 10px">Après l’estimation, cliquez sur <b>Réserver</b> pour choisir un créneau et payer en ligne.</p>
+      <div id="calendly-inline"></div>
+    </section>
 
-    <!-- Hero + footer -->
-    <div class="hero"><img src="/assets/hero-g6.png" alt="XPENG G6"></div>
+    <!-- ===== Footer ===== -->
     <div class="footer small">
-      © Transport Confort by Vincent — SIREN 990 407 397 — TVA FR71 990 407 397 — 23 rue La Bruyère, 93800 Épinay-sur-Seine — 07 49 55 62 77
+      © Transport Confort by Vincent — SIREN 990 407 397 — TVA FR71 990 407 397 —
+      23 rue La Bruyère, 93800 Épinay-sur-Seine — 07 49 55 62 77
     </div>
   </div>
 
-  <!-- ===== JS pour l’ouverture Calendly ===== -->
+  <!-- ===== JS d’intégration Calendly (harmonisé) ===== -->
   <script>
-    // === Config URLs + IDs de questions ===
+    // === Config URLs + IDs de questions (garde tes slugs Calendly) ===
     const CAL = {
       mad: {
         url: 'https://calendly.com/contact-transportconfort/reservation-chauffeur-prive-mad',
@@ -168,31 +214,27 @@
       }
     };
 
-    function getVal(id){ const el=document.getElementById(id); return el ? el.value.trim() : ''; }
+    function getVal(id){ const el=document.getElementById(id); return el ? (el.value||'').trim() : ''; }
 
-    // Attend que Calendly soit chargé
     function waitForCalendly(maxMs=15000){
-      return new Promise((resolve, reject)=>{
+      return new Promise((resolve,reject)=>{
         if (window.Calendly) return resolve();
-        const t0 = Date.now();
-        const iv = setInterval(()=>{
+        const t0=Date.now(), iv=setInterval(()=>{
           if (window.Calendly){ clearInterval(iv); resolve(); }
-          else if (Date.now()-t0 > maxMs){ clearInterval(iv); reject(new Error('Calendly not loaded')); }
-        }, 100);
+          else if (Date.now()-t0>maxMs){ clearInterval(iv); reject(new Error('Calendly not loaded')); }
+        },100);
       });
     }
 
     async function openInlineCalendly(){
-      try {
+      try{
         await waitForCalendly();
 
-        // Empêche l’ouverture si pas d’estimation
         if (!window._TC_LAST || window._TC_LAST.price_eur == null || !window._TC_LAST.from) {
           alert('Faites d’abord une estimation (tarif + adresses).');
           return;
         }
 
-        // 1) données
         const isMAD   = !!document.getElementById('mode-mad')?.checked;
         const dateStr = getVal('date');
         const timeStr = getVal('time');
@@ -200,101 +242,76 @@
         let whenISO = window._TC_LAST?.whenISO || null;
         if (!whenISO && dateStr && timeStr) whenISO = `${dateStr}T${timeStr}:00`;
 
-        const from       = window._TC_LAST?.from || getVal('from');
-        const to         = isMAD ? '' : (window._TC_LAST?.to || getVal('to'));
-        const price_eur  = window._TC_LAST?.price_eur ?? null;
-        const mad_hours  = isMAD ? (window._TC_LAST?.mad_hours || Number(document.getElementById('mad-hours')?.value || 1)) : undefined;
+        const from      = window._TC_LAST?.from || getVal('from');
+        const to        = isMAD ? '' : (window._TC_LAST?.to || getVal('to'));
+        const price_eur = window._TC_LAST?.price_eur ?? null;
+        const mad_hours = isMAD ? (window._TC_LAST?.mad_hours || Number(document.getElementById('mad-hours')?.value || 1)) : undefined;
+        const payFull   = !!document.getElementById('payfull')?.checked;
 
-// 2) canon + presign (fallback base64 si la function est KO)
-const payFull = !!document.getElementById('payfull')?.checked;
+        // Canon + presign (fallback base64)
+        const canon = { type:isMAD?'mad':'course', whenISO, from, to, price_eur, mad_hours, pay_mode: payFull ? 'full' : 'deposit' };
 
-const canon = {
-  type: isMAD ? 'mad' : 'course',
-  whenISO,
-  from,
-  to,
-  price_eur,
-  mad_hours,
-  // NEW: choix d’encaissement
-  pay_mode: payFull ? 'full' : 'deposit'
-};
+        let signed;
+        try{
+          const r = await fetch('/.netlify/functions/sim-presign', {
+            method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ canon })
+          });
+          if(!r.ok){
+            const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(canon))));
+            signed = { signature:'', nonce:'', canon_b64:b64 };
+          }else{
+            signed = await r.json(); // { signature, canon_b64, nonce }
+          }
+        }catch(e){
+          console.warn('presign error — fallback', e);
+          const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(canon))));
+          signed = { signature:'', nonce:'', canon_b64:b64 };
+        }
 
-let signed;
-try {
-  const r = await fetch('/.netlify/functions/sim-presign', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ canon })
-  });
-
-  if (!r.ok) {
-    const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(canon))));
-    signed = { signature: '', nonce: '', canon_b64: b64 };
-  } else {
-    signed = await r.json(); // { signature, canon_b64, nonce }
-  }
-} catch (e) {
-  console.warn('presign error — fallback', e);
-  const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(canon))));
-  signed = { signature: '', nonce: '', canon_b64: b64 };
-}
-
-  
-
-        // 3) prefill (questions personnalisées Calendly)
+        // Prefill Calendly
         const cfg = isMAD ? CAL.mad : CAL.course;
         const ca  = {};
         if (cfg.qid.price && price_eur!=null) ca[cfg.qid.price] = (typeof TC!=='undefined' && TC.fmtMoney)? TC.fmtMoney(price_eur) : `${price_eur} €`;
         if (cfg.qid.from  && from)            ca[cfg.qid.from]  = from;
         if (!isMAD && cfg.qid.to && to)       ca[cfg.qid.to]    = to;
         if (isMAD && cfg.qid.duration && mad_hours) ca[cfg.qid.duration] = `${mad_hours} h`;
-        const prefill = {
-          date: whenISO ? whenISO.slice(0,10) : undefined,
-          customAnswers: ca
-        };
+        const prefill = { date: whenISO ? whenISO.slice(0,10) : undefined, customAnswers: ca };
 
-        // 4) UTM (preuve)
+        // UTM (traçabilité)
         const utm = {
           utm_source:  'simulator',
           utm_medium:  signed.signature || 'nosig',
           utm_term:    signed.nonce || '',
           utm_content: signed.canon_b64 || '',
-          utm_campaign: (window._TC_LAST?.label || (isMAD?'MAD':'COURSE'))
+          utm_campaign:(window._TC_LAST?.label || (isMAD?'MAD':'COURSE'))
         };
 
-        // 5) URL Calendly + couleurs
+        // URL Calendly + thème
         const base = new URL(cfg.url);
         base.searchParams.set('background_color','0B0B0B');
         base.searchParams.set('text_color','FFFFFF');
         base.searchParams.set('primary_color','C7A24B');
-        // duplication UTM pour l’UI Calendly
+        // UTM visibles
         base.searchParams.set('utm_source', utm.utm_source);
         base.searchParams.set('utm_medium', utm.utm_medium);
         base.searchParams.set('utm_term', utm.utm_term);
         base.searchParams.set('utm_content', utm.utm_content);
         base.searchParams.set('utm_campaign', utm.utm_campaign);
 
-        // 6) host + init widget
         const host = document.getElementById('calendly-inline');
-        if (!host){ alert('Zone calendrier manquante (#calendly-inline).'); return; }
-        host.innerHTML = '';
+        if(!host){ alert('Zone calendrier manquante (#calendly-inline).'); return; }
+        host.innerHTML='';
 
-        Calendly.initInlineWidget({
-          url: base.toString(),
-          parentElement: host,
-          prefill,
-          utm
-        });
-
+        Calendly.initInlineWidget({ url: base.toString(), parentElement: host, prefill, utm });
         host.scrollIntoView({ behavior:'smooth', block:'start' });
-      } catch (e){
+      }catch(e){
         console.error('openInlineCalendly failed:', e);
         alert('Impossible d’ouvrir le calendrier.');
       }
     }
 
-    // Accroche du bouton + export global (pour l’ancien code)
-    document.addEventListener('DOMContentLoaded', () => {
+    // Hook bouton
+    document.addEventListener('DOMContentLoaded', ()=>{
       const btn = document.getElementById('calendly');
       if (btn) btn.addEventListener('click', (ev)=>{ ev.preventDefault(); openInlineCalendly(); });
       window.openInlineCalendly = openInlineCalendly;
