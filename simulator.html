@@ -1,4 +1,4 @@
-<!doctype html>
+<!doctype html> 
 <html lang="fr">
 <head>
   <meta charset="utf-8">
@@ -69,20 +69,18 @@
     /* ===== Calendly – conteneur + override internes ===== */
     #calendly-inline{
       width:100%;
-      height:82vh;          /* occupe la hauteur utile */
-      min-height:900px;     /* desktop confortable */
+      height:82vh;
+      min-height:900px;
       border:1px solid var(--line);
       border-radius:12px;
       overflow:hidden;
       background:#0b0b0b;
     }
-    /* Casse la hauteur fixe que Calendly applique en interne */
     #calendly-inline .calendly-inline-widget,
     #calendly-inline .calendly-inline-widget iframe{
       height:100% !important;
       min-height:100% !important;
     }
-    /* Mobile très petit : plus haut pour la liste créneaux */
     @media (max-width:480px){
       #calendly-inline{ height:1100px; min-height:1100px; }
     }
@@ -218,24 +216,24 @@
     </div>
   </div>
 
-  <!-- ===== JS d’intégration Calendly (harmonisé + plein écran) ===== -->
+  <!-- ===== JS d’intégration Calendly (harmonisé + plein écran + formats FR) ===== -->
   <script>
     // === Config URLs + IDs de questions (garde tes slugs Calendly) ===
-   const CAL = {
-  mad: {
-    url: 'https://calendly.com/contact-transportconfort/reservation-chauffeur-prive-mad',
-    // 1: Date souhaitée, 2: Heure souhaitée, 3: Adresse prise en charge, 4: Durée souhaitée, 5: Tarif estimé
-    qid: { date: 'a1', time: 'a2', from: 'a3', duration: 'a4', price: 'a5' }
-  },
-  course: {
-    url: 'https://calendly.com/contact-transportconfort/reservation-vtc',
-    // 1: Date souhaitée, 2: Heure souhaitée, 3: Adresse prise en charge, 4: Adresse de dépose, 5: Tarif estimé
-    qid: { date: 'a1', time: 'a2', from: 'a3', to: 'a4', price: 'a5' }
-  }
-};
+    const CAL = {
+      mad: {
+        url: 'https://calendly.com/contact-transportconfort/reservation-chauffeur-prive-mad',
+        // 1: Date souhaitée, 2: Heure souhaitée, 3: Adresse prise en charge, 4: Durée souhaitée, 5: Tarif estimé
+        qid: { date: 'a1', time: 'a2', from: 'a3', duration: 'a4', price: 'a5' }
+      },
+      course: {
+        url: 'https://calendly.com/contact-transportconfort/reservation-vtc',
+        // 1: Date souhaitée, 2: Heure souhaitée, 3: Adresse prise en charge, 4: Adresse de dépose, 5: Tarif estimé
+        qid: { date: 'a1', time: 'a2', from: 'a3', to: 'a4', price: 'a5' }
+      }
+    };
 
+    // Helpers
     function getVal(id){ const el=document.getElementById(id); return el ? (el.value||'').trim() : ''; }
-
     function waitForCalendly(maxMs=15000){
       return new Promise((resolve,reject)=>{
         if (window.Calendly) return resolve();
@@ -244,6 +242,23 @@
           else if (Date.now()-t0>maxMs){ clearInterval(iv); reject(new Error('Calendly not loaded')); }
         },100);
       });
+    }
+    // >>> formatage FR pour champs texte Calendly
+    function toFRDate(isoOrYmd){
+      if (!isoOrYmd) return '';
+      const ymd = isoOrYmd.slice(0,10);               // 'YYYY-MM-DD'
+      const [y,m,d] = ymd.split('-');
+      if (y && m && d) return `${d}/${m}/${y}`;       // 'DD/MM/YYYY'
+      try { return new Date(isoOrYmd).toLocaleDateString('fr-FR'); }
+      catch(_) { return isoOrYmd; }
+    }
+    function toFRTime(hhmm){
+      if (!hhmm) return '';
+      const m = String(hhmm).match(/^(\d{1,2})[:hH]?(\d{2})$/);
+      if (!m) return hhmm;
+      const h = m[1].padStart(2,'0');
+      const mi = m[2];
+      return `${h}h${mi}`;                             // '18h55'
     }
 
     async function openInlineCalendly(){
@@ -256,8 +271,8 @@
         }
 
         const isMAD   = !!document.getElementById('mode-mad')?.checked;
-        const dateStr = getVal('date');
-        const timeStr = getVal('time');
+        const dateStr = getVal('date');                // 'YYYY-MM-DD'
+        const timeStr = getVal('time');                // 'HH:MM'
 
         let whenISO = window._TC_LAST?.whenISO || null;
         if (!whenISO && dateStr && timeStr) whenISO = `${dateStr}T${timeStr}:00`;
@@ -288,14 +303,22 @@
           signed = { signature:'', nonce:'', canon_b64:b64 };
         }
 
-        // Prefill Calendly
+        // Prefill Calendly (avec formats FR pour les champs texte)
         const cfg = isMAD ? CAL.mad : CAL.course;
         const ca  = {};
         if (cfg.qid.price && price_eur!=null) ca[cfg.qid.price] = (typeof TC!=='undefined' && TC.fmtMoney)? TC.fmtMoney(price_eur) : `${price_eur} €`;
         if (cfg.qid.from  && from)            ca[cfg.qid.from]  = from;
         if (!isMAD && cfg.qid.to && to)       ca[cfg.qid.to]    = to;
         if (isMAD && cfg.qid.duration && mad_hours) ca[cfg.qid.duration] = `${mad_hours} h`;
-        const prefill = { date: whenISO ? whenISO.slice(0,10) : undefined, customAnswers: ca };
+
+        // >> Date/Heure dans les "custom answers" (format FR attendu)
+        const rawDate = whenISO ? whenISO.slice(0,10) : dateStr;   // 'YYYY-MM-DD'
+        const rawTime = whenISO ? whenISO.slice(11,16) : timeStr;  // 'HH:MM'
+        if (cfg.qid.date && rawDate) ca[cfg.qid.date] = toFRDate(rawDate);
+        if (cfg.qid.time && rawTime) ca[cfg.qid.time] = toFRTime(rawTime);
+
+        // Garder aussi le "prefill.date" (calendrier de gauche)
+        const prefill = { date: whenISO ? whenISO.slice(0,10) : (rawDate || undefined), customAnswers: ca };
 
         // UTM (traçabilité)
         const utm = {
@@ -311,7 +334,6 @@
         base.searchParams.set('background_color','0B0B0B');
         base.searchParams.set('text_color','FFFFFF');
         base.searchParams.set('primary_color','C7A24B');
-        // UTM visibles
         base.searchParams.set('utm_source', utm.utm_source);
         base.searchParams.set('utm_medium', utm.utm_medium);
         base.searchParams.set('utm_term', utm.utm_term);
@@ -322,14 +344,9 @@
         if(!host){ alert('Zone calendrier manquante (#calendly-inline).'); return; }
         host.innerHTML='';
 
-        /* ============================================
-           PATCH "plein écran" Calendly (desktop+mobile)
-        ============================================ */
-        // Dimensionne le conteneur selon l'écran
+        /* ===== Patch "plein écran" Calendly ===== */
         const vh = Math.max(900, Math.round(window.innerHeight * 0.85));
         host.style.height = vh + 'px';
-
-        // Forcer 100% sur le widget et l'iframe (Calendly pose une height fixe)
         const ensureFullHeight = () => {
           const w = host.querySelector('.calendly-inline-widget');
           const f = host.querySelector('.calendly-inline-widget iframe');
@@ -338,8 +355,6 @@
         };
         const mo = new MutationObserver(ensureFullHeight);
         mo.observe(host, { childList:true, subtree:true });
-
-        // Ajuste sur resize / rotation
         let t;
         window.addEventListener('resize', () => {
           clearTimeout(t);
@@ -349,7 +364,7 @@
             ensureFullHeight();
           }, 150);
         });
-        /* ========== fin patch plein écran ========== */
+        /* ========================================= */
 
         Calendly.initInlineWidget({ url: base.toString(), parentElement: host, prefill, utm });
         host.scrollIntoView({ behavior:'smooth', block:'start' });
