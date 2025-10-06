@@ -1,4 +1,4 @@
-<!doctype html> 
+<!doctype html>  
 <html lang="fr">
 <head>
   <meta charset="utf-8">
@@ -216,19 +216,19 @@
     </div>
   </div>
 
-  <!-- ===== JS d’intégration Calendly (harmonisé + plein écran + formats FR) ===== -->
+  <!-- ===== JS d’intégration Calendly (harmonisé + plein écran + formats FR + passagers/commentaires) ===== -->
   <script>
-    // === Config URLs + IDs de questions (garde tes slugs Calendly) ===
+    // === Config URLs + IDs de questions (par ordre dans Calendly) ===
     const CAL = {
       mad: {
         url: 'https://calendly.com/contact-transportconfort/reservation-chauffeur-prive-mad',
-        // 1: Date souhaitée, 2: Heure souhaitée, 3: Adresse prise en charge, 4: Durée souhaitée, 5: Tarif estimé
-        qid: { date: 'a1', time: 'a2', from: 'a3', duration: 'a4', price: 'a5', pax:'a6', note:'a7' }
+        // 1: Date, 2: Heure, 3: Adresse prise en charge, 4: Durée MAD, 5: Tarif, 6: Passagers, 7: Commentaires
+        qid: { date:'a1', time:'a2', from:'a3', duration:'a4', price:'a5', pax:'a6', note:'a7' }
       },
       course: {
         url: 'https://calendly.com/contact-transportconfort/reservation-vtc',
-        // 1: Date souhaitée, 2: Heure souhaitée, 3: Adresse prise en charge, 4: Adresse de dépose, 5: Tarif estimé
-        qid: { date: 'a1', time: 'a2', from: 'a3', to: 'a4', price: 'a5', pax:'a6', note:'a7' }
+        // 1: Date, 2: Heure, 3: Adresse prise en charge, 4: Adresse de dépose, 5: Tarif, 6: Passagers, 7: Commentaires
+        qid: { date:'a1', time:'a2', from:'a3', to:'a4', price:'a5', pax:'a6', note:'a7' }
       }
     };
 
@@ -283,6 +283,10 @@
         const mad_hours = isMAD ? (window._TC_LAST?.mad_hours || Number(document.getElementById('mad-hours')?.value || 1)) : undefined;
         const payFull   = !!document.getElementById('payfull')?.checked;
 
+        // NEW: passagers & commentaires
+        const paxStr  = (document.getElementById('pax')?.value || '').trim();
+        const noteStr = (document.getElementById('note')?.value || '').replace(/\s+\n/g,'\n').trim();
+
         // Canon + presign (fallback base64)
         const canon = { type:isMAD?'mad':'course', whenISO, from, to, price_eur, mad_hours, pay_mode: payFull ? 'full' : 'deposit' };
 
@@ -311,22 +315,20 @@
         if (!isMAD && cfg.qid.to && to)       ca[cfg.qid.to]    = to;
         if (isMAD && cfg.qid.duration && mad_hours) ca[cfg.qid.duration] = `${mad_hours} h`;
 
-        // >> Date/Heure dans les "custom answers" (format FR attendu)
-       function toFRDate(iso){ try{ const [y,m,d]=iso.split('-'); return `${d}/${m}/${y}`; }catch(e){ return iso; } }
-       function toFRTime(hhmm){ return /^\d{2}:\d{2}$/.test(hhmm) ? `${hhmm}h` : hhmm; }
+        // >> Date/Heure dans les "custom answers"
+        const rawDate = dateStr || (whenISO ? whenISO.slice(0,10) : '');
+        const rawTime = timeStr || (whenISO ? whenISO.slice(11,16) : '');
+        if (cfg.qid.date && rawDate) ca[cfg.qid.date] = toFRDate(rawDate);
+        if (cfg.qid.time && rawTime) ca[cfg.qid.time] = toFRTime(rawTime);
 
-       // Préfère toujours les valeurs du formulaire ; fallback sur whenISO si vide.
-       const rawDate = dateStr || (whenISO ? whenISO.slice(0,10) : '');
-       const rawTime = timeStr || (whenISO ? whenISO.slice(11,16) : '');
+        // >> Passagers & commentaires
+        if (cfg.qid.pax  && paxStr)  ca[cfg.qid.pax]  = `${paxStr} passager${paxStr==='1'?'':'s'}`;
+        if (cfg.qid.note && noteStr) ca[cfg.qid.note] = noteStr;
 
-       if (cfg.qid.date && rawDate) ca[cfg.qid.date] = toFRDate(rawDate);
-       if (cfg.qid.time && rawTime) ca[cfg.qid.time] = toFRTime(rawTime);
-
-
-        // Garder aussi le "prefill.date" (calendrier de gauche)
+        // Préselection de la date côté Calendly (calendrier)
         const prefill = {
-        date: dateStr || (whenISO ? whenISO.slice(0,10) : undefined),
-        customAnswers: ca
+          date: dateStr || (whenISO ? whenISO.slice(0,10) : undefined),
+          customAnswers: ca
         };
 
         // UTM (traçabilité)
