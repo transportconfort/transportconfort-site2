@@ -312,15 +312,22 @@
         if (isMAD && cfg.qid.duration && mad_hours) ca[cfg.qid.duration] = `${mad_hours} h`;
 
         // >> Date/Heure dans les "custom answers" (format FR attendu)
-        const rawDate = whenISO ? whenISO.slice(0,10) : dateStr;   // 'YYYY-MM-DD'
-        // Préfère toujours la valeur du formulaire (locale) ; fallback sur whenISO si vide.
-        const rawDate = dateStr || (whenISO ? whenISO.slice(0,10) : '');
-        const rawTime = timeStr || (whenISO ? whenISO.slice(11,16) : '');
-        if (cfg.qid.date && rawDate) ca[cfg.qid.date] = toFRDate(rawDate);
-        if (cfg.qid.time && rawTime) ca[cfg.qid.time] = toFRTime(rawTime);
+       function toFRDate(iso){ try{ const [y,m,d]=iso.split('-'); return `${d}/${m}/${y}`; }catch(e){ return iso; } }
+       function toFRTime(hhmm){ return /^\d{2}:\d{2}$/.test(hhmm) ? `${hhmm}h` : hhmm; }
+
+       // Préfère toujours les valeurs du formulaire ; fallback sur whenISO si vide.
+       const rawDate = dateStr || (whenISO ? whenISO.slice(0,10) : '');
+       const rawTime = timeStr || (whenISO ? whenISO.slice(11,16) : '');
+
+       if (cfg.qid.date && rawDate) ca[cfg.qid.date] = toFRDate(rawDate);
+       if (cfg.qid.time && rawTime) ca[cfg.qid.time] = toFRTime(rawTime);
+
 
         // Garder aussi le "prefill.date" (calendrier de gauche)
-        const prefill = { date: whenISO ? whenISO.slice(0,10) : (rawDate || undefined), customAnswers: ca };
+        const prefill = {
+        date: dateStr || (whenISO ? whenISO.slice(0,10) : undefined),
+        customAnswers: ca
+        };
 
         // UTM (traçabilité)
         const utm = {
