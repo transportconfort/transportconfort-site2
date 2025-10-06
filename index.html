@@ -1,4 +1,4 @@
-<!doctype html>
+<!doctype html> 
 <html lang="fr">
 <head>
   <meta charset="utf-8">
@@ -12,14 +12,26 @@
     }
     body{background:var(--bg);color:var(--fg);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;line-height:1.55}
     .container{max-width:1120px;margin:0 auto;padding:0 16px}
-    .header{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
-    .brand{display:flex;gap:10px;align-items:center}
-    .brand img{height:38px;width:auto}
-    .brand h1{margin:0;font-size:clamp(18px,4.6vw,28px)}
-    .slogan{color:var(--muted);font-size:clamp(12px,3.4vw,14px)}
-    .nav{display:flex;gap:12px;flex-wrap:wrap}
-    .nav a{color:var(--fg);text-decoration:none;font-size:14px}
-    .nav a[aria-current="page"]{color:var(--gold);font-weight:600}
+
+    /* ===== Header refondu (masthead) ===== */
+    .masthead{padding:12px 0;border-bottom:1px solid var(--line);position:relative;background:var(--bg)}
+    .brand-block{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center}
+    .brand-logo{height:56px;width:auto;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+    .brand-text{min-width:0}
+    .brand-name{margin:0;font-size:0} /* masqué visuellement, utile si tu veux l’afficher plus tard */
+    .slogan{color:var(--muted);font-size:clamp(13px,3.6vw,15px);line-height:1.35}
+
+    .nav-scroller{
+      margin-top:10px;display:flex;gap:16px;white-space:nowrap;overflow-x:auto;overscroll-behavior-x:contain;
+      padding-bottom:6px;scrollbar-width:none;border-top:1px solid var(--line);padding-top:10px
+    }
+    .nav-scroller::-webkit-scrollbar{display:none}
+    .nav-scroller a{color:var(--fg);text-decoration:none;font-size:15px;opacity:.92}
+    .nav-scroller a[aria-current="page"]{color:var(--gold);font-weight:600;opacity:1}
+    @media (min-width:960px){
+      .brand-logo{height:64px}
+      .nav-scroller{gap:20px}
+    }
 
     /* ===== Section HOME ===== */
     .tcv-home{background:var(--bg);border-radius:16px;padding:16px;margin:10px 0 24px;border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.28)}
@@ -35,11 +47,11 @@
     .grid{display:grid;gap:12px}
 
     /* === Layout mobile d’abord === */
-    .grid-2{grid-template-columns:1fr}           /* mobile: 1 colonne */
-    .tile{grid-template-columns:1fr}             /* tuiles: 1 col en très petit */
-    @media (min-width:420px){ .tile{grid-template-columns:1fr 1fr} }  /* 2 colonnes dès 420px */
+    .grid-2{grid-template-columns:1fr}
+    .tile{grid-template-columns:1fr}
+    @media (min-width:420px){ .tile{grid-template-columns:1fr 1fr} }
     @media (min-width:960px){
-      .grid-2{grid-template-columns:1fr 1fr}     /* desktop: 2 colonnes équilibrées */
+      .grid-2{grid-template-columns:1fr 1fr}
       .tcv-home{padding:22px;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
       .card{padding:18px}
     }
@@ -53,7 +65,7 @@
     .tcv-promo .btn{margin-left:auto;padding:8px 10px;border-radius:10px}
     .tcv-promo .close{margin-left:6px;background:transparent;color:#bbb;border:1px solid var(--line);border-radius:999px;padding:2px 8px;line-height:1}
 
-    /* === Colonne images empilées (grand visuel mobile) === */
+    /* === Colonne images empilées === */
     .images-card .stack{display:grid;gap:10px}
     .images-card .ph{margin:0;padding:0;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
     .images-card img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;transition:transform .25s}
@@ -63,7 +75,7 @@
       .images-card img{aspect-ratio:16/9;min-height:240px}
     }
 
-    /* === Listes & séparateurs plus aérés en mobile */
+    /* === Listes & séparateurs === */
     .list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
     .check{width:16px;height:16px;border-radius:50%;border:2px solid var(--gold);display:inline-flex;align-items:center;justify-content:center;margin-right:8px}
     .check::after{content:"";width:7px;height:7px;background:var(--gold);border-radius:50%}
@@ -73,7 +85,7 @@
     .tcv-home .card.tile{background:transparent;border:none;box-shadow:none;padding:0}
     .tcv-home .tile .feature-card{
       background: rgba(17,17,17,.65);
-      border: 1px solid rgba(199,162,75,.25); /* doré doux */
+      border: 1px solid rgba(199,162,75,.25);
       border-radius: 12px;
       padding: 14px;
       transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
@@ -84,10 +96,7 @@
       box-shadow: 0 12px 26px rgba(0,0,0,.45);
     }
     .tcv-home .title-premium{position:relative;padding-top:10px;margin-bottom:.6rem}
-    .tcv-home .title-premium::before{
-      content:"";display:block;width:56px;height:2px;background:var(--gold);
-      border-radius:2px;margin-bottom:8px
-    }
+    .tcv-home .title-premium::before{content:"";display:block;width:56px;height:2px;background:var(--gold);border-radius:2px;margin-bottom:8px}
     .tcv-home .feature-card h4{margin:.2rem 0 .35rem;color:#fff;font-size:1rem}
     .tcv-home .feature-card p.note{color:var(--muted);font-size:.95rem;margin:0}
     @media (max-width:420px){
@@ -99,23 +108,24 @@
 </head>
 <body>
   <div class="container">
-    <!-- ===== Header ===== -->
-    <div class="header">
-      <div class="brand">
-        <img src="/assets/logo.png" alt="Logo">
-        <div>
-          <h1>Transport Confort</h1>
+
+    <!-- ===== Header (nouvelle version) ===== -->
+    <header class="masthead" role="banner">
+      <div class="brand-block">
+        <img class="brand-logo" src="/assets/logo.png" alt="Transport Confort">
+        <div class="brand-text">
+          <h1 class="brand-name">Transport Confort</h1> <!-- masqué visuellement via CSS -->
           <div class="slogan">Transport haut de gamme • Confort premium</div>
         </div>
       </div>
-      <nav class="nav">
+      <nav class="nav-scroller" role="navigation" aria-label="Navigation principale">
         <a href="/" aria-current="page">Accueil</a>
         <a href="/simulator.html">Simulateur</a>
         <a href="/tarifs.html">Tarifs</a>
         <a href="/a-propos.html">À propos</a>
         <a href="/mentions.html">Mentions légales</a>
       </nav>
-    </div>
+    </header>
 
     <!-- ===== HOME ===== -->
     <section id="tcv-home" class="tcv-home" aria-labelledby="home-title">
@@ -150,7 +160,7 @@
           </div>
         </header>
 
-        <!-- Services + Images (mobile: 1 colonne, desktop: 2 colonnes équilibrées) -->
+        <!-- Services + Images -->
         <div class="grid grid-2" style="align-items:start">
           <!-- Services -->
           <section class="card">
@@ -191,17 +201,15 @@
             </ul>
           </section>
 
-          <!-- Images empilées (grandes) -->
+          <!-- Images empilées -->
           <section class="card images-card">
             <h3>En images</h3>
             <div class="stack">
               <figure class="ph">
-                <img loading="lazy" src="/assets/hero-airport.png" alt="Transport Confort — Aéroport"
-                     sizes="(max-width: 960px) 100vw, 540px">
+                <img loading="lazy" src="/assets/hero-airport.png" alt="Transport Confort — Aéroport" sizes="(max-width: 960px) 100vw, 540px">
               </figure>
               <figure class="ph">
-                <img loading="lazy" src="/assets/hero-g6-alt.png" alt="Transport Confort — Hôtel de nuit"
-                     sizes="(max-width: 960px) 100vw, 540px">
+                <img loading="lazy" src="/assets/hero-g6-alt.png" alt="Transport Confort — Hôtel de nuit" sizes="(max-width: 960px) 100vw, 540px">
               </figure>
             </div>
           </section>
