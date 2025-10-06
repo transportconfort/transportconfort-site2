@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Simulateur & Réservation • Transport Confort</title>
 
-  <!-- Feuille globale (conserve) -->
+  <!-- Feuille globale -->
   <link rel="stylesheet" href="/assets/style.css">
 
   <!-- App + simulateur (calculs, Google Maps, etc.) -->
   <script src="/js/app.js" defer></script>
   <script src="/js/simulator.js" defer></script>
 
-  <!-- Calendly (nécessaire pour l'embed inline) -->
+  <!-- Calendly (embed inline) -->
   <link rel="stylesheet" href="https://assets.calendly.com/assets/external/widget.css">
   <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
 
@@ -66,8 +66,26 @@
     .price{display:flex;align-items:center;gap:8px;font-size:1.05rem}
     .price .value{font-size:1.1rem}
 
-    /* Calendly container */
-    #calendly-inline{width:100%;min-height:680px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+    /* ===== Calendly – conteneur + override internes ===== */
+    #calendly-inline{
+      width:100%;
+      height:82vh;          /* occupe la hauteur utile */
+      min-height:900px;     /* desktop confortable */
+      border:1px solid var(--line);
+      border-radius:12px;
+      overflow:hidden;
+      background:#0b0b0b;
+    }
+    /* Casse la hauteur fixe que Calendly applique en interne */
+    #calendly-inline .calendly-inline-widget,
+    #calendly-inline .calendly-inline-widget iframe{
+      height:100% !important;
+      min-height:100% !important;
+    }
+    /* Mobile très petit : plus haut pour la liste créneaux */
+    @media (max-width:480px){
+      #calendly-inline{ height:1100px; min-height:1100px; }
+    }
 
     /* Footer */
     .footer{color:var(--muted);margin:14px 0}
@@ -200,7 +218,7 @@
     </div>
   </div>
 
-  <!-- ===== JS d’intégration Calendly (harmonisé) ===== -->
+  <!-- ===== JS d’intégration Calendly (harmonisé + plein écran) ===== -->
   <script>
     // === Config URLs + IDs de questions (garde tes slugs Calendly) ===
     const CAL = {
@@ -301,6 +319,35 @@
         const host = document.getElementById('calendly-inline');
         if(!host){ alert('Zone calendrier manquante (#calendly-inline).'); return; }
         host.innerHTML='';
+
+        /* ============================================
+           PATCH "plein écran" Calendly (desktop+mobile)
+        ============================================ */
+        // Dimensionne le conteneur selon l'écran
+        const vh = Math.max(900, Math.round(window.innerHeight * 0.85));
+        host.style.height = vh + 'px';
+
+        // Forcer 100% sur le widget et l'iframe (Calendly pose une height fixe)
+        const ensureFullHeight = () => {
+          const w = host.querySelector('.calendly-inline-widget');
+          const f = host.querySelector('.calendly-inline-widget iframe');
+          if (w) { w.style.height = '100%'; w.style.minHeight = '100%'; }
+          if (f) { f.style.height = '100%'; f.style.minHeight = '100%'; }
+        };
+        const mo = new MutationObserver(ensureFullHeight);
+        mo.observe(host, { childList:true, subtree:true });
+
+        // Ajuste sur resize / rotation
+        let t;
+        window.addEventListener('resize', () => {
+          clearTimeout(t);
+          t = setTimeout(() => {
+            const nv = Math.max(900, Math.round(window.innerHeight * 0.85));
+            host.style.height = nv + 'px';
+            ensureFullHeight();
+          }, 150);
+        });
+        /* ========== fin patch plein écran ========== */
 
         Calendly.initInlineWidget({ url: base.toString(), parentElement: host, prefill, utm });
         host.scrollIntoView({ behavior:'smooth', block:'start' });
