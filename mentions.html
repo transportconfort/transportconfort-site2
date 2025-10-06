@@ -1,412 +1,388 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mentions légales & CGV & CGU • Transport Confort</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="/assets/style.css"></head><body><div class="container"><div class="header"><div class="brand"><img src="/assets/logo.png" alt="Logo"><div><h1>Transport Confort</h1><div class="slogan">Transport haut de gamme • Confort premium</div></div></div><nav class="nav"><a href="/">Accueil</a><a href="/simulator.html">Simulateur</a><a href="/tarifs.html">Tarifs</a><a href="/a-propos.html">À propos</a><a href="/mentions.html">Mentions légales</a></nav></div>
-<div class="section">
-  <h2>Mentions légales</h2>
-  <p class="small">Éditeur : Transport Confort by Vincent — SIREN 990 407 397 — 23 rue La Bruyère, 93800 Épinay-sur-Seine — contact@transportconfort.com — 07 49 55 62 77. Hébergeur : Netlify, Inc.</p>
-  <section id="cgv" class="tcv-cgv" lang="fr" aria-labelledby="cgv-title">
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Mentions légales & CGV & CGU • Transport Confort</title>
+  <link rel="stylesheet" href="/assets/style.css">
   <style>
-    /* === Transport Confort — CGV === */
-    .tcv-cgv{--bg:#0B0B0B;--fg:#F5F5F5;--muted:#CFCFCF;--gold:#C7A24B;--line:#2A2A2A;--ok:#2ecc71;--warn:#f1c40f;--bad:#e74c3c;
-      font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; background:var(--bg); color:var(--fg);
-      border-radius:18px; padding:28px; box-shadow:0 10px 30px rgba(0,0,0,.35); line-height:1.6; letter-spacing:.2px}
-    .tcv-cgv *{box-sizing:border-box}
-    .tcv-cgv h2,#cgv-title{font-size:1.9rem;margin:0 0 .5rem 0;color:var(--gold);letter-spacing:.4px}
-    .tcv-cgv .subtitle{margin:0 0 1.2rem 0;color:var(--muted);font-size:.95rem}
-    .tcv-cgv .grid{display:grid;gap:18px}
-    .tcv-cgv .card{border:1px solid var(--line); border-radius:14px; padding:18px; background:rgba(255,255,255,.02)}
-    .tcv-cgv h3{margin:.2rem 0 .6rem 0; font-size:1.15rem; color:var(--gold)}
-    .tcv-cgv p{margin:.4rem 0}
-    .tcv-cgv ul, .tcv-cgv ol{margin:.4rem 0 .6rem 1.2rem}
-    .tcv-cgv .note{font-size:.9rem; color:var(--muted)}
-    .tcv-cgv .badge{display:inline-block; padding:.2rem .55rem; border:1px solid var(--line); border-radius:999px; font-size:.8rem; color:var(--muted)}
-    .tcv-cgv .kpi{display:flex; gap:10px; flex-wrap:wrap; margin:.5rem 0 0 0}
-    .tcv-cgv .kpi .pill{padding:.35rem .6rem; border-radius:999px; border:1px solid var(--line); font-size:.85rem}
-    .tcv-cgv .pill.ok{border-color:var(--ok); color:var(--ok)}
-    .tcv-cgv .pill.warn{border-color:var(--warn); color:var(--warn)}
-    .tcv-cgv .pill.bad{border-color:var(--bad); color:var(--bad)}
-    .tcv-cgv .law{font-family: ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.9rem; color:var(--muted)}
-    .tcv-cgv .list-compact li{margin:.2rem 0}
-    .tcv-cgv .dl{display:grid; grid-template-columns: 220px 1fr; gap:8px 18px}
-    .tcv-cgv .dl dt{color:var(--muted)}
-    .tcv-cgv .dl dd{margin:0}
-    .tcv-cgv hr{border:none; border-top:1px solid var(--line); margin:14px 0}
-    @media (max-width: 720px){
-      .tcv-cgv{padding:20px}
-      .tcv-cgv .dl{grid-template-columns: 1fr}
-    }
-  </style>
+    :root{--bg:#0B0B0B;--fg:#F5F5F5;--muted:#CFCFCF;--gold:#C7A24B;--line:#1F1F1F;--card:#111111}
+    body{background:var(--bg);color:var(--fg);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;line-height:1.6}
+    .container{max-width:1120px;margin:0 auto;padding:0 16px}
 
-  <header>
-    <h2 id="cgv-title">Conditions Générales de Vente — Transport Confort by Vincent</h2>
-    <p class="subtitle">
-      Applicables aux prestations de transport privé de personnes proposées par <strong>Transport Confort by Vincent</strong> (SASU),
-      SIRET <strong>SIREN 990 407 397</strong>. Dernière mise à jour : <time datetime="{{YYYY-MM-DD}}">{{JJ/MM/AAAA}}</time>.
-    </p>
-    <div class="kpi">
-      <span class="pill ok">Acompte 20% (Stripe)</span>
-      <span class="pill warn">Annulation ≥ 24h : remboursement 100%</span>
-      <span class="pill bad">Annulation &lt; 24h : acompte non remboursé</span>
+    /* ===== Masthead harmonisé ===== */
+    .masthead{padding:12px 0;border-bottom:1px solid var(--line);background:var(--bg)}
+    .brand-block{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center}
+    .brand-logo{height:56px;width:auto;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+    .slogan{color:var(--muted);font-size:clamp(13px,3.6vw,15px);line-height:1.35}
+    .nav-scroller{
+      margin-top:10px;display:flex;gap:16px;white-space:nowrap;overflow-x:auto;overscroll-behavior-x:contain;
+      padding-bottom:6px;scrollbar-width:none;border-top:1px solid var(--line);padding-top:10px
+    }
+    .nav-scroller::-webkit-scrollbar{display:none}
+    .nav-scroller a{color:var(--fg);text-decoration:none;font-size:15px;opacity:.92}
+    .nav-scroller a[aria-current="page"]{color:var(--gold);font-weight:600;opacity:1}
+    @media (min-width:960px){ .brand-logo{height:64px} .nav-scroller{gap:20px} }
+
+    /* ===== Sections juridiques (styles communs) ===== */
+    .block{background:var(--bg);color:var(--fg);border-radius:18px;padding:28px;margin-top:18px;border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    .block h2{font-size:1.9rem;margin:0 0 .6rem;color:var(--gold)}
+    .block .subtitle{margin:0 0 1.2rem;color:var(--muted);font-size:.95rem}
+    .block .grid{display:grid;gap:18px}
+    .block .card{border:1px solid var(--line);border-radius:14px;padding:18px;background:rgba(255,255,255,.02);box-shadow:0 10px 24px rgba(0,0,0,.25)}
+    .block h3{margin:.2rem 0 .6rem;font-size:1.15rem;color:var(--gold)}
+    .block p{margin:.4rem 0}
+    .block ul{margin:.4rem 0 .6rem 1.2rem}
+    .block .note{font-size:.9rem;color:var(--muted)}
+    .block .dl{display:grid;grid-template-columns:220px 1fr;gap:8px 18px}
+    .block .dl dt{color:var(--muted)} .block .dl dd{margin:0}
+    .block hr{border:none;border-top:1px solid var(--line);margin:14px 0}
+    .badge{display:inline-block;padding:.22rem .55rem;border:1px solid var(--line);border-radius:999px;font-size:.8rem;color:var(--muted)}
+    @media (max-width:720px){
+      .block{padding:20px}
+      .block .dl{grid-template-columns:1fr}
+    }
+
+    /* Petits pills de synthèse CGV */
+    .kpi{display:flex;gap:10px;flex-wrap:wrap;margin:.5rem 0 0}
+    .pill{padding:.35rem .6rem;border-radius:999px;border:1px solid var(--line);font-size:.85rem}
+    .pill.ok{border-color:#2ecc71;color:#2ecc71}
+    .pill.warn{border-color:#f1c40f;color:#f1c40f}
+    .pill.bad{border-color:#e74c3c;color:#e74c3c}
+    .law{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9rem;color:var(--muted)}
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- ===== Header ===== -->
+    <header class="masthead" role="banner">
+      <div class="brand-block">
+        <img class="brand-logo" src="/assets/logo.png" alt="Transport Confort">
+        <div class="brand-text">
+          <div class="slogan">Transport haut de gamme • Confort premium</div>
+        </div>
+      </div>
+      <nav class="nav-scroller" role="navigation" aria-label="Navigation principale">
+        <a href="/">Accueil</a>
+        <a href="/simulator.html">Simulateur</a>
+        <a href="/tarifs.html">Tarifs</a>
+        <a href="/a-propos.html">À propos</a>
+        <a href="/mentions.html" aria-current="page">Mentions légales</a>
+      </nav>
+    </header>
+
+    <!-- ===== Mentions légales (intro courte) ===== -->
+    <section class="block" aria-labelledby="mentions-title">
+      <h2 id="mentions-title">Mentions légales</h2>
+      <p class="subtitle">
+        Éditeur : <strong>Transport Confort by Vincent</strong> — SIREN 990&nbsp;407&nbsp;397 — 23&nbsp;rue&nbsp;La&nbsp;Bruyère, 93800 Épinay-sur-Seine — 
+        <a href="mailto:contact@transportconfort.com" class="badge">contact@transportconfort.com</a> — 07&nbsp;49&nbsp;55&nbsp;62&nbsp;77. 
+        Hébergeur : Netlify, Inc.
+      </p>
+    </section>
+
+    <!-- ===== CGV ===== -->
+    <section id="cgv" class="block" aria-labelledby="cgv-title">
+      <h2 id="cgv-title">Conditions Générales de Vente — Transport Confort by Vincent</h2>
+      <p class="subtitle">
+        Applicables aux prestations de transport privé de personnes proposées par <strong>Transport Confort by Vincent</strong> (SASU),
+        SIRET <strong>SIREN 990&nbsp;407&nbsp;397</strong>. Dernière mise à jour :
+        <time datetime="{{YYYY-MM-DD}}">{{JJ/MM/AAAA}}</time>.
+      </p>
+      <div class="kpi">
+        <span class="pill ok">Acompte 20% (Stripe)</span>
+        <span class="pill warn">Annulation ≥ 24h : remboursement 100%</span>
+        <span class="pill bad">Annulation &lt; 24h : acompte non remboursé</span>
+      </div>
+
+      <div class="grid" role="list">
+        <section class="card" role="listitem">
+          <h3>1) Objet</h3>
+          <p>Les présentes CGV encadrent les <strong>prestations de transport privé de personnes</strong> : courses à la demande, <strong>forfaits</strong> (aéroports, destinations dédiées) et <strong>mises à disposition (MAD)</strong>.</p>
+          <p class="note">Tarifs et disponibilités publiés sur le site et/ou communiqués avant confirmation.</p>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>2) Réservation & confirmation</h3>
+          <ul>
+            <li>Réservation prioritaire <strong>en ligne</strong> (simulateur + Calendly) ; en cas d’indisponibilité : par <strong>téléphone</strong> ou <strong>email</strong>.</li>
+            <li><strong>Acompte obligatoire de 20% TTC</strong> via Stripe (lien de paiement possible sur demande).</li>
+            <li>Un créneau Calendly <strong>sans paiement d’acompte</strong> est réputé <strong>non confirmé</strong> et peut être <strong>annulé d’office</strong>.</li>
+            <li>La confirmation vaut acceptation du prix, des horaires et des présentes CGV.</li>
+          </ul>
+          <div class="dl" aria-label="Fenêtres jour/nuit & WE">
+            <dt>Période de jour (courses classiques)</dt><dd>07:00 → 22:59</dd>
+            <dt>Période de nuit (courses classiques)</dt><dd>23:00 → 06:59</dd>
+            <dt>Week-end</dt><dd>Samedi 00:00 → Dimanche 23:59</dd>
+          </div>
+          <p class="note">Ces plages servent au calcul des majorations des <em>courses classiques</em>. Les <em>forfaits aéroports</em> ont leurs colonnes <strong>jour</strong> et <strong>nuit/WE</strong> (sans +20%).</p>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>3) Acompte, solde & moyens de paiement</h3>
+          <ul>
+            <li><strong>Acompte :</strong> 20% du prix TTC, payé en ligne via Stripe.</li>
+            <li><strong>Solde à bord :</strong> CB (terminal) ou espèces <em>(min. 100 €, max. 1 000 €)</em>.</li>
+            <li>Devise : € (euros). Aucun escompte pour paiement anticipé.</li>
+          </ul>
+          <p class="note">Le conducteur peut refuser un paiement en espèces non conforme aux seuils légaux.</p>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>4) Annulation & remboursements</h3>
+          <ul>
+            <li><strong>Client ≥ 24h :</strong> remboursement <strong>intégral</strong> de l’acompte.</li>
+            <li><strong>Client &lt; 24h :</strong> <strong>acompte non remboursé</strong>.</li>
+            <li><strong>Transporteur :</strong> remboursement <strong>intégral</strong> des sommes versées.</li>
+          </ul>
+          <p class="note">Délais en heure locale (Europe/Paris). En cas de force majeure (art. 7), l’obligation de transport peut être suspendue.</p>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>5) Prix, TVA & majorations</h3>
+          <ul>
+            <li><strong>Courses classiques :</strong> barème km + minute, <strong>TVA 10%</strong>, <strong>+20% nuit/WE</strong>.</li>
+            <li><strong>MAD :</strong> forfaits horaires/journaliers, <strong>TVA 20%</strong>, <strong>sans majoration nuit/WE</strong>.</li>
+            <li><strong>Forfaits aéroports :</strong> colonnes <em>jour</em> et <em>nuit/WE</em> dédiées ; <u>pas de +20%</u>.</li>
+          </ul>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>6) Conditions de transport</h3>
+          <ul>
+            <li><strong>Bagages :</strong> inclus dans la limite du volume ; objets de valeur sous la garde du client.</li>
+            <li><strong>Retards client :</strong> 15 min d’attente incluses ; au-delà, annulation possible (acompte conservé) ou bascule en MAD.</li>
+            <li><strong>Sécurité :</strong> ceinture obligatoire, pas de tabac/vape, respect du véhicule.</li>
+            <li><strong>Enfants :</strong> siège/réhausseur sur demande préalable (selon dispo).</li>
+          </ul>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>7) Responsabilité & force majeure</h3>
+          <p>Non-responsabilité pour retards dus à des événements extérieurs imprévisibles/irrésistibles : embouteillages exceptionnels, accidents, manifestations, météo extrême, décisions administratives, grèves.</p>
+          <p class="law">Code civil, art. 1218 — force majeure.</p>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>8) Données personnelles</h3>
+          <p>Données (identité, coordonnées, réservation, paiement Stripe) utilisées uniquement pour exécuter la prestation. Voir la <a href="#confidentialite" class="badge">Politique de confidentialité</a>.</p>
+          <div class="dl" aria-label="Sous-traitants">
+            <dt>Sous-traitants</dt><dd>Stripe (paiement), Calendly (rendez-vous), Netlify (hébergement)</dd>
+            <dt>Responsable</dt><dd>{{Transport Confort by Vincent}} — {{Email contact}}</dd>
+          </div>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>9) Médiation de la consommation</h3>
+          <p>Conformément aux art. L.612-1 et s., le client consommateur peut saisir gratuitement un médiateur si le litige n’a pas été résolu au préalable.</p>
+          <div class="dl" aria-label="Médiateur">
+            <dt>Médiateur désigné</dt><dd><strong>{{Nom du médiateur agréé}}</strong> — <a href="{{URL médiateur}}" class="badge">Accéder au site</a></dd>
+            <dt>Contact</dt><dd>{{Email/téléphone médiateur}}</dd>
+          </div>
+          <p class="note">Renseigner après adhésion (ex. SMP Médiation). Indiquer aussi dans l’email de confirmation.</p>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>10) Droit applicable & juridiction</h3>
+          <p>Droit français. Compétence des tribunaux du ressort de <strong>{{Bobigny}}</strong>, sous réserve des règles protectrices du consommateur.</p>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>11) Divers</h3>
+          <ul>
+            <li>Nullité partielle : la nullité d’une clause n’affecte pas les autres.</li>
+            <li>Preuve : confirmations électroniques (email/SMS, reçus Stripe) font foi.</li>
+            <li>Version : la dernière version publiée en ligne prévaut.</li>
+          </ul>
+          <hr>
+          <p class="note">Besoin d’aide ? <a href="mailto:{{Email contact}}" class="badge">Contacter l’assistance</a></p>
+        </section>
+      </div>
+    </section>
+
+    <!-- ===== CGU ===== -->
+    <section id="cgu" class="block" aria-labelledby="cgu-title">
+      <h2 id="cgu-title">Conditions Générales d’Utilisation — transportconfort.com</h2>
+      <p class="subtitle">
+        Éditeur : <strong>Transport Confort by Vincent</strong> — SIREN 990&nbsp;407&nbsp;397 — Contact :
+        <a href="mailto:{{Email contact}}">{{Email contact}}</a>. Dernière mise à jour :
+        <time datetime="{{YYYY-MM-DD}}">{{JJ/MM/AAAA}}</time>.
+      </p>
+
+      <div class="grid" role="list">
+        <section class="card" role="listitem">
+          <h3>1) Objet & champ</h3>
+          <p>Les CGU encadrent l’accès et l’utilisation du site. L’accès implique l’acceptation sans réserve.</p>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>2) Accès</h3>
+          <ul>
+            <li>Accès gratuit (hors coûts de connexion). Interruptions possibles (maintenance/mises à jour).</li>
+            <li>Objectif de disponibilité raisonnable, sans garantie d’uptime.</li>
+          </ul>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>3) Contenus & exactitude</h3>
+          <p>Les informations (tarifs, disponibilités) peuvent évoluer. Le prix applicable est celui confirmé lors de la réservation (cf. CGV).</p>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>4) Services tiers</h3>
+          <div class="dl" aria-label="Services">
+            <dt>Cartographie</dt><dd>Google Maps API.</dd>
+            <dt>Prise de rendez-vous</dt><dd>Calendly.</dd>
+            <dt>Paiement</dt><dd>Stripe.</dd>
+            <dt>Hébergement</dt><dd>Netlify.</dd>
+          </div>
+          <p class="note">Ces services peuvent déposer des cookies/traceurs (voir Politique de confidentialité).</p>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>5) Comportement</h3>
+          <ul>
+            <li>Pas d’atteinte au fonctionnement du site (intrusion, scraping abusif, contenus illicites).</li>
+            <li>Fournir des informations exactes lors des demandes/réservations.</li>
+          </ul>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>6) Propriété intellectuelle</h3>
+          <p>Charte graphique, textes, logos et visuels protégés. Toute reproduction non autorisée est interdite.</p>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>7) Liens externes</h3>
+          <p>Présence possible de liens tiers. Nous ne sommes pas responsables de leur contenu ni de leur politique de confidentialité.</p>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>8) Responsabilité</h3>
+          <p>Pas de responsabilité pour dommages indirects liés à l’usage du site. La responsabilité transport relève des CGV.</p>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>9) Données & cookies</h3>
+          <p>Voir <a href="#confidentialite">Politique de confidentialité</a>.</p>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>10) Modifications</h3>
+          <p>Nous pouvons modifier les CGU. La version en ligne au jour de la consultation prévaut.</p>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>11) Droit applicable & juridiction</h3>
+          <p>Droit français ; compétence du <strong>Tribunal judiciaire de Bobigny</strong>, sous réserve des règles protectrices du consommateur.</p>
+        </section>
+      </div>
+    </section>
+
+    <!-- ===== Politique de confidentialité ===== -->
+    <section id="confidentialite" class="block" aria-labelledby="privacy-title">
+      <h2 id="privacy-title">Politique de confidentialité — Transport Confort by Vincent</h2>
+      <p class="subtitle">
+        Responsable de traitement : <strong>Transport Confort by Vincent</strong> — Contact RGPD :
+        <a href="mailto:{{Email RGPD}}">{{Email RGPD}}</a>. Dernière mise à jour :
+        <time datetime="{{YYYY-MM-DD}}">{{JJ/MM/AAAA}}</time>.
+      </p>
+
+      <div class="grid" role="list">
+        <section class="card" role="listitem">
+          <h3>1) Données collectées</h3>
+          <ul>
+            <li><strong>Identification :</strong> nom, email, téléphone.</li>
+            <li><strong>Réservation :</strong> adresses, date/heure, passagers, notes, préférences.</li>
+            <li><strong>Paiement :</strong> via Stripe (jetons/identifiants) — <u>aucune donnée carte</u> n’est stockée par {{Dénomination sociale}}.</li>
+            <li><strong>Technique :</strong> logs de sécurité, cookies/traceurs.</li>
+          </ul>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>2) Finalités & bases légales</h3>
+          <ul>
+            <li><strong>Exécution du contrat</strong> : gestion demandes, réservations, paiements, prise en charge.</li>
+            <li><strong>Intérêt légitime</strong> : lutte fraude/no-show, amélioration du service.</li>
+            <li><strong>Obligation légale</strong> : facturation/comptabilité.</li>
+            <li><strong>Consentement</strong> (si activé) : offres/actu (opt-in révocable).</li>
+          </ul>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>3) Destinataires & sous-traitants</h3>
+          <div class="dl">
+            <dt>Stripe</dt><dd>Paiements en ligne (UE/EEE + transferts encadrés).</dd>
+            <dt>Calendly</dt><dd>Planification de créneaux.</dd>
+            <dt>Google Maps</dt><dd>Cartographie & géocodage.</dd>
+            <dt>Netlify</dt><dd>Hébergement.</dd>
+          </div>
+          <p class="note">Des transferts hors UE peuvent exister ; encadrés par CCT/mécanismes RGPD reconnus.</p>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>4) Durées de conservation</h3>
+          <ul>
+            <li><strong>Réservations & facturation :</strong> 5 ans.</li>
+            <li><strong>Prospects :</strong> 12 mois après dernier contact.</li>
+            <li><strong>Logs techniques :</strong> 6–12 mois.</li>
+            <li><strong>Cookies soumis à consentement :</strong> jusqu’à 13 mois.</li>
+          </ul>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>5) Vos droits</h3>
+          <p>Droits d’accès, rectification, effacement, limitation, opposition, portabilité (selon cas).</p>
+          <div class="dl">
+            <dt>Contact RGPD</dt><dd><a href="mailto:{{Email RGPD}}">{{Email RGPD}}</a></dd>
+            <dt>Justificatif</dt><dd>Une preuve d’identité peut être requise.</dd>
+            <dt>Réclamation</dt><dd>CNIL : <a href="https://www.cnil.fr">www.cnil.fr</a>.</dd>
+          </div>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>6) Sécurité</h3>
+          <ul>
+            <li>Chiffrement TLS du site et des paiements (Stripe).</li>
+            <li>Accès restreint aux données nécessaires.</li>
+            <li>Journalisation des accès admin / mises à jour régulières.</li>
+          </ul>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>7) Cookies & traceurs</h3>
+          <ul>
+            <li><strong>Techniques</strong> : fonctionnement, sécurité, session.</li>
+            <li><strong>Mesure d’audience</strong> (si activée) : statistiques agrégées.</li>
+            <li><strong>Tiers</strong> : Stripe, Calendly, Google Maps.</li>
+          </ul>
+          <p>Gestion via le bandeau cookies par finalité. Le refus des cookies non essentiels peut réduire certaines fonctionnalités.</p>
+          <p class="note">Durée recommandée : 13 mois max. pour les cookies soumis à consentement.</p>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>8) Transferts hors UE</h3>
+          <p>Encadrés par des mécanismes reconnus (CCT, mesures complémentaires).</p>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>9) Médiation & recours</h3>
+          <p>Après contact auprès de {{Transport Confort by Vincent}}, vous pouvez saisir le médiateur de la consommation indiqué aux CGV (§9).</p>
+        </section>
+
+        <section class="card" role="listitem">
+          <h3>10) Modifications</h3>
+          <p>La version en ligne au jour de la consultation prévaut.</p>
+        </section>
+      </div>
+    </section>
+
+    <!-- ===== Footer ===== -->
+    <div class="footer small" style="margin:14px 0">
+      © Transport Confort by Vincent — SIREN 990 407 397 — TVA FR71 990 407 397 —
+      23 rue La Bruyère, 93800 Épinay-sur-Seine — 07 49 55 62 77
     </div>
-  </header>
-
-  <div class="grid" role="list">
-    <!-- OBJET -->
-    <section class="card" role="listitem">
-      <h3>1) Objet</h3>
-      <p>
-        Les présentes CGV encadrent les <strong>prestations de transport privé de personnes</strong> réalisées par Transport Confort by Vincent,
-        incluant les <strong>courses à la demande</strong>, les <strong>forfaits</strong> (aéroports, destinations dédiées) et les
-        <strong>mises à disposition (MAD)</strong>.
-      </p>
-      <p class="note">Le détail des tarifs et disponibilités est publié sur le site et/ou communiqué avant confirmation.</p>
-    </section>
-
-    <!-- RESERVATION -->
-    <section class="card" role="listitem">
-      <h3>2) Réservation & confirmation</h3>
-      <ul class="list-compact">
-        <li>Réservation prioritaire <strong>en ligne</strong> (simulateur + Calendly) ; en cas d’indisponibilité du site : par <strong>téléphone</strong> ou <strong>email</strong>.</li>
-        <li><strong>Acompte obligatoire de 20% TTC</strong> via Stripe pour confirmer la réservation (lien de paiement possible sur demande).</li>
-        <li>Un créneau Calendly <strong>sans paiement de l’acompte</strong> est réputé <strong>non confirmé</strong> et peut être <strong>annulé d’office</strong>.</li>
-        <li>La confirmation vaut acceptation du prix, des horaires et des conditions décrites aux présentes CGV.</li>
-      </ul>
-      <div class="dl" aria-label="Fenêtres jour/nuit & week-end">
-        <dt>Période de jour (courses classiques)</dt><dd>07:00 → 22:59</dd>
-        <dt>Période de nuit (courses classiques)</dt><dd>23:00 → 06:59</dd>
-        <dt>Week-end</dt><dd>Samedi 00:00 → Dimanche 23:59</dd>
-      </div>
-      <p class="note">Les plages ci-dessus servent au calcul des majorations pour les <em>courses classiques</em>. Les <em>forfaits aéroports</em> disposent d’un tarif <strong>jour</strong> et <strong>nuit/WE</strong> dédié (sans majoration +20%).</p>
-    </section>
-
-    <!-- ACOMPTE & SOLDE -->
-    <section class="card" role="listitem">
-      <h3>3) Acompte, solde et moyens de paiement</h3>
-      <ul class="list-compact">
-        <li><strong>Acompte :</strong> 20% du prix TTC, payé en ligne via Stripe au moment de la réservation.</li>
-        <li><strong>Solde à bord :</strong> par CB (terminal) ou espèces <em>(min. 100 €, max. 1 000 €)</em>, conformément à la réglementation.</li>
-        <li>Devise : € (euros). Aucun escompte pour paiement anticipé.</li>
-      </ul>
-      <p class="note">Pour raisons de sécurité, le conducteur peut refuser le paiement en espèces ne respectant pas les seuils ci-dessus.</p>
-    </section>
-
-    <!-- ANNULATION -->
-    <section class="card" role="listitem">
-      <h3>4) Annulation & remboursements</h3>
-      <ul>
-        <li><strong>Annulation par le client ≥ 24h avant l’horaire de prise en charge :</strong> remboursement <strong>intégral</strong> de l’acompte.</li>
-        <li><strong>Annulation par le client &lt; 24h :</strong> <strong>acompte non remboursé</strong>.</li>
-        <li><strong>Annulation par le transporteur :</strong> remboursement <strong>intégral</strong> des sommes versées.</li>
-      </ul>
-      <p class="note">Les délais s’apprécient en heure locale (Europe/Paris). En cas de force majeure (cf. art. 9), l’obligation de transport peut être suspendue.</p>
-    </section>
-
-    <!-- PRIX & TVA -->
-    <section class="card" role="listitem">
-      <h3>5) Prix, TVA & majorations</h3>
-      <ul class="list-compact">
-        <li><strong>Courses classiques :</strong> barème au km + minute, <strong>TVA 10%</strong>, <strong>+20% nuit & week-end</strong>.</li>
-        <li><strong>Mises à disposition (MAD) :</strong> forfaits horaires/journaliers, <strong>TVA 20%</strong>, <strong>sans majoration nuit/WE</strong>.</li>
-        <li><strong>Forfaits aéroports :</strong> <em>tarifs fixes</em> avec deux colonnes <strong>jour</strong> et <strong>nuit/WE</strong> ; <u>aucune majoration +20%</u> ne s’applique.</li>
-      </ul>
-      <p class="note">Les tarifs en vigueur (simulateur, grilles forfaitaires) sont publiés sur le site à titre d’information contractuelle.</p>
-    </section>
-
-    <!-- CONDITIONS DE TRANSPORT -->
-    <section class="card" role="listitem">
-      <h3>6) Conditions de transport</h3>
-      <ul class="list-compact">
-        <li><strong>Bagages :</strong> inclus dans la limite du volume du véhicule ; objets de valeur sous la garde du client.</li>
-        <li><strong>Retards client :</strong> 15 min d’attente incluses (sauf précision contraire). Au-delà, la course peut être annulée (acompte conservé) ou facturée en MAD.</li>
-        <li><strong>Comportement & sécurité :</strong> port de la ceinture obligatoire, interdiction de fumer/vapoter, respect du véhicule.</li>
-        <li><strong>Enfants :</strong> sièges ou réhausseurs sur demande préalable (selon disponibilité).</li>
-      </ul>
-    </section>
-
-    <!-- RESPONSABILITÉ & FORCE MAJEURE -->
-    <section class="card" role="listitem">
-      <h3>7) Responsabilité & force majeure</h3>
-      <p>
-        Transport Confort by Vincent ne saurait être tenue pour responsable des retards dus à des événements extérieurs imprévisibles et irrésistibles :
-        embouteillages exceptionnels, accidents, manifestations, conditions météo extrêmes, décisions administratives, grèves.
-      </p>
-      <p class="law">Code civil, art. 1218 — force majeure.</p>
-    </section>
-
-    <!-- DONNÉES PERSONNELLES -->
-    <section class="card" role="listitem">
-      <h3>8) Données personnelles</h3>
-      <p>
-        Les données collectées (identité, coordonnées, informations de réservation, paiement via Stripe) sont utilisées
-        uniquement pour l’exécution de la prestation. Durées de conservation et droits RGPD détaillés dans la
-        <a href="#confidentialite" class="badge" aria-label="Lire la politique de confidentialité">Politique de confidentialité</a>.
-      </p>
-      <div class="dl" aria-label="Sous-traitants">
-        <dt>Sous-traitants</dt><dd>Stripe (paiement), Calendly (prise de rendez-vous), Netlify (hébergement)</dd>
-        <dt>Responsable de traitement</dt><dd>{{Transport Confort by Vincent}} — {{Email contact}}</dd>
-      </div>
-    </section>
-
-    <!-- MEDIATEUR -->
-    <section class="card" role="listitem">
-      <h3>9) Médiation de la consommation</h3>
-      <p>
-        Conformément aux art. L.612-1 et suivants du Code de la consommation, le client consommateur peut saisir gratuitement un médiateur
-        pour les litiges non résolus au préalable avec Transport Confort by Vincent.
-      </p>
-      <div class="dl" aria-label="Médiateur">
-        <dt>Médiateur désigné</dt><dd><strong>{{Nom du médiateur agréé}}</strong> — <a href="{{URL médiateur}}" class="badge">Accéder au site</a></dd>
-        <dt>Contact</dt><dd>{{Email/téléphone médiateur}}</dd>
-      </div>
-      <p class="note">À insérer après adhésion (ex. SMP Médiation de la consommation). L’information doit figurer aussi sur un support durable (email de confirmation).</p>
-    </section>
-
-    <!-- LITIGES -->
-    <section class="card" role="listitem">
-      <h3>10) Droit applicable & juridiction</h3>
-      <p>
-        Les présentes CGV sont soumises au <strong>droit français</strong>. Tout litige relatif à leur exécution ou interprétation relève de la compétence des tribunaux
-        du ressort de <strong>{{Tribunal compétent — ex. Bobigny}}</strong>, sous réserve des règles d’ordre public applicables aux consommateurs.
-      </p>
-    </section>
-
-    <!-- DIVERS -->
-    <section class="card" role="listitem">
-      <h3>11) Divers</h3>
-      <ul class="list-compact">
-        <li>Nullité partielle : la nullité d’une clause n’affecte pas les autres stipulations.</li>
-        <li>Preuve : confirmations électroniques (emails, SMS, reçus Stripe) font foi des engagements et paiements.</li>
-        <li>Version : en cas de divergence, la dernière version publiée sur le site prévaut.</li>
-      </ul>
-      <hr>
-      <p class="note">Besoin d’assistance ? <a href="mailto:{{Email contact}}" class="badge">Contacter l’assistance</a></p>
-    </section>
   </div>
-</section>
-
-  <section id="cgu" class="tcv-cgu" lang="fr" aria-labelledby="cgu-title">
-  <style>
-    /* === Transport Confort — CGU === */
-    .tcv-cgu{--bg:#0B0B0B;--fg:#F5F5F5;--muted:#CFCFCF;--gold:#C7A24B;--line:#2A2A2A;
-      font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; background:var(--bg); color:var(--fg);
-      border-radius:18px; padding:28px; box-shadow:0 10px 30px rgba(0,0,0,.35); line-height:1.6; letter-spacing:.2px; margin-top:28px}
-    .tcv-cgu *{box-sizing:border-box}
-    .tcv-cgu h2{font-size:1.9rem;margin:0 0 .5rem 0;color:var(--gold);letter-spacing:.4px}
-    .tcv-cgu .subtitle{margin:0 0 1.2rem 0;color:var(--muted);font-size:.95rem}
-    .tcv-cgu .grid{display:grid;gap:18px}
-    .tcv-cgu .card{border:1px solid var(--line); border-radius:14px; padding:18px; background:rgba(255,255,255,.02)}
-    .tcv-cgu h3{margin:.2rem 0 .6rem 0; font-size:1.15rem; color:var(--gold)}
-    .tcv-cgu p{margin:.4rem 0}
-    .tcv-cgu ul{margin:.4rem 0 .6rem 1.2rem}
-    .tcv-cgu .note{font-size:.9rem; color:var(--muted)}
-    .tcv-cgu .dl{display:grid; grid-template-columns: 220px 1fr; gap:8px 18px}
-    .tcv-cgu .dl dt{color:var(--muted)}
-    .tcv-cgu .dl dd{margin:0}
-    .tcv-cgu hr{border:none; border-top:1px solid var(--line); margin:14px 0}
-    @media (max-width: 720px){
-      .tcv-cgu{padding:20px}
-      .tcv-cgu .dl{grid-template-columns: 1fr}
-    }
-  </style>
-
-  <header>
-    <h2 id="cgu-title">Conditions Générales d’Utilisation — Site transportconfort.com</h2>
-    <p class="subtitle">
-      Éditeur : <strong>Transport Confort by Vincent</strong> — SIRET <strong>SIREN 990 407 397</strong> — Contact : <a href="mailto:{{Email contact}}">{{Email contact}}</a>.
-      Dernière mise à jour : <time datetime="{{YYYY-MM-DD}}">{{JJ/MM/AAAA}}</time>.
-    </p>
-  </header>
-
-  <div class="grid" role="list">
-    <section class="card" role="listitem">
-      <h3>1) Objet & champ d’application</h3>
-      <p>Les présentes CGU encadrent l’accès et l’utilisation du site transportconfort.com par tout utilisateur. L’accès au site implique l’acceptation sans réserve des CGU.</p>
-    </section>
-
-    <section class="card" role="listitem">
-      <h3>2) Accès au site</h3>
-      <ul>
-        <li>Accès gratuit (hors coûts de connexion). Le site peut faire l’objet d’interruptions (maintenance, mises à jour).</li>
-        <li>Transport Confort by Vincent s’efforce d’assurer une disponibilité raisonnable sans garantie d’uptime.</li>
-      </ul>
-    </section>
-
-    <section class="card" role="listitem">
-      <h3>3) Contenus & exactitude</h3>
-      <p>Les informations (tarifs, disponibilités) sont fournies à titre indicatif et peuvent évoluer. Le prix applicable est celui confirmé lors de la réservation (voir CGV).</p>
-    </section>
-
-    <section class="card" role="listitem">
-      <h3>4) Fonctionnalités tierces</h3>
-      <div class="dl" aria-label="Services utilisés">
-        <dt>Cartographie</dt><dd>Google Maps API (calcul d’itinéraire, géolocalisation d’adresses).</dd>
-        <dt>Prise de rendez-vous</dt><dd>Calendly (sélection d’un créneau de prise en charge).</dd>
-        <dt>Paiement</dt><dd>Stripe (acompte sécurisé 20%).</dd>
-        <dt>Hébergement</dt><dd>Netlify.</dd>
-      </div>
-      <p class="note">Ces services peuvent déposer des cookies/traceurs (voir Politique de confidentialité).</p>
-    </section>
-
-    <section class="card" role="listitem">
-      <h3>5) Comportement de l’utilisateur</h3>
-      <ul>
-        <li>Ne pas porter atteinte au bon fonctionnement du site (tentatives d’intrusion, scraping abusif, envoi de contenus illicites).</li>
-        <li>Utiliser des informations exactes lors des demandes de devis/réservations.</li>
-      </ul>
-    </section>
-
-    <section class="card" role="listitem">
-      <h3>6) Propriété intellectuelle</h3>
-      <p>Le site, sa charte graphique, ses textes, logos et visuels sont protégés. Toute reproduction non autorisée est interdite.</p>
-    </section>
-
-    <section class="card" role="listitem">
-      <h3>7) Liens externes</h3>
-      <p>Le site peut contenir des liens vers des sites tiers. Transport Confort by Vincent n’est pas responsable de leur contenu ni de leur politique de confidentialité.</p>
-    </section>
-
-    <section class="card" role="listitem">
-      <h3>8) Responsabilité</h3>
-      <p>Transport Confort by Vincent n’est pas responsable des dommages indirects résultant de l’usage du site. La responsabilité liée à la prestation de transport est régie par les CGV.</p>
-    </section>
-
-    <section class="card" role="listitem">
-      <h3>9) Données personnelles & cookies</h3>
-      <p>Le traitement des données et l’usage des cookies sont détaillés dans la <a href="#confidentialite">Politique de confidentialité</a>.</p>
-    </section>
-
-    <section class="card" role="listitem">
-      <h3>10) Modifications des CGU</h3>
-      <p>Transport Confort by Vincent peut modifier les CGU à tout moment. La version en ligne au jour de la consultation prévaut.</p>
-    </section>
-
-    <section class="card" role="listitem">
-      <h3>11) Droit applicable & juridiction</h3>
-      <p>CGU régies par le droit français. Compétence territoriale : <strong>Tribunal judiciaire de Bobigny</strong>, sous réserve des règles protectrices du consommateur.</p>
-    </section>
-  </div>
-</section>
-
-  <section id="confidentialite" class="tcv-privacy" lang="fr" aria-labelledby="privacy-title">
-  <style>
-    /* === Transport Confort — Politique de confidentialité === */
-    .tcv-privacy{--bg:#0B0B0B;--fg:#F5F5F5;--muted:#CFCFCF;--gold:#C7A24B;--line:#2A2A2A;
-      font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; background:var(--bg); color:var(--fg);
-      border-radius:18px; padding:28px; box-shadow:0 10px 30px rgba(0,0,0,.35); line-height:1.6; letter-spacing:.2px; margin-top:28px}
-    .tcv-privacy *{box-sizing:border-box}
-    .tcv-privacy h2{font-size:1.9rem;margin:0 0 .5rem 0;color:var(--gold);letter-spacing:.4px}
-    .tcv-privacy .subtitle{margin:0 0 1.2rem 0;color:var(--muted);font-size:.95rem}
-    .tcv-privacy .grid{display:grid;gap:18px}
-    .tcv-privacy .card{border:1px solid var(--line); border-radius:14px; padding:18px; background:rgba(255,255,255,.02)}
-    .tcv-privacy h3{margin:.2rem 0 .6rem 0; font-size:1.15rem; color:var(--gold)}
-    .tcv-privacy p{margin:.4rem 0}
-    .tcv-privacy ul{margin:.4rem 0 .6rem 1.2rem}
-    .tcv-privacy .dl{display:grid; grid-template-columns: 220px 1fr; gap:8px 18px}
-    .tcv-privacy .dl dt{color:var(--muted)}
-    .tcv-privacy .dl dd{margin:0}
-    .tcv-privacy .note{font-size:.9rem; color:var(--muted)}
-    .tcv-privacy code{font-family: ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.9rem; color:#ddd; background:#111; padding:.1rem .25rem; border-radius:6px}
-    @media (max-width: 720px){
-      .tcv-privacy{padding:20px}
-      .tcv-privacy .dl{grid-template-columns: 1fr}
-    }
-  </style>
-
-  <header>
-    <h2 id="privacy-title">Politique de confidentialité — Transport Confort by Vincent</h2>
-    <p class="subtitle">
-      Responsable de traitement : <strong>Transport Confort by Vincent</strong> — Contact RGPD : <a href="mailto:{{Email RGPD}}">{{Email RGPD}}</a>.
-      Dernière mise à jour : <time datetime="{{YYYY-MM-DD}}">{{JJ/MM/AAAA}}</time>.
-    </p>
-  </header>
-
-  <div class="grid" role="list">
-    <section class="card" role="listitem">
-      <h3>1) Données collectées</h3>
-      <ul>
-        <li><strong>Identification :</strong> nom, prénom, email, téléphone.</li>
-        <li><strong>Réservation :</strong> adresses de départ/arrivée, date/heure, passagers, notes, préférences.</li>
-        <li><strong>Paiement :</strong> via Stripe (jetons/identifiants techniques) — <u>aucune donnée carte</u> n’est stockée par {{Dénomination sociale}}.</li>
-        <li><strong>Technique :</strong> logs de sécurité, cookies/traceurs (voir §7).</li>
-      </ul>
-    </section>
-
-    <section class="card" role="listitem">
-      <h3>2) Finalités & bases légales</h3>
-      <ul>
-        <li><strong>Exécution du contrat</strong> : gestion des demandes, réservations, paiements, prise en charge.</li>
-        <li><strong>Intérêt légitime</strong> : lutte contre la fraude/no-show, amélioration du service.</li>
-        <li><strong>Obligation légale</strong> : facturation, comptabilité, obligations fiscales.</li>
-        <li><strong>Consentement</strong> (si activé) : envoi d’actualités/offres (opt-in, révocable à tout moment).</li>
-      </ul>
-    </section>
-
-    <section class="card" role="listitem">
-      <h3>3) Destinataires & sous-traitants</h3>
-      <div class="dl" aria-label="Sous-traitants">
-        <dt>Stripe</dt><dd>Paiements en ligne (UE/EEE + transferts encadrés si hors UE).</dd>
-        <dt>Calendly</dt><dd>Planification de créneaux (UE/EEE + transferts encadrés si hors UE).</dd>
-        <dt>Google Maps</dt><dd>Cartographie & géocodage (APIs).</dd>
-        <dt>Netlify</dt><dd>Hébergement du site.</dd>
-      </div>
-      <p class="note">Des transferts hors UE peuvent exister via ces prestataires ; ils sont encadrés par des clauses contractuelles types (CCT) et/ou des mécanismes reconnus par le RGPD.</p>
-    </section>
-
-    <section class="card" role="listitem">
-      <h3>4) Durées de conservation</h3>
-      <ul>
-        <li><strong>Dossiers de réservation & facturation :</strong> 5 ans (obligations légales/comptables).</li>
-        <li><strong>Prospects (demandes non conclues) :</strong> 12 mois après dernier contact.</li>
-        <li><strong>Logs techniques :</strong> 6 mois à 12 mois (sécurité).</li>
-        <li><strong>Cookies de mesure/techniques :</strong> jusqu’à 13 mois (voir §7).</li>
-      </ul>
-    </section>
-
-    <section class="card" role="listitem">
-      <h3>5) Vos droits</h3>
-      <p>Conformément au RGPD et à la loi “Informatique & Libertés”, vous disposez des droits d’accès, rectification, effacement, limitation, opposition, et portabilité lorsque applicable.</p>
-      <div class="dl" aria-label="Exercer ses droits">
-        <dt>Contact RGPD</dt><dd><a href="mailto:{{Email RGPD}}">{{Email RGPD}}</a></dd>
-        <dt>Pièce justificative</dt><dd>Une preuve d’identité peut être requise pour des raisons de sécurité.</dd>
-        <dt>Réclamation</dt><dd>Vous pouvez saisir la CNIL : <a href="https://www.cnil.fr">www.cnil.fr</a>.</dd>
-      </div>
-    </section>
-
-    <section class="card" role="listitem">
-      <h3>6) Sécurité</h3>
-      <ul>
-        <li>Chiffrement TLS du site et des paiements (via Stripe).</li>
-        <li>Accès restreint aux données nécessaires à l’exécution de la prestation.</li>
-        <li>Journalisation des accès administrateurs et mises à jour régulières.</li>
-      </ul>
-    </section>
-
-    <section class="card" role="listitem">
-      <h3>7) Cookies & traceurs</h3>
-      <ul>
-        <li><strong>Techniques/nécessaires</strong> : fonctionnement du site, sécurité, gestion de session.</li>
-        <li><strong>Mesure d’audience</strong> (si activée) : statistiques anonymisées/agrégées.</li>
-        <li><strong>Tiers</strong> : Stripe (paiement), Calendly (widget), Google Maps (API).</li>
-      </ul>
-      <p>Vous pouvez gérer vos préférences via le bandeau cookies (accepter/refuser par finalité). Le refus des cookies non essentiels peut réduire certaines fonctionnalités (ex. carte interactive).</p>
-      <p class="note">Durée de vie recommandée : maximum 13 mois pour les cookies soumis au consentement.</p>
-    </section>
-
-    <section class="card" role="listitem">
-      <h3>8) Transferts hors UE</h3>
-      <p>Lorsque nos sous-traitants traitent des données hors UE, les transferts sont encadrés par des mécanismes reconnus (Clauses Contractuelles Types, mesures complémentaires).</p>
-    </section>
-
-    <section class="card" role="listitem">
-      <h3>9) Médiation & recours</h3>
-      <p>Pour tout litige relatif à l’utilisation des données, après contact auprès de {{Transport Confort by Vincent}}, vous pouvez saisir le médiateur de la consommation indiqué aux CGV (§9).</p>
-    </section>
-
-    <section class="card" role="listitem">
-      <h3>10) Modifications</h3>
-      <p>Nous pouvons mettre à jour la présente politique. La version en ligne au jour de la consultation prévaut.</p>
-    </section>
-  </div>
-</section>
-
-  </ul>
-</div>
-<div class="footer small">© Transport Confort by Vincent — SIREN 990 407 397 — TVA FR71 990 407 397 — 23 rue La Bruyère, 93800 Épinay-sur-Seine — 07 49 55 62 77</div></div></body></html>
+</body>
+</html>
