@@ -221,16 +221,18 @@
   <!-- ===== JS d’intégration Calendly (harmonisé + plein écran) ===== -->
   <script>
     // === Config URLs + IDs de questions (garde tes slugs Calendly) ===
-    const CAL = {
-      mad: {
-        url: 'https://calendly.com/contact-transportconfort/reservation-chauffeur-prive-mad',
-        qid: { date:'QID_MAD_DATE', time:'QID_MAD_TIME', from:'QID_MAD_FROM', duration:'QID_MAD_DURATION', price:'QID_MAD_PRICE' }
-      },
-      course: {
-        url: 'https://calendly.com/contact-transportconfort/reservation-vtc',
-        qid: { date:'QID_VTC_DATE', time:'QID_VTC_TIME', from:'QID_VTC_FROM', to:'QID_VTC_TO', price:'QID_VTC_PRICE' }
-      }
-    };
+   const CAL = {
+  mad: {
+    url: 'https://calendly.com/contact-transportconfort/reservation-chauffeur-prive-mad',
+    // 1: Date souhaitée, 2: Heure souhaitée, 3: Adresse prise en charge, 4: Durée souhaitée, 5: Tarif estimé
+    qid: { date: 'a1', time: 'a2', from: 'a3', duration: 'a4', price: 'a5' }
+  },
+  course: {
+    url: 'https://calendly.com/contact-transportconfort/reservation-vtc',
+    // 1: Date souhaitée, 2: Heure souhaitée, 3: Adresse prise en charge, 4: Adresse de dépose, 5: Tarif estimé
+    qid: { date: 'a1', time: 'a2', from: 'a3', to: 'a4', price: 'a5' }
+  }
+};
 
     function getVal(id){ const el=document.getElementById(id); return el ? (el.value||'').trim() : ''; }
 
