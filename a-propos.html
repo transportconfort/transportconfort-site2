@@ -1,89 +1,98 @@
-<!doctype html>
+<!doctype html> 
 <html lang="fr">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>À propos — Transport Confort</title>
-  <link rel="stylesheet" href="/assets/style.css"><!-- conserve ta feuille globale -->
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>À propos • Transport Confort</title>
+  <link rel="stylesheet" href="/assets/style.css">
+  <style>
+    :root{--bg:#0B0B0B;--fg:#F5F5F5;--muted:#CFCFCF;--gold:#C7A24B;--line:#1F1F1F;--card:#111111}
+    body{background:var(--bg);color:var(--fg);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;line-height:1.6}
+    .container{max-width:1120px;margin:0 auto;padding:0 16px}
+
+    /* ===== Header harmonisé ===== */
+    .masthead{padding:12px 0;border-bottom:1px solid var(--line);background:var(--bg)}
+    .brand-block{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center}
+    .brand-logo{height:56px;width:auto;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+    .slogan{color:var(--muted);font-size:clamp(13px,3.6vw,15px);line-height:1.35}
+    .nav-scroller{
+      margin-top:10px;display:flex;gap:16px;white-space:nowrap;overflow-x:auto;overscroll-behavior-x:contain;
+      padding-bottom:6px;scrollbar-width:none;border-top:1px solid var(--line);padding-top:10px
+    }
+    .nav-scroller::-webkit-scrollbar{display:none}
+    .nav-scroller a{color:var(--fg);text-decoration:none;font-size:15px;opacity:.92}
+    .nav-scroller a[aria-current="page"]{color:var(--gold);font-weight:600;opacity:1}
+    @media (min-width:960px){ .brand-logo{height:64px} .nav-scroller{gap:20px} }
+
+    /* ===== Section À propos ===== */
+    .tcv-about{background:var(--bg);color:var(--fg);border-radius:18px;padding:28px;margin-top:18px;box-shadow:0 10px 30px rgba(0,0,0,.35);line-height:1.6;letter-spacing:.2px;border:1px solid var(--line)}
+    .tcv-about h2{font-size:1.9rem;margin:0 0 .5rem;color:var(--gold)}
+    .tcv-about h3{font-size:1.15rem;margin:.2rem 0 .6rem;color:var(--gold)}
+    .tcv-about p{margin:.4rem 0}
+    .tcv-about .lede{color:var(--muted)}
+    .tcv-about .grid{display:grid;gap:18px}
+    @media (min-width:900px){ .tcv-about .grid-2{grid-template-columns:1.1fr .9fr} .tcv-about .grid-3{grid-template-columns:repeat(3,1fr)} }
+    .tcv-about .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 10px 24px rgba(0,0,0,.25)}
+    .tcv-about .badge{display:inline-block;padding:6px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:12px}
+    .tcv-about .check{width:18px;height:18px;border-radius:50%;border:2px solid var(--gold);display:inline-flex;align-items:center;justify-content:center;margin-right:10px}
+    .tcv-about .check::after{content:"";width:8px;height:8px;background:var(--gold);border-radius:50%}
+    .tcv-about .btn{display:inline-block;padding:12px 18px;border-radius:14px;font-weight:600;text-decoration:none;background:var(--gold);color:#0B0B0B;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+    .tcv-about .btn-outline{background:transparent;color:var(--gold);border:1px solid var(--gold)}
+    .tcv-about .faq-item{border-bottom:1px solid var(--line)}
+    .tcv-about .faq-q{width:100%;text-align:left;background:transparent;color:var(--fg);border:none;padding:18px 0;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-weight:600}
+    .tcv-about .faq-q span{color:var(--gold);margin-right:12px;font-weight:700}
+    .tcv-about .faq-a{max-height:0;overflow:hidden;transition:max-height .25s ease;color:var(--muted)}
+    .tcv-about .faq-item.open .faq-a{max-height:320px;padding-bottom:14px}
+    .tcv-about .dl{display:grid;grid-template-columns:220px 1fr;gap:8px 18px}
+    .tcv-about .dl dt{color:var(--muted)} .tcv-about .dl dd{margin:0}
+    @media (max-width:720px){ .tcv-about{padding:20px} .tcv-about .dl{grid-template-columns:1fr} }
+  </style>
 </head>
+
 <body>
   <div class="container">
-    <!-- ===== Header existant (inchangé) ===== -->
-    <div class="header">
-      <div class="brand">
-        <img src="/assets/logo.png" alt="Logo">
-        <div>
-          <h1>Transport Confort</h1>
+
+    <!-- ===== HEADER HARMONISÉ ===== -->
+    <header class="masthead" role="banner">
+      <div class="brand-block">
+        <img class="brand-logo" src="/assets/logo.png" alt="Transport Confort">
+        <div class="brand-text">
           <div class="slogan">Transport haut de gamme • Confort premium</div>
         </div>
       </div>
-      <nav class="nav">
-        <a href="/index.html">Accueil</a>
-        <a href="/simulator.html">Réservation</a>
+      <nav class="nav-scroller" role="navigation" aria-label="Navigation principale">
+        <a href="/">Accueil</a>
+        <a href="/simulator.html">Simulateur</a>
         <a href="/tarifs.html">Tarifs</a>
         <a href="/a-propos.html" aria-current="page">À propos</a>
         <a href="/mentions.html">Mentions légales</a>
       </nav>
-    </div>
+    </header>
 
-    <!-- ===== À PROPOS harmonisé ===== -->
+    <!-- ===== SECTION À PROPOS ===== -->
     <section id="tcv-about" class="tcv-about" aria-labelledby="about-title">
-      <style>
-        /* === Transport Confort — Section À propos (namespace .tcv-about) === */
-        .tcv-about{--bg:#0B0B0B;--fg:#F5F5F5;--muted:#CFCFCF;--gold:#C7A24B;--line:#2A2A2A;--card:#111111;
-          font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-          background:var(--bg);color:var(--fg);border-radius:18px;padding:28px;margin-top:18px;
-          box-shadow:0 10px 30px rgba(0,0,0,.35);line-height:1.6;letter-spacing:.2px}
-        .tcv-about *{box-sizing:border-box}
-        .tcv-about .container{max-width:1120px;margin:0 auto;padding:0}
-        .tcv-about h2{font-size:1.9rem;margin:0 0 .5rem;color:var(--gold);letter-spacing:.4px}
-        .tcv-about h3{font-size:1.15rem;margin:.2rem 0 .6rem;color:var(--gold)}
-        .tcv-about p{margin:.4rem 0}
-        .tcv-about .lede{color:var(--muted)}
-        .tcv-about .grid{display:grid;gap:18px}
-        @media (min-width:900px){ .tcv-about .grid-2{grid-template-columns:1.1fr .9fr} .tcv-about .grid-3{grid-template-columns:repeat(3,1fr)} }
-        .tcv-about .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 10px 24px rgba(0,0,0,.25)}
-        .tcv-about .badge{display:inline-block;padding:6px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:12px}
-        .tcv-about .check{width:18px;height:18px;border-radius:50%;border:2px solid var(--gold);display:inline-flex;align-items:center;justify-content:center;margin-right:10px}
-        .tcv-about .check::after{content:"";width:8px;height:8px;background:var(--gold);border-radius:50%}
-        .tcv-about .btn{display:inline-block;padding:12px 18px;border-radius:14px;font-weight:600;text-decoration:none;
-          transition:transform .15s ease,box-shadow .15s ease;background:var(--gold);color:#0B0B0B;box-shadow:0 6px 18px rgba(0,0,0,.25)}
-        .tcv-about .btn:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(0,0,0,.35)}
-        .tcv-about .btn-outline{background:transparent;color:var(--gold);border:1px solid var(--gold)}
-        .tcv-about .btn-outline:hover{background:rgba(199,162,75,.08)}
-        .tcv-about .faq-item{border-bottom:1px solid var(--line)}
-        .tcv-about .faq-q{width:100%;text-align:left;background:transparent;color:var(--fg);border:none;padding:18px 0;cursor:pointer;
-          display:flex;align-items:center;justify-content:space-between;font-weight:600}
-        .tcv-about .faq-q span{color:var(--gold);margin-right:12px;font-weight:700}
-        .tcv-about .faq-a{max-height:0;overflow:hidden;transition:max-height .25s ease;color:var(--muted)}
-        .tcv-about .faq-item.open .faq-a{max-height:320px;padding-bottom:14px}
-        .tcv-about .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#131313;border:1px solid var(--line);border-radius:8px;padding:2px 6px;color:var(--muted)}
-        .tcv-about .dl{display:grid;grid-template-columns:220px 1fr;gap:8px 18px}
-        .tcv-about .dl dt{color:var(--muted)} .tcv-about .dl dd{margin:0}
-        @media (max-width:720px){ .tcv-about{padding:20px} .tcv-about .dl{grid-template-columns:1fr} }
-      </style>
-
       <div class="container">
+
         <!-- HERO -->
         <header>
           <div class="badge">À propos — Service VTC premium</div>
           <h2 id="about-title">Le confort, la sérénité et une relation directe.</h2>
           <p class="lede">
-            Je m’appelle Vincent, fondateur de <strong>Transport Confort by Vincent</strong>.
-            Mon parti pris : un service de transport <em>haut de gamme, sécurisé et discret</em> en Île-de-France et au-delà,
+            Je m’appelle Vincent, fondateur de <strong>Transport Confort by Vincent</strong>.  
+            Mon parti pris : un service de transport <em>haut de gamme, sécurisé et discret</em> en Île-de-France et au-delà,  
             avec un suivi personnel de chaque trajet.
           </p>
           <div style="margin-top:14px;display:flex;gap:12px;flex-wrap:wrap">
-            <a href="/simulator.html" class="btn" aria-label="Simuler un tarif">Simuler mon tarif</a>
-            <a href="/simulator.html#calendly" class="btn btn-outline" aria-label="Réserver maintenant">Réserver maintenant</a>
+            <a href="/simulator.html" class="btn">Simuler un tarif</a>
+            <a href="/simulator.html#calendly" class="btn btn-outline">Réserver maintenant</a>
           </div>
           <p style="margin-top:10px;color:var(--muted);font-size:14px">Prix affiché = prix payé. Facture avec TVA récupérable (clients pros).</p>
         </header>
 
         <!-- VALEURS + VÉHICULE -->
         <div class="grid grid-2" style="margin-top:20px;align-items:start">
-          <section class="card" aria-labelledby="valeurs-title">
-            <h3 id="valeurs-title">Mes valeurs</h3>
+          <section class="card">
+            <h3>Mes valeurs</h3>
             <ul style="list-style:none;padding:0;margin:0;display:grid;gap:10px">
               <li><span class="check"></span> Ponctualité & fiabilité</li>
               <li><span class="check"></span> Sécurité & sérénité</li>
@@ -92,24 +101,20 @@
             </ul>
           </section>
 
-          <section class="card" aria-labelledby="vehicule-title">
-            <h3 id="vehicule-title">Le véhicule</h3>
-            <p>
-              <strong>XPeng G6</strong> — SUV 100% électrique : silence, espace « lounge » à l’arrière, toit panoramique, ambiance lumineuse.
-              Accueil attentif, <em>bouteille d’eau et chargeurs</em> à disposition. Conduite apaisée et respectueuse.
-            </p>
-            <p class="lede" style="margin-top:8px">
-              Le G6 embarque une <strong>caméra extérieure</strong> jouant le rôle du rétroviseur intérieur : aucun regard intrusif dans l’habitacle.
-            </p>
+          <section class="card">
+            <h3>Le véhicule</h3>
+            <p><strong>XPeng G6</strong> — SUV 100% électrique : silence, espace « lounge », toit panoramique, ambiance lumineuse.  
+            Accueil attentif, <em>bouteille d’eau et chargeurs</em> à disposition. Conduite apaisée et respectueuse.</p>
+            <p class="lede" style="margin-top:8px">Caméra extérieure remplaçant le rétroviseur intérieur : confidentialité totale.</p>
           </section>
         </div>
 
-        <!-- ENGAGEMENTS CLÉS -->
-        <section class="card" style="margin-top:18px" aria-labelledby="engagements-title">
-          <h3 id="engagements-title">Engagements clés</h3>
+        <!-- ENGAGEMENTS -->
+        <section class="card" style="margin-top:18px">
+          <h3>Engagements clés</h3>
           <div class="grid grid-3">
             <div>
-              <h4 style="margin:.2rem 0 .4rem;color:var(--fg);font-size:1rem">Transparence & réservation simple</h4>
+              <h4 style="margin:.2rem 0 .4rem;color:var(--fg);font-size:1rem">Transparence</h4>
               <p class="lede">Simulateur clair, acompte sécurisé, confirmation immédiate.</p>
             </div>
             <div>
@@ -123,122 +128,55 @@
           </div>
         </section>
 
-        <!-- CONDITIONS CLÉS (alignées CGV) -->
-        <section class="card" style="margin-top:18px" aria-labelledby="conditions-title">
-          <h3 id="conditions-title">Conditions importantes</h3>
-          <div class="dl" aria-label="Synthèse conditions">
+        <!-- CONDITIONS CLÉS -->
+        <section class="card" style="margin-top:18px">
+          <h3>Conditions importantes</h3>
+          <dl class="dl">
             <dt>Acompte</dt><dd>20% TTC à la réservation (Stripe). Solde à bord : CB (terminal) ou espèces (min. 100 €, max. 1 000 €).</dd>
-            <dt>Annulation</dt><dd><strong>≥ 24h</strong> : <strong>remboursement intégral</strong> de l’acompte. <strong>&lt; 24h</strong> : acompte conservé.</dd>
-            <dt>Tarifs</dt><dd>Prix TTC publiés (simulateur/grilles). Courses classiques : +20% nuit/WE. Forfaits aéroports : colonnes <em>jour</em> vs <em>nuit/WE</em> (pas de +20%). MAD : TVA 20%, pas de majoration nuit/WE.</dd>
-          </div>
+            <dt>Annulation</dt><dd><strong>≥ 24h</strong> : remboursement intégral. <strong>&lt; 24h</strong> : acompte conservé.</dd>
+            <dt>Tarifs</dt><dd>Prix TTC (simulateur/grilles). Courses classiques : +20% nuit/WE. Forfaits aéroports : <em>jour</em> / <em>nuit-WE</em>. MAD : TVA 20%.</dd>
+          </dl>
           <p class="lede" style="margin-top:8px">Détails complets : <a href="/mentions.html#cgv" style="color:var(--gold)">CGV</a>.</p>
         </section>
 
         <!-- FAQ -->
-        <section style="margin-top:18px" aria-labelledby="faq-title">
-          <h3 id="faq-title">Questions fréquentes</h3>
+        <section style="margin-top:18px">
+          <h3>Questions fréquentes</h3>
           <div class="card">
             <div class="faq-item">
-              <button class="faq-q" aria-expanded="false">
-                <div><span>Q1</span>Pourquoi êtes-vous plus cher qu’une plateforme ?</div>
-                <div class="kbd">ouvrir</div>
-              </button>
-              <div class="faq-a" aria-hidden="true">
-                <p>Service non-massifié : véhicule premium, ponctualité, accueil personnalisé, relation directe. La différence se ressent dès la prise en charge.</p>
-              </div>
+              <button class="faq-q"><div><span>Q1</span>Pourquoi êtes-vous plus cher qu’une plateforme ?</div></button>
+              <div class="faq-a"><p>Véhicule premium, ponctualité, accueil personnalisé, relation directe — la différence se ressent dès la prise en charge.</p></div>
             </div>
-
             <div class="faq-item">
-              <button class="faq-q" aria-expanded="false">
-                <div><span>Q2</span>Puis-je demander un magazine, une boisson ou un service particulier ?</div>
-                <div class="kbd">ouvrir</div>
-              </button>
-              <div class="faq-a" aria-hidden="true">
-                <p>Oui. Indiquez-le lors de la réservation ; j’adapte dans la mesure du possible.</p>
-              </div>
+              <button class="faq-q"><div><span>Q2</span>Puis-je demander un service particulier ?</div></button>
+              <div class="faq-a"><p>Oui. Indiquez-le lors de la réservation, j’adapte dans la mesure du possible.</p></div>
             </div>
-
             <div class="faq-item">
-              <button class="faq-q" aria-expanded="false">
-                <div><span>Q3</span>Proposez-vous des tours touristiques de Paris ?</div>
-                <div class="kbd">ouvrir</div>
-              </button>
-              <div class="faq-a" aria-hidden="true">
-                <p>Oui, via des <strong>mises à disposition à l’heure</strong> pour découvrir la capitale dans le confort, itinéraire sur mesure possible.</p>
-              </div>
+              <button class="faq-q"><div><span>Q3</span>Proposez-vous des tours touristiques ?</div></button>
+              <div class="faq-a"><p>Oui, via des mises à disposition à l’heure avec itinéraire sur mesure.</p></div>
             </div>
-
             <div class="faq-item">
-              <button class="faq-q" aria-expanded="false">
-                <div><span>Q4</span>Puis-je réserver un long trajet (ex. Sud de la France) ?</div>
-                <div class="kbd">ouvrir</div>
-              </button>
-              <div class="faq-a" aria-hidden="true">
-                <p>Oui, sur demande. Transferts inter-villes et longues distances possibles avec devis clair et horaires planifiés.</p>
-              </div>
-            </div>
-
-            <div class="faq-item">
-              <button class="faq-q" aria-expanded="false">
-                <div><span>Q5</span>Pourquoi un acompte est-il demandé à la réservation ?</div>
-                <div class="kbd">ouvrir</div>
-              </button>
-              <div class="faq-a" aria-hidden="true">
-                <p>Pour <strong>bloquer le créneau</strong>, assurer la ponctualité et couvrir les annulations tardives. L’acompte est <strong>déduit</strong> du prix final. Paiement sécurisé via Stripe.</p>
-              </div>
-            </div>
-
-            <div class="faq-item">
-              <button class="faq-q" aria-expanded="false">
-                <div><span>Q6</span>J’ai un imprévu, suis-je remboursé de mon acompte ?</div>
-                <div class="kbd">ouvrir</div>
-              </button>
-              <div class="faq-a" aria-hidden="true">
-                <p><strong>Oui si vous annulez ≥ 24h</strong> avant l’heure de prise en charge : remboursement intégral de l’acompte. <strong>Moins de 24h</strong> : l’acompte est conservé.</p>
-              </div>
-            </div>
-
-            <div class="faq-item">
-              <button class="faq-q" aria-expanded="false">
-                <div><span>Q7</span>Besoin d’une course le jour même mais aucune dispo sur Calendly ?</div>
-                <div class="kbd">ouvrir</div>
-              </button>
-              <div class="faq-a" aria-hidden="true">
-                <p>Contact direct : téléphone/SMS <a href="tel:+33749556277" class="lede">07 49 55 62 77</a> ou email <a href="mailto:contact@transportconfort.com" class="lede">contact@transportconfort.com</a>. Un créneau peut se libérer.</p>
-              </div>
+              <button class="faq-q"><div><span>Q4</span>Pourquoi un acompte ?</div></button>
+              <div class="faq-a"><p>Pour bloquer le créneau et couvrir les annulations tardives. L’acompte est déduit du prix final.</p></div>
             </div>
           </div>
         </section>
 
-        <!-- JS accordéon FAQ -->
         <script>
-          (function(){
-            const root = document.getElementById('tcv-about');
-            root.querySelectorAll('.faq-item').forEach(item=>{
-              const btn = item.querySelector('.faq-q');
-              const ans = item.querySelector('.faq-a');
-              btn.addEventListener('click', ()=>{
-                const open = item.classList.toggle('open');
-                btn.setAttribute('aria-expanded', String(open));
-                ans.setAttribute('aria-hidden', String(!open));
-                if(open){
-                  root.querySelectorAll('.faq-item').forEach(other=>{
-                    if(other!==item){ other.classList.remove('open');
-                      other.querySelector('.faq-q').setAttribute('aria-expanded','false');
-                      other.querySelector('.faq-a').setAttribute('aria-hidden','true');
-                    }
-                  });
-                }
-              });
+          document.querySelectorAll('.faq-item').forEach(item=>{
+            const q=item.querySelector('.faq-q'), a=item.querySelector('.faq-a');
+            q.addEventListener('click',()=>{
+              const open=item.classList.toggle('open');
+              a.style.maxHeight=open?a.scrollHeight+'px':'0';
             });
-          })();
+          });
         </script>
       </div>
     </section>
 
-    <!-- ===== Footer (tu peux conserver le tien) ===== -->
-    <div class="footer small">
-      © Transport Confort by Vincent — SIREN 990 407 397 — Siège : 23 rue la Bruyère, 93800 Épinay-sur-Seine — 07 49 55 62 77
+    <!-- ===== FOOTER ===== -->
+    <div class="footer small" style="margin-top:14px">
+      © Transport Confort by Vincent — SIREN 990 407 397 — Siège : 23 rue La Bruyère, 93800 Épinay-sur-Seine — 07 49 55 62 77
     </div>
   </div>
 </body>
