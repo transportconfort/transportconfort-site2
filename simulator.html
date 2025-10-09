@@ -1,4 +1,4 @@
-<!doctype html>  
+<!doctype html>   
 <html lang="fr">
 <head>
   <meta charset="utf-8">
@@ -21,6 +21,8 @@
     :root{ --bg:#0B0B0B; --fg:#F5F5F5; --muted:#CFCFCF; --gold:#C7A24B; --line:#1F1F1F; --card:#111111 }
     html,body{background:var(--bg);color:var(--fg);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;line-height:1.55}
     .container{max-width:1120px;margin:0 auto;padding:0 16px}
+    /* Scroll fluide pour les ancres (#itineraire, etc.) */
+    html{ scroll-behavior:smooth; }
 
     /* ===== Masthead harmonisé ===== */
     .masthead{padding:12px 0;border-bottom:1px solid var(--line);background:var(--bg)}
@@ -188,7 +190,7 @@
       </section>
 
       <!-- Colonne droite : carte + indicateurs -->
-      <aside class="card" aria-labelledby="map-title">
+      <aside id="itineraire" class="card" aria-labelledby="map-title">
         <h3 id="map-title" style="margin-top:0">Votre itinéraire</h3>
         <div id="map" style="height:360px;border-radius:10px;overflow:hidden;margin-bottom:10px;background:#0f0f0f"></div>
         <div class="kpi"><span class="badge">Distance</span> <span id="distance" class="value">—</span></div>
@@ -385,11 +387,24 @@
       }
     }
 
-    // Hook bouton
+    // Hooks : bouton Réserver + auto-scroll carte (Estimer / #itineraire)
     document.addEventListener('DOMContentLoaded', ()=>{
       const btn = document.getElementById('calendly');
       if (btn) btn.addEventListener('click', (ev)=>{ ev.preventDefault(); openInlineCalendly(); });
-      window.openInlineCalendly = openInlineCalendly;
+
+      // Auto-scroll vers la carte si on arrive avec #itineraire
+      const anchor = document.getElementById('itineraire');
+      if (location.hash === '#itineraire' && anchor){
+        setTimeout(()=> anchor.scrollIntoView({ behavior:'smooth', block:'start' }), 60);
+      }
+
+      // Quand on clique sur "Estimer", scroller vers la carte (laisser l’estimation s’exécuter)
+      const est = document.getElementById('estimate');
+      if (est && anchor){
+        est.addEventListener('click', ()=>{
+          setTimeout(()=> anchor.scrollIntoView({ behavior:'smooth', block:'start' }), 200);
+        });
+      }
     });
   </script>
 </body>
