@@ -428,5 +428,76 @@
       }
     });
   </script>
+  <script>
+// --- Double select (heure + minutes) qui pilote le vrai #time ---
+(function(){
+  document.addEventListener('DOMContentLoaded', () => {
+    const selTime = document.getElementById('time');
+    if (!selTime) return;
+
+    // valeur actuelle (ex: "14:35")
+    const cur = (selTime.value || '00:00').match(/^(\d{2}):(\d{2})$/) || ['','00','00'];
+    let H = parseInt(cur[1],10), M = parseInt(cur[2],10);
+
+    // conteneur (à côté du #time)
+    const wrap = document.createElement('div');
+    wrap.style.display = 'flex';
+    wrap.style.gap = '8px';
+    wrap.style.alignItems = 'center';
+
+    // selects heure/minute (même style que .input)
+    const hSelect = document.createElement('select');
+    const mSelect = document.createElement('select');
+    hSelect.className = 'input';
+    mSelect.className = 'input';
+    hSelect.style.maxWidth = '110px';
+    mSelect.style.maxWidth = '110px';
+    hSelect.setAttribute('aria-label','Heure');
+    mSelect.setAttribute('aria-label','Minutes');
+
+    // options heures 00..23
+    for (let h=0; h<24; h++){
+      const opt = document.createElement('option');
+      opt.value = String(h).padStart(2,'0');
+      opt.textContent = opt.value;
+      if (h===H) opt.selected = true;
+      hSelect.appendChild(opt);
+    }
+    // options minutes 00..55 par 5
+    for (let m=0; m<60; m+=5){
+      const opt = document.createElement('option');
+      opt.value = String(m).padStart(2,'0');
+      opt.textContent = opt.value;
+      if (m===M) opt.selected = true;
+      mSelect.appendChild(opt);
+    }
+
+    // insérer & cacher le select d’origine
+    selTime.parentNode.insertBefore(wrap, selTime);
+    wrap.appendChild(hSelect);
+    wrap.appendChild(mSelect);
+    selTime.style.display = 'none';
+
+    // sync -> met à jour #time en "HH:MM"
+    function sync(){
+      const val = `${hSelect.value}:${mSelect.value}`;
+      selTime.value = val;
+
+      // Si d'autres scripts lisent "change" sur #time, déclenche-le
+      const evt = new Event('change', { bubbles:true });
+      selTime.dispatchEvent(evt);
+    }
+    hSelect.addEventListener('change', sync);
+    mSelect.addEventListener('change', sync);
+
+    // si ton code modifie #time plus tard, répercute dans les dropdowns
+    const obs = new MutationObserver(()=>{
+      const m = (selTime.value||'').match(/^(\d{2}):(\d{2})$/);
+      if (m){ hSelect.value = m[1]; mSelect.value = m[2]; }
+    });
+    obs.observe(selTime, { attributes:true, attributeFilter:['value'] });
+  });
+})();
+</script>
 </body>
 </html>
