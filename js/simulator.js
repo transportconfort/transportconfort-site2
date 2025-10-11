@@ -222,7 +222,7 @@
   //   0–30 km 100% ; 30–60 km 90% ; 60–120 km 80% ; 120+ km 70%
   // Dégressivité temps (appliquée sur la part minutes) :
   //   0–60 min 100% ; 60–120 min 90% ; 120+ min 80%
-  // Majoration Nuit/WE : +20%
+  // Majoration Nuit/WE : +15%
   function price(dist_m, dur_s, when) {
     const PICKUP_FEE = 10.00;
     const PER_KM     = 2.00;
@@ -274,7 +274,7 @@
     );
 
     let amt = PICKUP_FEE + kmCharge(km) + minCharge(min);
-    if (isNW) amt *= 1.20;
+    if (isNW) amt *= 1.15;
 
     return Math.round(amt * 100) / 100;
   }
