@@ -22,8 +22,8 @@
     BVA: { day: 150, night: 170 },
   };
   // Casino Barrière, 3 Av. de Ceinture, 95880 Enghien-les-Bains
-const ENGHIEN   = { lat: 48.96992, lng: 2.30939 };
-const R_ENGHIEN = 0.6; // km — rayon d’attache très court
+  const ENGHIEN   = { lat: 48.96992, lng: 2.30939 };
+  const R_ENGHIEN = 0.6; // km — rayon d’attache très court
 
 
   // ====== DOM ======
@@ -210,17 +210,25 @@ const R_ENGHIEN = 0.6; // km — rayon d’attache très court
     return band ? { total: band.price, label: band.label } : null;
   }
 
+  // ====== TARIF CLASSIQUE : 10 € prise en charge + 2,00 €/km + 1,50 €/min (+20% nuit/WE) ======
   function price(dist_m, dur_s, when) {
-    const min = 10,
-      perKm = 1.6,
-      perMin = 0.55;
+    const PICKUP = 10;     // prise en charge obligatoire
+    const perKm  = 2.0;    // €/km
+    const perMin = 1.50;   // €/min
+
     const isNW = isNightOrWeekend(
       when.toISOString().slice(0, 10),
       when.toTimeString().slice(0, 5)
     );
-    let amt = perKm * (dist_m / 1000) + perMin * (dur_s / 60);
-    if (amt < min) amt = min;
-    return Math.round(amt * (isNW ? 1.2 : 1) * 100) / 100;
+
+    const km   = Math.max(0, dist_m / 1000);
+    const mins = Math.max(0, dur_s / 60);
+
+    // Somme des composantes (plus de “minimum de course” : pickup est TOUJOURS ajouté)
+    const base = PICKUP + (perKm * km) + (perMin * mins);
+
+    const total = isNW ? base * 1.20 : base;
+    return Math.round(total * 100) / 100;
   }
 
   // ====== Estimation ======
@@ -323,49 +331,43 @@ const R_ENGHIEN = 0.6; // km — rayon d’attache très court
       return;
     }
 
-    // === Forfait Enghien : déclenchement seulement si un des 2 points est
-// dans un rayon très court autour du Casino Barrière ===
-const leg = route.routes?.[0]?.legs?.[0];
-if (leg) {
-  const start = { lat: leg.start_location.lat(), lng: leg.start_location.lng() };
-  const end   = { lat: leg.end_location.lat(),   lng: leg.end_location.lng() };
+    // === Forfait Enghien (rayon court autour du Casino) ===
+    const leg = route.routes?.[0]?.legs?.[0];
+    if (leg) {
+      const start = { lat: leg.start_location.lat(), lng: leg.start_location.lng() };
+      const end   = { lat: leg.end_location.lat(),   lng: leg.end_location.lng() };
 
-  // Distances de chaque extrémité au Casino
-  const dStart = haversineKm(start, ENGHIEN);
-  const dEnd   = haversineKm(end,   ENGHIEN);
+      const dStart = haversineKm(start, ENGHIEN);
+      const dEnd   = haversineKm(end,   ENGHIEN);
 
-  // Forfait uniquement si départ OU arrivée est "collé" au Casino
-  const isEnghienEndpoint = (dStart <= R_ENGHIEN) || (dEnd <= R_ENGHIEN);
-  if (isEnghienEndpoint) {
-    // La tranche se calcule sur la distance du point NON-Enghien
-    const bandDist = (dStart <= R_ENGHIEN) ? dEnd : dStart;
+      const isEnghienEndpoint = (dStart <= R_ENGHIEN) || (dEnd <= R_ENGHIEN);
+      if (isEnghienEndpoint) {
+        const bandDist = (dStart <= R_ENGHIEN) ? dEnd : dStart;
 
-    const eng = computeEnghienForfait(bandDist, isNW);
-    if (eng) {
-      // UI
-      els.distance.textContent = '—';
-      els.duration.textContent = '—';
-      els.total.textContent    = TC.fmtMoney(eng.total);
-      const totalLbl = document.getElementById('totalLabel');
-      if (totalLbl) { totalLbl.textContent = eng.label; totalLbl.style.display = ''; }
+        const eng = computeEnghienForfait(bandDist, isNW);
+        if (eng) {
+          els.distance.textContent = '—';
+          els.duration.textContent = '—';
+          els.total.textContent    = TC.fmtMoney(eng.total);
+          const totalLbl = document.getElementById('totalLabel');
+          if (totalLbl) { totalLbl.textContent = eng.label; totalLbl.style.display = ''; }
 
-      els.calendlyBtn?.removeAttribute('disabled');
+          els.calendlyBtn?.removeAttribute('disabled');
 
-      // Contexte réservation/paiement
-      window._TC_LAST = {
-        type: 'FORFAIT_ENGHIEN',
-        from, to,
-        whenISO: dt.toISOString(), // dt = ta date de départ déjà calculée plus haut
-        price_eur: eng.total,
-        label: eng.label,
-        km_to_enghien: Math.round(bandDist * 10) / 10
-      };
-      return; // IMPORTANT : on sort ici si le forfait s’applique
+          window._TC_LAST = {
+            type: 'FORFAIT_ENGHIEN',
+            from, to,
+            whenISO: dt.toISOString(),
+            price_eur: eng.total,
+            label: eng.label,
+            km_to_enghien: Math.round(bandDist * 10) / 10
+          };
+          return;
+        }
+      }
     }
-  }
-}
 
-    // Tarif classique (km + min, +20% nuit/WE)
+    // Tarif classique (prise en charge + km + min, +20% nuit/WE)
     const dm = new google.maps.DistanceMatrixService();
     const r = await dm.getDistanceMatrix({
       origins: [from],
@@ -401,23 +403,23 @@ if (leg) {
     };
   } // fin estimate()
 
-// ===== Bind UI =====
-if (els && els.estimateBtn) {
-  els.estimateBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    estimate().catch((err) => {
-      console.error(err);
-      alert('Estimation impossible. Réessayez.');
+  // ===== Bind UI =====
+  if (els && els.estimateBtn) {
+    els.estimateBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      estimate().catch((err) => {
+        console.error(err);
+        alert('Estimation impossible. Réessayez.');
+        });
     });
-  });
-}
+  }
 
-// (optionnel) accrocher aussi le bouton “Réserver” côté JS :
-// const reserveBtn = document.getElementById('calendly');
-// if (reserveBtn) reserveBtn.addEventListener('click', (ev) => {
-//   ev.preventDefault();
-//   if (window.openInlineCalendly) window.openInlineCalendly();
-// });
+  // (optionnel) accrocher aussi le bouton “Réserver” côté JS :
+  // const reserveBtn = document.getElementById('calendly');
+  // if (reserveBtn) reserveBtn.addEventListener('click', (ev) => {
+  //   ev.preventDefault();
+  //   if (window.openInlineCalendly) window.openInlineCalendly();
+  // });
 
-// === FIN du fichier : exactement UNE seule IIFE fermée ===
+  // === FIN du fichier : exactement UNE seule IIFE fermée ===
 })();
