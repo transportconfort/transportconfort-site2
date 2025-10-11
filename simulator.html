@@ -1,4 +1,4 @@
-<!doctype html>   
+<!doctype html>    
 <html lang="fr">
 <head>
   <meta charset="utf-8">
@@ -59,6 +59,26 @@
     }
     .input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(199,162,75,.15)}
     textarea.input{min-height:84px;resize:vertical}
+
+    /* >>> Habillage de l'input time (le picker interne reste natif OS) */
+    input[type="time"].input{
+      background:#0f0f0f;
+      color:#C7A24B;
+      border:1px solid #C7A24B;
+      font-weight:600;
+      text-align:center;
+      border-radius:10px;
+      letter-spacing:0.5px;
+    }
+    /* icône du sélecteur (Chrome/Edge/Brave) */
+    input[type="time"].input::-webkit-calendar-picker-indicator{
+      filter: invert(1) sepia(1) saturate(0.3) hue-rotate(15deg);
+      opacity:.75; cursor:pointer;
+    }
+    /* alignements (WebKit) */
+    input[type="time"].input::-webkit-datetime-edit-fields-wrapper{ padding:0 2px; }
+    input[type="time"].input::-webkit-datetime-edit-hour-field,
+    input[type="time"].input::-webkit-datetime-edit-minute-field{ padding:0 2px; }
 
     /* ===== Grille locale simulateur ===== */
     .sim-grid{display:grid;grid-template-columns:1fr 420px;gap:16px}
@@ -155,7 +175,8 @@
           </div>
           <div>
             <label for="time">Heure</label>
-            <select id="time" class="input"></select>
+            <!-- >>> Remplacé par un input time natif, step 5 min -->
+            <input id="time" class="input" type="time" step="300" required>
           </div>
         </div>
 
