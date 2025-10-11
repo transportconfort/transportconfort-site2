@@ -7,9 +7,7 @@
     const r = await fetch('/.netlify/functions/public-gmaps-key');
     const { key } = await r.json();
     await TC.addScript(
-      `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(
-        key
-      )}&libraries=places`
+      `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&libraries=places`
     );
   }
   await loadGmaps();
@@ -24,7 +22,6 @@
   // Casino Barrière, 3 Av. de Ceinture, 95880 Enghien-les-Bains
   const ENGHIEN   = { lat: 48.96992, lng: 2.30939 };
   const R_ENGHIEN = 0.6; // km — rayon d’attache très court
-
 
   // ====== DOM ======
   const els = {
@@ -94,28 +91,46 @@
   document.getElementById('mode-mad')?.addEventListener('change', syncModeUI);
   document.getElementById('mode-course')?.addEventListener('change', syncModeUI);
 
-  // ====== Préremplissage date/heure ======
-  if (els.time) els.time.step = 300;
+  // ====== Préremplissage date/heure (pas de 5 min + arrondi auto) ======
   {
     const now = new Date();
-    now.setMinutes(now.getMinutes() + 120);
-    now.setSeconds(0, 0);
-    const step = 5;
-    now.setMinutes(Math.ceil(now.getMinutes() / step) * step);
-    els.date && (els.date.value = now.toISOString().slice(0, 10));
-    els.time && (els.time.value = now.toTimeString().slice(0, 5));
-  }
-  // Si l’heure est un <select>, le remplir 00:00 → 23:55
-  if (els.time && els.time.tagName === 'SELECT') {
-    els.time.innerHTML = '';
-    for (let h = 0; h < 24; h++) {
-      for (let m = 0; m < 60; m += 5) {
-        const hh = String(h).padStart(2, '0');
-        const mm = String(m).padStart(2, '0');
-        const opt = document.createElement('option');
-        opt.value = `${hh}:${mm}`;
-        opt.textContent = `${hh}:${mm}`;
-        els.time.appendChild(opt);
+    // +120 min, arrondi au 5 min supérieur
+    now.setMinutes(now.getMinutes() + 120, 0, 0);
+    const round5 = (m) => Math.ceil(m / 5) * 5;
+    now.setMinutes(round5(now.getMinutes()));
+
+    const yyyy = now.toISOString().slice(0, 10);
+    const hh   = String(now.getHours()).padStart(2, '0');
+    const mm   = String(now.getMinutes()).padStart(2, '0');
+
+    if (els.date) els.date.value = yyyy;
+
+    if (els.time) {
+      if (els.time.tagName === 'SELECT') {
+        els.time.innerHTML = '';
+        for (let H = 0; H < 24; H++) {
+          for (let M = 0; M < 60; M += 5) {
+            const opt = document.createElement('option');
+            opt.value = `${String(H).padStart(2,'0')}:${String(M).padStart(2,'0')}`;
+            opt.textContent = opt.value;
+            els.time.appendChild(opt);
+          }
+        }
+        els.time.value = `${hh}:${mm}`;
+      } else {
+        els.time.type = 'time';
+        els.time.step = 300; // 5 min
+        els.time.value = `${hh}:${mm}`;
+        const snapTo5 = () => {
+          const v = els.time.value || '';
+          const m = v.match(/^(\d{1,2}):(\d{2})$/);
+          if (!m) return;
+          let H = parseInt(m[1],10), M = parseInt(m[2],10);
+          M = Math.round(M / 5) * 5;
+          if (M === 60) { M = 0; H = (H + 1) % 24; }
+          els.time.value = `${String(H).padStart(2,'0')}:${String(M).padStart(2,'0')}`;
+        };
+        ['change','blur'].forEach(ev => els.time.addEventListener(ev, snapTo5));
       }
     }
   }
@@ -129,12 +144,8 @@
   });
 
   // ====== Google Places + Map ======
-  new google.maps.places.Autocomplete(els.from, {
-    componentRestrictions: { country: 'fr' },
-  });
-  new google.maps.places.Autocomplete(els.to, {
-    componentRestrictions: { country: 'fr' },
-  });
+  new google.maps.places.Autocomplete(els.from, { componentRestrictions: { country: 'fr' } });
+  new google.maps.places.Autocomplete(els.to,   { componentRestrictions: { country: 'fr' } });
 
   const map = new google.maps.Map(els.map, {
     center: { lat: 48.987, lng: 2.3 },
@@ -165,8 +176,7 @@
   function detectAirportCode(fromText, toText) {
     const t = (fromText + ' ' + toText).toLowerCase();
     if (t.includes('orly') || t.includes('ory')) return 'ORY';
-    if (t.includes('roissy') || t.includes('charles de gaulle') || t.includes('cdg'))
-      return 'CDG';
+    if (t.includes('roissy') || t.includes('charles de gaulle') || t.includes('cdg')) return 'CDG';
     if (t.includes('beauvais') || t.includes('tillé') || t.includes('bva')) return 'BVA';
     return null;
   }
@@ -192,43 +202,81 @@
   function computeEnghienForfait(kmToEnghien, isNightWE) {
     let band = null;
     if (kmToEnghien <= 5)
-      band = isNightWE
-        ? { price: 20, label: 'Forfait Enghien 5 km (nuit/WE)' }
-        : { price: 15, label: 'Forfait Enghien 5 km (jour)' };
+      band = isNightWE ? { price: 20, label: 'Forfait Enghien 5 km (nuit/WE)' }
+                       : { price: 15, label: 'Forfait Enghien 5 km (jour)' };
     else if (kmToEnghien <= 10)
-      band = isNightWE
-        ? { price: 30, label: 'Forfait Enghien 10 km (nuit/WE)' }
-        : { price: 25, label: 'Forfait Enghien 10 km (jour)' };
+      band = isNightWE ? { price: 30, label: 'Forfait Enghien 10 km (nuit/WE)' }
+                       : { price: 25, label: 'Forfait Enghien 10 km (jour)' };
     else if (kmToEnghien <= 20)
-      band = isNightWE
-        ? { price: 60, label: 'Forfait Enghien 20 km (nuit/WE)' }
-        : { price: 50, label: 'Forfait Enghien 20 km (jour)' };
+      band = isNightWE ? { price: 60, label: 'Forfait Enghien 20 km (nuit/WE)' }
+                       : { price: 50, label: 'Forfait Enghien 20 km (jour)' };
     else if (kmToEnghien <= 30)
-      band = isNightWE
-        ? { price: 80, label: 'Forfait Enghien 30 km (nuit/WE)' }
-        : { price: 70, label: 'Forfait Enghien 30 km (jour)' };
+      band = isNightWE ? { price: 80, label: 'Forfait Enghien 30 km (nuit/WE)' }
+                       : { price: 70, label: 'Forfait Enghien 30 km (jour)' };
     return band ? { total: band.price, label: band.label } : null;
   }
 
-  // ====== TARIF CLASSIQUE : 10 € prise en charge + 2,00 €/km + 1,50 €/min (+20% nuit/WE) ======
+  // ====== TARIF CLASSIQUE LISSÉ ======
+  // Base : 10 € pickup + 2,00 €/km + 1,50 €/min
+  // Dégressivité distance (appliquée sur la part km) :
+  //   0–30 km 100% ; 30–60 km 90% ; 60–120 km 80% ; 120+ km 70%
+  // Dégressivité temps (appliquée sur la part minutes) :
+  //   0–60 min 100% ; 60–120 min 90% ; 120+ min 80%
+  // Majoration Nuit/WE : +20%
   function price(dist_m, dur_s, when) {
-    const PICKUP = 10;     // prise en charge obligatoire
-    const perKm  = 2.0;    // €/km
-    const perMin = 1.50;   // €/min
+    const PICKUP_FEE = 10.00;
+    const PER_KM     = 2.00;
+    const PER_MIN    = 1.50;
+
+    const km  = Math.max(0, dist_m / 1000);
+    const min = Math.max(0, dur_s / 60);
+
+    function kmCharge(k) {
+      const bands = [
+        { upto: 30,      factor: 1.00 },
+        { upto: 60,      factor: 0.90 },
+        { upto: 120,     factor: 0.80 },
+        { upto: Infinity, factor: 0.70 }
+      ];
+      let remain = k, last = 0, sum = 0;
+      for (const b of bands) {
+        const seg = Math.max(0, Math.min(remain, b.upto - last));
+        if (!seg) continue;
+        sum += seg * PER_KM * b.factor;
+        remain -= seg;
+        last = b.upto;
+        if (remain <= 0) break;
+      }
+      return sum;
+    }
+
+    function minCharge(m) {
+      const bands = [
+        { upto: 60,      factor: 1.00 },
+        { upto: 120,     factor: 0.90 },
+        { upto: Infinity, factor: 0.80 }
+      ];
+      let remain = m, last = 0, sum = 0;
+      for (const b of bands) {
+        const seg = Math.max(0, Math.min(remain, b.upto - last));
+        if (!seg) continue;
+        sum += seg * PER_MIN * b.factor;
+        remain -= seg;
+        last = b.upto;
+        if (remain <= 0) break;
+      }
+      return sum;
+    }
 
     const isNW = isNightOrWeekend(
       when.toISOString().slice(0, 10),
       when.toTimeString().slice(0, 5)
     );
 
-    const km   = Math.max(0, dist_m / 1000);
-    const mins = Math.max(0, dur_s / 60);
+    let amt = PICKUP_FEE + kmCharge(km) + minCharge(min);
+    if (isNW) amt *= 1.20;
 
-    // Somme des composantes (plus de “minimum de course” : pickup est TOUJOURS ajouté)
-    const base = PICKUP + (perKm * km) + (perMin * mins);
-
-    const total = isNW ? base * 1.20 : base;
-    return Math.round(total * 100) / 100;
+    return Math.round(amt * 100) / 100;
   }
 
   // ====== Estimation ======
@@ -278,9 +326,7 @@
         label: `MAD ${h}h`,
       };
 
-      try {
-        dr.set('directions', null);
-      } catch {}
+      try { dr.set('directions', null); } catch {}
       return;
     }
 
@@ -367,7 +413,7 @@
       }
     }
 
-    // Tarif classique (prise en charge + km + min, +20% nuit/WE)
+    // Tarif classique lissé
     const dm = new google.maps.DistanceMatrixService();
     const r = await dm.getDistanceMatrix({
       origins: [from],
@@ -410,16 +456,9 @@
       estimate().catch((err) => {
         console.error(err);
         alert('Estimation impossible. Réessayez.');
-        });
+      });
     });
   }
-
-  // (optionnel) accrocher aussi le bouton “Réserver” côté JS :
-  // const reserveBtn = document.getElementById('calendly');
-  // if (reserveBtn) reserveBtn.addEventListener('click', (ev) => {
-  //   ev.preventDefault();
-  //   if (window.openInlineCalendly) window.openInlineCalendly();
-  // });
 
   // === FIN du fichier : exactement UNE seule IIFE fermée ===
 })();
