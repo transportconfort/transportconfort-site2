@@ -1,32 +1,29 @@
-<!doctype html> 
+<!doctype html>
 <html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Tarifs • Transport Confort</title>
-  <link rel="stylesheet" href="/assets/style.css"><!-- conserve ta feuille globale -->
+  <link rel="stylesheet" href="/assets/style.css">
   <style>
     :root{--bg:#0B0B0B;--fg:#F5F5F5;--muted:#CFCFCF;--gold:#C7A24B;--line:#1F1F1F;--card:#111111}
     body{background:var(--bg);color:var(--fg);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;line-height:1.6}
     .container{max-width:1120px;margin:0 auto;padding:0 16px}
 
-    /* ===== Header refondu (masthead) ===== */
+    /* Header */
     .masthead{padding:12px 0;border-bottom:1px solid var(--line);background:var(--bg)}
     .brand-block{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center}
     .brand-logo{height:56px;width:auto;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.35)}
     .brand-text{min-width:0}
     .brand-name{margin:0;font-size:0}
     .slogan{color:var(--muted);font-size:clamp(13px,3.6vw,15px);line-height:1.35}
-    .nav-scroller{
-      margin-top:10px;display:flex;gap:16px;white-space:nowrap;overflow-x:auto;overscroll-behavior-x:contain;
-      padding-bottom:6px;scrollbar-width:none;border-top:1px solid var(--line);padding-top:10px
-    }
+    .nav-scroller{margin-top:10px;display:flex;gap:16px;white-space:nowrap;overflow-x:auto;overscroll-behavior-x:contain;padding-bottom:6px;scrollbar-width:none;border-top:1px solid var(--line);padding-top:10px}
     .nav-scroller::-webkit-scrollbar{display:none}
     .nav-scroller a{color:var(--fg);text-decoration:none;font-size:15px;opacity:.92}
     .nav-scroller a[aria-current="page"]{color:var(--gold);font-weight:600;opacity:1}
     @media (min-width:960px){ .brand-logo{height:64px} .nav-scroller{gap:20px} }
 
-    /* ===== Section TARIFS ===== */
+    /* Section TARIFS */
     .tcv-tarifs{background:var(--bg);color:var(--fg);border-radius:18px;padding:28px;margin-top:18px;box-shadow:0 10px 30px rgba(0,0,0,.35);line-height:1.6;letter-spacing:.2px;border:1px solid var(--line)}
     .tcv-tarifs *{box-sizing:border-box}
     .tcv-tarifs .container{max-width:1120px;margin:0 auto;padding:0}
@@ -57,7 +54,7 @@
 <body>
   <div class="container">
 
-    <!-- ===== Header (harmonisé) ===== -->
+    <!-- Header -->
     <header class="masthead" role="banner">
       <div class="brand-block">
         <img class="brand-logo" src="/assets/logo.png" alt="Transport Confort">
@@ -75,7 +72,7 @@
       </nav>
     </header>
 
-    <!-- ===== TARIFS harmonisés ===== -->
+    <!-- TARIFS -->
     <section id="tcv-tarifs" class="tcv-tarifs" aria-labelledby="tarifs-title">
       <div class="container">
         <header style="text-align:center">
@@ -88,10 +85,9 @@
           <p class="note">TVA : 10% (courses classiques & forfaits) • 20% (mises à disposition).</p>
         </header>
 
-        <!-- ===== Bloc principal tarifs (version clean) ===== -->
         <div class="card tcv-tarifs-card">
           <style>
-            .tcv-tarifs .price{font-variant-numeric: tabular-nums}
+            .tcv-tarifs .price{font-variant-numeric:tabular-nums}
             .tcv-tarifs .chip{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.03)}
             .tcv-tarifs .chip b{font-weight:700}
             .tcv-tarifs .chip + .chip{margin-left:8px}
@@ -103,18 +99,31 @@
             .tcv-tarifs dl{display:grid;grid-template-columns:160px 1fr;gap:8px 16px;margin:0}
             .tcv-tarifs dt{color:var(--muted)}
             .tcv-tarifs dd{margin:0}
-            @media (max-width:720px){
-              .tcv-tarifs .col{min-width:100%}
-              .tcv-tarifs dl{grid-template-columns:1fr}
+            @media (max-width:720px){ .tcv-tarifs .col{min-width:100%} .tcv-tarifs dl{grid-template-columns:1fr} }
+
+            /* === Cartes propres pour Forfaits (aéroports & Enghien) === */
+            .tcv-tarifs .row > .col{
+              background:var(--card);
+              border:1px solid var(--line);
+              border-radius:14px;
+              padding:14px 16px;
+              box-shadow:0 8px 20px rgba(0,0,0,.25);
             }
-            /* Sous-sections plates (aéroports/Enghien) */
-            .tcv-tarifs .rows{display:grid;gap:0}
-            .tcv-tarifs .r{display:grid;grid-template-columns:1fr auto;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+            .tcv-tarifs .col-title{
+              display:inline-block;margin-bottom:10px;padding:.28rem .7rem;
+              border:1px solid var(--line);border-radius:999px;color:var(--muted);
+              font-size:.82rem;letter-spacing:.2px;background:rgba(255,255,255,.02);
+            }
+            .tcv-tarifs .rows{margin-top:4px}
+            .tcv-tarifs .r{
+              display:grid;grid-template-columns:1fr auto;
+              gap:14px;padding:12px 0;border-bottom:1px solid var(--line);line-height:1.45;
+            }
             .tcv-tarifs .r:last-child{border-bottom:0}
-            .tcv-tarifs .r .label{color:#fff;font-weight:600}
-            .tcv-tarifs .r .val{font-variant-numeric:tabular-nums;font-weight:700}
-            .tcv-tarifs .col-title{display:inline-block;margin-bottom:6px;padding:.22rem .55rem;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:.8rem}
-            @media (max-width:720px){ .tcv-tarifs .r{padding:10px 0} }
+            .tcv-tarifs .r .label{color:#fff;font-weight:600;padding-left:2px}
+            .tcv-tarifs .r .val{font-variant-numeric:tabular-nums;font-weight:700;padding-right:2px}
+            @media (pointer:fine){ .tcv-tarifs .r:hover{background:rgba(255,255,255,.03)} }
+            @media (max-width:900px){ .tcv-tarifs .row > .col{padding:12px 14px} }
           </style>
 
           <!-- Courses classiques -->
@@ -126,19 +135,19 @@
               <span class="chip price"><span>Minute</span><b>1,50&nbsp;€&nbsp;/&nbsp;min</b></span>
             </div>
             <div class="hint">Majoration <b>+15%</b> appliquée la nuit et le week-end.</div>
-            <section class="section" aria-labelledby="tarifs-intro">
-  <div class="card" style="border-color: var(--line)">
-    <p style="margin:.4rem 0 0">
-      Nos tarifs incluent une prise en charge fixe de <strong>10 €</strong>, puis une facturation
-      transparente à <strong>2 €/km</strong> et <strong>1,50 €/min</strong>.
-    </p>
-    <p class="small" style="color:var(--muted);margin:.4rem 0 0">
-      Des ajustements automatiques garantissent un tarif cohérent pour les longs trajets
-      et les horaires de nuit/week-end.
-    </p>
-  </div>
-</section>
 
+            <section class="section" aria-labelledby="tarifs-intro">
+              <div class="card" style="border-color:var(--line)">
+                <p style="margin:.4rem 0 0">
+                  Nos tarifs incluent une prise en charge fixe de <strong>10 €</strong>, puis une facturation
+                  transparente à <strong>2 €/km</strong> et <strong>1,50 €/min</strong>.
+                </p>
+                <p class="small" style="color:var(--muted);margin:.4rem 0 0">
+                  Des ajustements automatiques garantissent un tarif cohérent pour les longs trajets
+                  et les horaires de nuit/week-end.
+                </p>
+              </div>
+            </section>
           </div>
 
           <div class="sep" role="separator" aria-hidden="true"></div>
@@ -149,7 +158,7 @@
             <div class="row">
               <div class="col">
                 <span class="col-title">Jour</span>
-                <div class="rows price" style="margin-top:6px">
+                <div class="rows price">
                   <div class="r"><div class="label">Orly</div><div class="val">60&nbsp;€</div></div>
                   <div class="r"><div class="label">Charles-de-Gaulle</div><div class="val">80&nbsp;€</div></div>
                   <div class="r"><div class="label">Beauvais</div><div class="val">150&nbsp;€</div></div>
@@ -157,7 +166,7 @@
               </div>
               <div class="col">
                 <span class="col-title">Nuit & week-end</span>
-                <div class="rows price" style="margin-top:6px">
+                <div class="rows price">
                   <div class="r"><div class="label">Orly</div><div class="val">70&nbsp;€</div></div>
                   <div class="r"><div class="label">Charles-de-Gaulle</div><div class="val">90&nbsp;€</div></div>
                   <div class="r"><div class="label">Beauvais</div><div class="val">170&nbsp;€</div></div>
@@ -190,7 +199,7 @@
             <div class="row">
               <div class="col">
                 <span class="col-title">Jour</span>
-                <div class="rows price" style="margin-top:6px">
+                <div class="rows price">
                   <div class="r"><div class="label">5&nbsp;km</div><div class="val">15&nbsp;€</div></div>
                   <div class="r"><div class="label">10&nbsp;km</div><div class="val">25&nbsp;€</div></div>
                   <div class="r"><div class="label">20&nbsp;km</div><div class="val">50&nbsp;€</div></div>
@@ -199,7 +208,7 @@
               </div>
               <div class="col">
                 <span class="col-title">Nuit & week-end</span>
-                <div class="rows price" style="margin-top:6px">
+                <div class="rows price">
                   <div class="r"><div class="label">5&nbsp;km</div><div class="val">20&nbsp;€</div></div>
                   <div class="r"><div class="label">10&nbsp;km</div><div class="val">30&nbsp;€</div></div>
                   <div class="r"><div class="label">20&nbsp;km</div><div class="val">60&nbsp;€</div></div>
@@ -207,57 +216,8 @@
                 </div>
               </div>
             </div>
-            <div class="hint">Au-delà de 30&nbsp;km : tarification «&nbsp;courses classiques&nbsp;» (km + minute).</div>
+            <div class="hint">Au-delà de 30&nbsp;km : tarification « courses classiques » (km + minute).</div>
           </div>
-          /* === Cartes propres pour Forfaits (aéroports & Enghien) === */
-.tcv-tarifs .row > .col {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 14px 16px;
-  box-shadow: 0 8px 20px rgba(0,0,0,.25);
-}
-
-.tcv-tarifs .col-title {
-  display: inline-block;
-  margin-bottom: 10px;
-  padding: .28rem .7rem;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  color: var(--muted);
-  font-size: .82rem;
-  letter-spacing: .2px;
-  background: rgba(255,255,255,.02);
-}
-
-/* Liste distance — prix avec respiration */
-.tcv-tarifs .rows { margin-top: 4px; }
-.tcv-tarifs .r {
-  grid-template-columns: 1fr auto;
-  gap: 14px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--line);
-  line-height: 1.45;
-}
-.tcv-tarifs .r:last-child { border-bottom: 0; }
-
-.tcv-tarifs .r .label { color: #fff; font-weight: 600; }
-.tcv-tarifs .r .val   { font-variant-numeric: tabular-nums; font-weight: 700; }
-
-/* Petites améliorations d’alignement et de touch cible */
-.tcv-tarifs .rows .r .label { padding-left: 2px; }
-.tcv-tarifs .rows .r .val   { padding-right: 2px; }
-
-/* Hover discret desktop (premium, pas “flashy”) */
-@media (pointer:fine) {
-  .tcv-tarifs .r:hover { background: rgba(255,255,255,.03); }
-}
-
-/* Responsive : cartes plein-largeur et padding un peu réduit */
-@media (max-width: 900px) {
-  .tcv-tarifs .row > .col { padding: 12px 14px; }
-}
-
 
           <!-- CTA -->
           <div style="display:flex;justify-content:center;margin-top:16px">
@@ -275,7 +235,6 @@
       </div>
     </section>
 
-    <!-- ===== Footer ===== -->
     <div class="footer small">© Transport Confort by Vincent — SIREN 990 407 397 — TVA FR71 990 407 397 — 23 rue La Bruyère, 93800 Épinay-sur-Seine — 07 49 55 62 77</div>
   </div>
 </body>
