@@ -209,6 +209,55 @@
             </div>
             <div class="hint">Au-delà de 30&nbsp;km : tarification «&nbsp;courses classiques&nbsp;» (km + minute).</div>
           </div>
+          /* === Cartes propres pour Forfaits (aéroports & Enghien) === */
+.tcv-tarifs .row > .col {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,.25);
+}
+
+.tcv-tarifs .col-title {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: .28rem .7rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: .82rem;
+  letter-spacing: .2px;
+  background: rgba(255,255,255,.02);
+}
+
+/* Liste distance — prix avec respiration */
+.tcv-tarifs .rows { margin-top: 4px; }
+.tcv-tarifs .r {
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  line-height: 1.45;
+}
+.tcv-tarifs .r:last-child { border-bottom: 0; }
+
+.tcv-tarifs .r .label { color: #fff; font-weight: 600; }
+.tcv-tarifs .r .val   { font-variant-numeric: tabular-nums; font-weight: 700; }
+
+/* Petites améliorations d’alignement et de touch cible */
+.tcv-tarifs .rows .r .label { padding-left: 2px; }
+.tcv-tarifs .rows .r .val   { padding-right: 2px; }
+
+/* Hover discret desktop (premium, pas “flashy”) */
+@media (pointer:fine) {
+  .tcv-tarifs .r:hover { background: rgba(255,255,255,.03); }
+}
+
+/* Responsive : cartes plein-largeur et padding un peu réduit */
+@media (max-width: 900px) {
+  .tcv-tarifs .row > .col { padding: 12px 14px; }
+}
+
 
           <!-- CTA -->
           <div style="display:flex;justify-content:center;margin-top:16px">
