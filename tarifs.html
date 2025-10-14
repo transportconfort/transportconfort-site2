@@ -64,6 +64,7 @@
     @media (pointer:fine){ .r:hover{background:rgba(255,255,255,.025)} }
 
     /* ====== MOBILE OPTI ====== */
+    /* Chips en grille sur mobile */
     @media (max-width:540px){
       .tcv-tarifs{padding:20px;border-radius:12px}
       .tcv-tarifs h2{font-size:1.38rem}
@@ -76,11 +77,26 @@
       .col-inner{padding:14px}
       .row > .col::before{transform:translateY(-14px)}
 
-      /* Affichage sur 2 lignes : libellé puis prix aligné droite */
       .r{grid-template-columns:1fr;gap:6px;padding:10px 2px}
       .r .label{font-size:1.02rem}
       .r .val{text-align:right}
       .btn{width:100%}
+
+      /* Grille 2x2 pour les chips */
+      .chips{
+        display:grid;
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:10px;
+      }
+      .chips .chip{
+        width:100%;
+        justify-content:space-between;
+      }
+    }
+    /* Très petits écrans : 1 colonne */
+    @media (max-width:360px){
+      .chips{grid-template-columns:1fr}
+      .chips .chip{font-size:.94rem}
     }
   </style>
 </head>
@@ -127,7 +143,8 @@
             </span>
             <span>Courses classiques</span>
           </div>
-          <div class="row">
+          <!-- CHIPS -> grille responsive -->
+          <div class="row chips">
             <span class="chip price"><span>Prise en charge</span><b>10&nbsp;€</b></span>
             <span class="chip price"><span>Kilomètre</span><b>2,00&nbsp;€&nbsp;/&nbsp;km</b></span>
             <span class="chip price"><span>Minute</span><b>1,50&nbsp;€&nbsp;/&nbsp;min</b></span>
@@ -193,7 +210,8 @@
             <span>Mise à disposition (MAD)</span>
           </div>
 
-          <div class="row">
+          <!-- CHIPS -> grille responsive -->
+          <div class="row chips">
             <span class="chip price"><span>1&nbsp;h</span><b>100&nbsp;€</b></span>
             <span class="chip price"><span>2&nbsp;h</span><b>180&nbsp;€</b><span style="opacity:.7">(90&nbsp;€/h)</span></span>
             <span class="chip price"><span>3&nbsp;h</span><b>240&nbsp;€</b><span style="opacity:.7">(80&nbsp;€/h)</span></span>
