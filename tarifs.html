@@ -4,8 +4,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Tarifs • Transport Confort</title>
-
-  <!-- Ta feuille globale si besoin -->
   <link rel="stylesheet" href="/assets/style.css">
 
   <style>
@@ -14,7 +12,7 @@
     .container{max-width:1120px;margin:0 auto;padding:0 16px}
     a{color:var(--gold)}
 
-    /* ===== Masthead ===== */
+    /* Masthead */
     .masthead{padding:12px 0;border-bottom:1px solid var(--line);background:var(--bg)}
     .brand-block{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center}
     .brand-logo{height:56px;width:auto;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.35)}
@@ -25,69 +23,74 @@
     .nav-scroller a[aria-current="page"]{color:var(--gold);font-weight:600;opacity:1}
     @media (min-width:960px){ .brand-logo{height:64px} .nav-scroller{gap:20px} }
 
-    /* ===== Section Tarifs - conteneur ===== */
+    /* Section Tarifs */
     .tcv-tarifs{background:var(--bg);color:var(--fg);border-radius:18px;padding:28px;margin-top:18px;border:1px solid var(--line);
       box-shadow:0 10px 30px rgba(0,0,0,.35)}
-    .tcv-tarifs *{box-sizing:border-box}
     .tcv-tarifs h2{font-size:1.9rem;margin:0 0 .5rem;color:var(--gold);letter-spacing:.4px;text-align:center}
     .tcv-tarifs .lede{color:var(--muted);text-align:center;margin:0 0 14px}
     .tcv-tarifs .note{color:var(--muted);font-size:.95rem}
-    .tcv-tarifs .card{background:linear-gradient(180deg,#0f0f0f,#0c0c0c);border:1px solid var(--line);border-radius:14px;padding:18px;
+
+    /* Cartes + accent doré */
+    .card{position:relative;background:linear-gradient(180deg,#0f0f0f,#0c0c0c);border:1px solid var(--line);border-radius:14px;padding:18px;
       box-shadow:0 10px 24px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.03)}
+    .accent::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;border-radius:14px 14px 0 0;
+      background:linear-gradient(90deg,#d9c26b,#c7a24b,#d9c26b);opacity:.95}
+
     .btn{display:inline-block;padding:13px 22px;border-radius:12px;font-weight:700;text-decoration:none;background:linear-gradient(180deg,#d5b55d,#c7a24b);
       color:#151515;border:none;box-shadow:0 10px 24px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.25)}
     .btn:active{transform:translateY(1px)}
 
-    /* ===== Carte principale tarifs ===== */
-    .tcv-tarifs .price{font-variant-numeric:tabular-nums}
-    .tcv-tarifs .row{display:flex;flex-wrap:wrap;gap:16px}
-    .tcv-tarifs .title{color:#fff;font-weight:700;margin:0 0 8px;letter-spacing:.2px}
-    .tcv-tarifs .hint{color:var(--muted);font-size:.93rem;margin-top:10px}
-    .tcv-tarifs .chip{
-      display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;
-      background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));box-shadow:inset 0 1px 0 rgba(255,255,255,.06)
-    }
-    .tcv-tarifs .chip b{font-weight:700}
-    .tcv-tarifs .chip + .chip{margin-left:8px}
-    .tcv-tarifs .sep{width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);margin:18px 0}
+    /* Grille tarifs */
+    .price{font-variant-numeric:tabular-nums}
+    .row{display:flex;flex-wrap:wrap;gap:16px}
+    .sep{width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);margin:18px 0}
 
-    .tcv-tarifs .col{min-width:280px;flex:1}
-    .tcv-tarifs .row > .col{
-      background:linear-gradient(180deg,#0f0f0f,#0c0c0c);border:1px solid var(--line);border-radius:14px;padding:16px 16px 10px;
-      box-shadow:0 10px 24px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.03)
-    }
-    .tcv-tarifs .col-title{
-      display:inline-block;margin-bottom:10px;padding:.32rem .8rem;border:1px solid var(--line);border-radius:999px;color:var(--muted);
-      font-size:.82rem;letter-spacing:.18px;background:rgba(255,255,255,.02)
-    }
-    .tcv-tarifs .rows{margin-top:2px}
-    .tcv-tarifs .r{display:grid;grid-template-columns:1fr auto;gap:18px;padding:12px 2px;border-bottom:1px dashed rgba(255,255,255,.10)}
-    .tcv-tarifs .r:last-child{border-bottom:0}
-    .tcv-tarifs .r .label{color:#fff;font-weight:600}
-    .tcv-tarifs .r .val{font-variant-numeric:tabular-nums;font-weight:700}
-    @media (pointer:fine){ .tcv-tarifs .r:hover{background:rgba(255,255,255,.025)} }
+    .chip{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;
+      background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+    .chip b{font-weight:700}
+
+    .sect-title{display:flex;align-items:center;gap:10px;color:#fff;font-weight:800;margin:0 0 10px;letter-spacing:.2px}
+    .sect-title .icon{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;
+      background:rgba(199,162,75,.1);border:1px solid rgba(199,162,75,.25)}
+    .sect-title svg{width:14px;height:14px;stroke:var(--gold);stroke-width:1.6;fill:none}
+
+    .col{min-width:280px;flex:1}
+    .row > .col{position:relative;}
+    .row > .col::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;border-radius:14px 14px 0 0;
+      background:linear-gradient(90deg,#d9c26b,#c7a24b,#d9c26b);opacity:.7;transform:translateY(-16px)}
+    .col-inner{background:linear-gradient(180deg,#0f0f0f,#0c0c0c);border:1px solid var(--line);border-radius:14px;padding:16px 16px 10px;
+      box-shadow:0 10px 24px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.03)}
+
+    .col-title{display:inline-block;margin-bottom:10px;padding:.32rem .8rem;border:1px solid var(--line);border-radius:999px;color:var(--muted);
+      font-size:.82rem;letter-spacing:.18px;background:rgba(255,255,255,.02)}
+    .rows{margin-top:2px}
+    .r{display:grid;grid-template-columns:1fr auto;gap:18px;padding:12px 2px;border-bottom:1px dashed rgba(255,255,255,.10)}
+    .r:last-child{border-bottom:0}
+    .r .label{color:#fff;font-weight:600}
+    .r .val{font-variant-numeric:tabular-nums;font-weight:700}
+    @media (pointer:fine){ .r:hover{background:rgba(255,255,255,.025)} }
+
+    .hint{color:var(--muted);font-size:.93rem;margin-top:10px}
 
     @media (max-width:720px){
       .tcv-tarifs{padding:20px;border-radius:12px}
-      .tcv-tarifs h2{font-size:1.5rem}
-      .tcv-tarifs .row{gap:12px}
-      .tcv-tarifs .row > .col{padding:14px}
+      .row{gap:12px}
+      .row > .col::before{transform:translateY(-14px)}
     }
   </style>
 </head>
 <body>
   <div class="container">
-
-    <!-- ===== Header ===== -->
+    <!-- Header -->
     <header class="masthead" role="banner">
       <div class="brand-block">
         <img class="brand-logo" src="/assets/logo.png" alt="Transport Confort">
-        <div class="brand-text">
-          <h1 class="brand-name" style="margin:0;font-size:0">Transport Confort</h1>
+        <div>
+          <h1 style="margin:0;font-size:0">Transport Confort</h1>
           <div class="slogan">Transport haut de gamme • Confort premium</div>
         </div>
       </div>
-      <nav class="nav-scroller" role="navigation" aria-label="Navigation principale">
+      <nav class="nav-scroller" aria-label="Navigation principale">
         <a href="/">Accueil</a>
         <a href="/simulator.html">Simulateur</a>
         <a href="/tarifs.html" aria-current="page">Tarifs</a>
@@ -96,8 +99,8 @@
       </nav>
     </header>
 
-    <!-- ===== Tarifs ===== -->
-    <section id="tcv-tarifs" class="tcv-tarifs" aria-labelledby="tarifs-title">
+    <!-- Tarifs -->
+    <section class="tcv-tarifs" aria-labelledby="tarifs-title">
       <header style="text-align:center">
         <img src="/assets/logo.png" alt="Logo Transport Confort" style="height:90px;display:block;margin:8px auto 12px">
         <h2 id="tarifs-title">Grille Tarifaire Premium (TTC)</h2>
@@ -110,11 +113,17 @@
         <p class="note">TVA : 10% (courses &amp; forfaits) • 20% (mises à disposition).</p>
       </header>
 
-      <div class="card tcv-tarifs-card">
-
+      <div class="card accent">
         <!-- Courses classiques -->
         <div>
-          <div class="title">Courses classiques</div>
+          <div class="sect-title">
+            <span class="icon">
+              <!-- Car icon -->
+              <svg viewBox="0 0 24 24"><path d="M3 13l2-6a2 2 0 0 1 2-1h8a2 2 0 0 1 2 1l2 6M5 13h14M7 17h0M17 17h0M6 13v4M18 13v4"/></svg>
+            </span>
+            <span>Courses classiques</span>
+          </div>
+
           <div class="row">
             <span class="chip price"><span>Prise en charge</span><b>10&nbsp;€</b></span>
             <span class="chip price"><span>Kilomètre</span><b>2,00&nbsp;€&nbsp;/&nbsp;km</b></span>
@@ -138,22 +147,33 @@
 
         <!-- Forfaits aéroports -->
         <div>
-          <div class="title">Forfaits aéroports</div>
+          <div class="sect-title">
+            <span class="icon">
+              <!-- Plane icon -->
+              <svg viewBox="0 0 24 24"><path d="M2 16l20-6M2 12l20-6M12 14l-2 6M12 14l2 6"/></svg>
+            </span>
+            <span>Forfaits aéroports</span>
+          </div>
+
           <div class="row">
             <div class="col">
-              <span class="col-title">Jour</span>
-              <div class="rows price">
-                <div class="r"><div class="label">Orly</div><div class="val">60&nbsp;€</div></div>
-                <div class="r"><div class="label">Charles-de-Gaulle</div><div class="val">80&nbsp;€</div></div>
-                <div class="r"><div class="label">Beauvais</div><div class="val">150&nbsp;€</div></div>
+              <div class="col-inner">
+                <span class="col-title">Jour</span>
+                <div class="rows price">
+                  <div class="r"><div class="label">Orly</div><div class="val">60&nbsp;€</div></div>
+                  <div class="r"><div class="label">Charles-de-Gaulle</div><div class="val">80&nbsp;€</div></div>
+                  <div class="r"><div class="label">Beauvais</div><div class="val">150&nbsp;€</div></div>
+                </div>
               </div>
             </div>
             <div class="col">
-              <span class="col-title">Nuit &amp; week-end</span>
-              <div class="rows price">
-                <div class="r"><div class="label">Orly</div><div class="val">70&nbsp;€</div></div>
-                <div class="r"><div class="label">Charles-de-Gaulle</div><div class="val">90&nbsp;€</div></div>
-                <div class="r"><div class="label">Beauvais</div><div class="val">170&nbsp;€</div></div>
+              <div class="col-inner">
+                <span class="col-title">Nuit &amp; week-end</span>
+                <div class="rows price">
+                  <div class="r"><div class="label">Orly</div><div class="val">70&nbsp;€</div></div>
+                  <div class="r"><div class="label">Charles-de-Gaulle</div><div class="val">90&nbsp;€</div></div>
+                  <div class="r"><div class="label">Beauvais</div><div class="val">170&nbsp;€</div></div>
+                </div>
               </div>
             </div>
           </div>
@@ -164,7 +184,14 @@
 
         <!-- MAD -->
         <div>
-          <div class="title">Mise à disposition (MAD)</div>
+          <div class="sect-title">
+            <span class="icon">
+              <!-- Clock icon -->
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v5l3 2"/></svg>
+            </span>
+            <span>Mise à disposition (MAD)</span>
+          </div>
+
           <div class="row">
             <span class="chip price"><span>1&nbsp;h</span><b>100&nbsp;€</b></span>
             <span class="chip price"><span>2&nbsp;h</span><b>180&nbsp;€</b><span style="opacity:.7">(90&nbsp;€/h)</span></span>
@@ -177,26 +204,37 @@
 
         <div class="sep" role="separator" aria-hidden="true"></div>
 
-        <!-- Forfaits Enghien -->
+        <!-- Enghien -->
         <div>
-          <div class="title">Forfaits Enghien (Casino / Théâtre)</div>
+          <div class="sect-title">
+            <span class="icon">
+              <!-- Ticket/Masks icon -->
+              <svg viewBox="0 0 24 24"><path d="M4 8h12v8H4zM16 10h4v8h-8"/></svg>
+            </span>
+            <span>Forfaits Enghien (Casino / Théâtre)</span>
+          </div>
+
           <div class="row">
             <div class="col">
-              <span class="col-title">Jour</span>
-              <div class="rows price">
-                <div class="r"><div class="label">5&nbsp;km</div><div class="val">15&nbsp;€</div></div>
-                <div class="r"><div class="label">10&nbsp;km</div><div class="val">25&nbsp;€</div></div>
-                <div class="r"><div class="label">20&nbsp;km</div><div class="val">50&nbsp;€</div></div>
-                <div class="r"><div class="label">30&nbsp;km</div><div class="val">70&nbsp;€</div></div>
+              <div class="col-inner">
+                <span class="col-title">Jour</span>
+                <div class="rows price">
+                  <div class="r"><div class="label">5&nbsp;km</div><div class="val">15&nbsp;€</div></div>
+                  <div class="r"><div class="label">10&nbsp;km</div><div class="val">25&nbsp;€</div></div>
+                  <div class="r"><div class="label">20&nbsp;km</div><div class="val">50&nbsp;€</div></div>
+                  <div class="r"><div class="label">30&nbsp;km</div><div class="val">70&nbsp;€</div></div>
+                </div>
               </div>
             </div>
             <div class="col">
-              <span class="col-title">Nuit &amp; week-end</span>
-              <div class="rows price">
-                <div class="r"><div class="label">5&nbsp;km</div><div class="val">20&nbsp;€</div></div>
-                <div class="r"><div class="label">10&nbsp;km</div><div class="val">30&nbsp;€</div></div>
-                <div class="r"><div class="label">20&nbsp;km</div><div class="val">60&nbsp;€</div></div>
-                <div class="r"><div class="label">30&nbsp;km</div><div class="val">80&nbsp;€</div></div>
+              <div class="col-inner">
+                <span class="col-title">Nuit &amp; week-end</span>
+                <div class="rows price">
+                  <div class="r"><div class="label">5&nbsp;km</div><div class="val">20&nbsp;€</div></div>
+                  <div class="r"><div class="label">10&nbsp;km</div><div class="val">30&nbsp;€</div></div>
+                  <div class="r"><div class="label">20&nbsp;km</div><div class="val">60&nbsp;€</div></div>
+                  <div class="r"><div class="label">30&nbsp;km</div><div class="val">80&nbsp;€</div></div>
+                </div>
               </div>
             </div>
           </div>
@@ -215,11 +253,9 @@
             ℹ️ Détails des conditions de paiement et d’annulation dans les <a href="/mentions.html#cgv">CGV</a>.
           </p>
         </div>
-
       </div>
     </section>
 
-    <!-- ===== Footer ===== -->
     <div class="footer small" style="color:var(--muted);margin:14px 0">
       © Transport Confort by Vincent — SIREN 990 407 397 — TVA FR71 990 407 397 —
       23 rue La Bruyère, 93800 Épinay-sur-Seine — 07 49 55 62 77
