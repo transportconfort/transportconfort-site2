@@ -8,120 +8,127 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/style.css">
   <style>
-    body { background:#0b0b0b; color:#fff; font-family:Inter,system-ui; }
-    .container { max-width:960px; margin:32px auto; padding:0 16px; }
-    .card { background:#151515; border-radius:12px; padding:20px; }
-    .ok { color:#16c784; font-weight:700; }
-    .muted { color:#aaa; }
-    .grid { display:grid; gap:12px; grid-template-columns: 1fr 1fr; }
-    @media (max-width:800px){ .grid{grid-template-columns:1fr;} }
-    .btn { display:inline-block; padding:10px 14px; border-radius:10px; background:#c7a24b; color:#121212; font-weight:600; text-decoration:none; }
-    .btn.secondary { background:#222; color:#fff; border:1px solid #333; }
-    .row { margin:8px 0; }
-    .label { display:inline-block; min-width:140px; color:#aaa; }
-    .monospace { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-    #note { margin-top:14px; padding:10px 12px; border-radius:10px; background:#201f1f; color:#ddd; display:none; }
+    :root{--bg:#0b0b0b;--fg:#ffffff;--muted:#bdbdbd;--gold:#c7a24b;--line:#1f1f1f;--card:#141414;}
+    body{background:var(--bg);color:var(--fg);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    .container{max-width:980px;margin:32px auto;padding:0 16px}
+    .card{background:linear-gradient(180deg,#151515,#101010);border:1px solid var(--line);border-radius:14px;padding:20px;box-shadow:0 10px 24px rgba(0,0,0,.25)}
+    .ok{color:#16c784;font-weight:700}
+    .muted{color:var(--muted)}
+    .grid{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+    @media (max-width:820px){.grid{grid-template-columns:1fr}}
+    .btn{display:inline-block;padding:11px 16px;border-radius:12px;background:var(--gold);color:#151515;font-weight:700;text-decoration:none;box-shadow:0 8px 18px rgba(0,0,0,.25)}
+    .btn.secondary{background:#222;color:#fff;border:1px solid var(--line)}
+    .row{margin:8px 0}
+    .label{display:inline-block;min-width:150px;color:var(--muted)}
+    .monospace{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+    #note{margin-top:14px;padding:10px 12px;border-radius:10px;background:#201f1f;color:#ddd;display:none}
+    h1{display:flex;align-items:center;gap:10px}
+    h1 .tick{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:6px;background:rgba(22,199,132,.12);border:1px solid rgba(22,199,132,.35)}
+    h1 .tick::before{content:"✓";color:#16c784;font-weight:900}
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Merci pour votre paiement ✅</h1>
-    <p class="muted">Votre réservation a bien été enregistrée. Vous recevez un e-mail de confirmation Stripe dans quelques instants.</p>
+    <h1>Merci pour votre paiement <span class="tick" aria-hidden="true"></span></h1>
+    <p class="muted">Votre réservation a bien été enregistrée. Un e-mail de confirmation Stripe arrive dans quelques instants.</p>
 
     <div id="box" class="card" role="status">
       Chargement des détails du paiement…
     </div>
 
-    <div class="row" style="margin-top:16px;">
+    <div class="row" style="margin-top:16px">
       <a href="/" class="btn">Retour à l’accueil</a>
-      <a href="/simulator.html" class="btn secondary" style="margin-left:8px;">Faire une autre réservation</a>
+      <a href="/simulator.html" class="btn secondary" style="margin-left:8px">Faire une autre réservation</a>
     </div>
 
-    <!-- Bandeau d’info (masqué par défaut, s’affiche seulement s’il y a une erreur) -->
     <div id="note"></div>
 
-    <p class="muted" style="margin-top:18px;">
-      Besoin d’aide ? Contactez-nous au <a href="tel:+33749556277" class="muted">07 49 55 62 77</a>.
+    <p class="muted" style="margin-top:18px">
+      Besoin d’aide ? Contactez-nous au <a class="muted" href="tel:+33749556277">07&nbsp;49&nbsp;55&nbsp;62&nbsp;77</a>.
     </p>
   </div>
 
   <script>
-    function qs(name){ return new URLSearchParams(location.search).get(name) || ''; }
-    function fmtEUR(cents){
-      return (cents/100).toLocaleString('fr-FR', { style:'currency', currency:'EUR' });
-    }
-    function fmtDate(iso){
-      try { return new Date(iso).toLocaleString('fr-FR'); } catch(e){ return iso || '—'; }
-    }
+    // ----- Helpers
+    const qs = n => new URLSearchParams(location.search).get(n) || "";
+    const fmtEUR = cents => (Number(cents||0)/100).toLocaleString("fr-FR",{style:"currency",currency:"EUR"});
+    const fmtDate = iso => { try{ return new Date(iso).toLocaleString("fr-FR"); }catch{ return iso||"—"; } };
 
     async function load(){
-      const box  = document.getElementById('box');
-      const note = document.getElementById('note');
-      if (note) note.style.display = 'none';
+      const box  = document.getElementById("box");
+      const note = document.getElementById("note"); note.style.display="none";
 
-      const sid = qs('session_id');
-      if (!sid){
-        box.innerHTML = `<p>Session de paiement introuvable.</p>
-                         <p><a href="/simulator.html" class="btn secondary">Revenir au simulateur</a></p>`;
+      // Stripe redirige vers /merci.html?session_id=cs_...
+      const sid = qs("session_id") || qs("id");
+      if(!sid){
+        box.innerHTML = `
+          <p>Session de paiement introuvable.</p>
+          <p><a href="/simulator.html" class="btn secondary">Revenir au simulateur</a></p>`;
         return;
       }
 
-      try {
-        // 👉 un seul appel, endpoint sans .js, paramètre 'id'
-        const r = await fetch(`/.netlify/functions/stripe-session?id=${encodeURIComponent(sid)}`);
-        if (!r.ok) throw new Error('HTTP '+r.status);
-        const s = await r.json();  // { id, status, payment_status, amount_total, currency, metadata... }
+      try{
+        // 👉 endpoint Netlify unifié
+        const r = await fetch(`/.netlify/functions/stripe-get-session?session_id=${encodeURIComponent(sid)}`, { cache:"no-store" });
+        if(!r.ok) throw new Error("HTTP "+r.status);
+        const s = await r.json();
 
-        // Champs utiles (fallbacks prudents)
+        // Champs utiles
         const paidCents = s.amount_total ?? 0;
-        const status    = s.payment_status || s.status || 'paid';
+        const status    = s.payment_status || s.status || "paid";
         const md        = s.metadata || {};
-        const payMode   = md.pay_mode || 'deposit';
-        const type      = md.type || '';
-        const from      = md.from || '';
-        const to        = md.to || '';
-        const whenISO   = md.whenISO || '';
-        const hours     = md.mad_hours || '';
-        const baseEUR   = md.price_eur || '';
-        const title     = (payMode === 'full' ? 'Paiement 100%' : 'Acompte 20%');
+        const payMode   = md.pay_mode || "deposit";       // "full" | "deposit"
+        const type      = md.type || "";                   // "mad" | "course"
+        const from      = md.from || "";
+        const to        = md.to || "";
+        const whenISO   = md.whenISO || "";
+        const hours     = md.mad_hours || "";
+        const baseEUR   = md.price_eur ? Number(md.price_eur) : null;
 
-        const extraLine =
-          (type === 'mad')
-            ? `<div class="row"><span class="label">Prestation</span> Mise à disposition ${hours || '?'} h</div>`
-            : `<div class="row"><span class="label">Prestation</span> Course classique</div>`;
+        // E-mail client (diffère selon versions/paramètres Stripe)
+        const email = (s.customer_details && s.customer_details.email)
+                   || s.customer_email
+                   || (s.customer && s.customer.email)
+                   || "";
+
+        const title = (payMode === "full" ? "Paiement 100%" : "Acompte 20%");
+
+        const extraLine = (type === "mad")
+          ? `<div class="row"><span class="label">Prestation</span> Mise à disposition ${hours||"?"} h</div>`
+          : `<div class="row"><span class="label">Prestation</span> Course classique</div>`;
 
         box.innerHTML = `
           <p class="ok">${title} confirmé — ${fmtEUR(paidCents)}</p>
           <div class="grid">
             <div>
               ${extraLine}
-              <div class="row"><span class="label">Départ</span> ${from || '—'}</div>
-              ${type==='mad' ? '' : `<div class="row"><span class="label">Arrivée</span> ${to || '—'}</div>`}
+              <div class="row"><span class="label">Départ</span> ${from || "—"}</div>
+              ${type==="mad" ? "" : `<div class="row"><span class="label">Arrivée</span> ${to || "—"}</div>`}
               <div class="row"><span class="label">Date/heure</span> ${fmtDate(whenISO)}</div>
             </div>
             <div>
               <div class="row"><span class="label">Statut Stripe</span> ${status}</div>
-              <div class="row"><span class="label">E-mail</span> ${email || '—'}</div>
-              <div class="row"><span class="label">Base estimée</span> ${baseEUR ? Number(baseEUR).toLocaleString('fr-FR',{style:'currency',currency:'EUR'}) : '—'}</div>
-              <div class="row"><span class="label">Session</span> <span class="monospace">${s.id || ''}</span></div>
-              <div class="row"><span class="label">Mode</span> ${payMode==='full' ? '100%' : 'Acompte 20%'}</div>
+              <div class="row"><span class="label">E-mail</span> ${email || "—"}</div>
+              <div class="row"><span class="label">Base estimée</span> ${baseEUR!=null ? baseEUR.toLocaleString("fr-FR",{style:"currency",currency:"EUR"}) : "—"}</div>
+              <div class="row"><span class="label">Session</span> <span class="monospace">${s.id || ""}</span></div>
+              <div class="row"><span class="label">Mode</span> ${payMode==="full" ? "100%" : "Acompte 20%"}</div>
             </div>
           </div>
-          <p class="muted" style="margin-top:10px;">Un e-mail de confirmation Stripe vous a été envoyé. Vous recevrez un rappel avant la prestation.</p>
+          <p class="muted" style="margin-top:10px">
+            Un e-mail de confirmation Stripe vous a été envoyé. Vous recevrez un rappel avant la prestation.
+          </p>
         `;
 
-        // Nettoie l’URL (on garde /merci.html sans les paramètres)
-        history.replaceState({}, '', location.pathname);
+        // Nettoie l’URL (on garde /merci.html)
+        history.replaceState({}, "", location.pathname);
 
-      } catch (e){
-        console.error(e);
-        // petit panneau d’alerte (au lieu d’une barre qui reste)
-        if (note) {
-          note.textContent = "Impossible de vérifier la session Stripe pour le moment.";
-          note.style.display = 'block';
-        }
-        box.innerHTML = `<p>Impossible de récupérer les détails du paiement.</p>
-                         <p><a href="/simulator.html" class="btn secondary">Revenir au simulateur</a></p>`;
+      }catch(err){
+        console.error(err);
+        note.textContent = "Impossible de vérifier la session Stripe pour le moment.";
+        note.style.display = "block";
+        box.innerHTML = `
+          <p>Impossible de récupérer les détails du paiement.</p>
+          <p><a href="/simulator.html" class="btn secondary">Revenir au simulateur</a></p>`;
       }
     }
     load();
