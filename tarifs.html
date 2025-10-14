@@ -5,12 +5,11 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Tarifs • Transport Confort</title>
   <link rel="stylesheet" href="/assets/style.css">
-
   <style>
     :root{--bg:#0B0B0B;--fg:#F5F5F5;--muted:#CFCFCF;--gold:#C7A24B;--line:#1F1F1F;--card:#111111}
+    *{box-sizing:border-box}
     body{background:var(--bg);color:var(--fg);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;line-height:1.6}
     .container{max-width:1120px;margin:0 auto;padding:0 16px}
-    a{color:var(--gold)}
 
     /* Masthead */
     .masthead{padding:12px 0;border-bottom:1px solid var(--line);background:var(--bg)}
@@ -24,58 +23,64 @@
     @media (min-width:960px){ .brand-logo{height:64px} .nav-scroller{gap:20px} }
 
     /* Section Tarifs */
-    .tcv-tarifs{background:var(--bg);color:var(--fg);border-radius:18px;padding:28px;margin-top:18px;border:1px solid var(--line);
-      box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    .tcv-tarifs{background:var(--bg);color:var(--fg);border-radius:18px;padding:28px;margin-top:18px;border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.35)}
     .tcv-tarifs h2{font-size:1.9rem;margin:0 0 .5rem;color:var(--gold);letter-spacing:.4px;text-align:center}
     .tcv-tarifs .lede{color:var(--muted);text-align:center;margin:0 0 14px}
     .tcv-tarifs .note{color:var(--muted);font-size:.95rem}
 
     /* Cartes + accent doré */
-    .card{position:relative;background:linear-gradient(180deg,#0f0f0f,#0c0c0c);border:1px solid var(--line);border-radius:14px;padding:18px;
+    .card{position:relative;background:linear-gradient(180deg,#101010,#0c0c0c);border:1px solid var(--line);border-radius:14px;padding:18px;
       box-shadow:0 10px 24px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.03)}
-    .accent::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;border-radius:14px 14px 0 0;
-      background:linear-gradient(90deg,#d9c26b,#c7a24b,#d9c26b);opacity:.95}
+    .accent::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;border-radius:14px 14px 0 0;background:linear-gradient(90deg,#d9c26b,#c7a24b,#d9c26b)}
 
     .btn{display:inline-block;padding:13px 22px;border-radius:12px;font-weight:700;text-decoration:none;background:linear-gradient(180deg,#d5b55d,#c7a24b);
       color:#151515;border:none;box-shadow:0 10px 24px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.25)}
-    .btn:active{transform:translateY(1px)}
 
-    /* Grille tarifs */
+    /* Grille */
     .price{font-variant-numeric:tabular-nums}
     .row{display:flex;flex-wrap:wrap;gap:16px}
     .sep{width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);margin:18px 0}
 
-    .chip{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;
-      background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+    .chip{display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
     .chip b{font-weight:700}
 
     .sect-title{display:flex;align-items:center;gap:10px;color:#fff;font-weight:800;margin:0 0 10px;letter-spacing:.2px}
-    .sect-title .icon{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;
-      background:rgba(199,162,75,.1);border:1px solid rgba(199,162,75,.25)}
+    .sect-title .icon{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:rgba(199,162,75,.1);border:1px solid rgba(199,162,75,.25)}
     .sect-title svg{width:14px;height:14px;stroke:var(--gold);stroke-width:1.6;fill:none}
 
     .col{min-width:280px;flex:1}
-    .row > .col{position:relative;}
-    .row > .col::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;border-radius:14px 14px 0 0;
-      background:linear-gradient(90deg,#d9c26b,#c7a24b,#d9c26b);opacity:.7;transform:translateY(-16px)}
-    .col-inner{background:linear-gradient(180deg,#0f0f0f,#0c0c0c);border:1px solid var(--line);border-radius:14px;padding:16px 16px 10px;
-      box-shadow:0 10px 24px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.03)}
+    .row > .col{position:relative}
+    .row > .col::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;border-radius:14px 14px 0 0;background:linear-gradient(90deg,#d9c26b,#c7a24b,#d9c26b);opacity:.7;transform:translateY(-16px)}
+    .col-inner{background:linear-gradient(180deg,#101010,#0c0c0c);border:1px solid var(--line);border-radius:14px;padding:16px 16px 10px;box-shadow:0 10px 24px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.03)}
 
-    .col-title{display:inline-block;margin-bottom:10px;padding:.32rem .8rem;border:1px solid var(--line);border-radius:999px;color:var(--muted);
-      font-size:.82rem;letter-spacing:.18px;background:rgba(255,255,255,.02)}
+    .col-title{display:inline-block;margin-bottom:10px;padding:.32rem .8rem;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:.82rem;letter-spacing:.18px;background:rgba(255,255,255,.02)}
     .rows{margin-top:2px}
+
+    /* Ligne distance → prix (desktop) */
     .r{display:grid;grid-template-columns:1fr auto;gap:18px;padding:12px 2px;border-bottom:1px dashed rgba(255,255,255,.10)}
     .r:last-child{border-bottom:0}
-    .r .label{color:#fff;font-weight:600}
+    .r .label{color:#fff;font-weight:600;word-break:keep-all;hyphens:none}
     .r .val{font-variant-numeric:tabular-nums;font-weight:700}
     @media (pointer:fine){ .r:hover{background:rgba(255,255,255,.025)} }
 
-    .hint{color:var(--muted);font-size:.93rem;margin-top:10px}
-
-    @media (max-width:720px){
+    /* ====== MOBILE OPTI ====== */
+    @media (max-width:540px){
       .tcv-tarifs{padding:20px;border-radius:12px}
+      .tcv-tarifs h2{font-size:1.38rem}
+      .tcv-tarifs .lede{font-size:.95rem}
+      .sect-title{font-size:1.05rem;margin-bottom:8px}
+      .sect-title .icon{width:20px;height:20px}
+      .chip{padding:8px 10px;font-size:.95rem}
       .row{gap:12px}
+      .col{min-width:100%}
+      .col-inner{padding:14px}
       .row > .col::before{transform:translateY(-14px)}
+
+      /* Affichage sur 2 lignes : libellé puis prix aligné droite */
+      .r{grid-template-columns:1fr;gap:6px;padding:10px 2px}
+      .r .label{font-size:1.02rem}
+      .r .val{text-align:right}
+      .btn{width:100%}
     }
   </style>
 </head>
@@ -105,7 +110,7 @@
         <img src="/assets/logo.png" alt="Logo Transport Confort" style="height:90px;display:block;margin:8px auto 12px">
         <h2 id="tarifs-title">Grille Tarifaire Premium (TTC)</h2>
         <p class="lede">
-          Tarifs transparents — sans surprise.<br>
+          Tarifs transparents — sans surprise. <br>
           Courses classiques : <strong>+15% nuit &amp; week-end</strong>
           <span class="note">(nuit 23:00→07:00 ; week-end sam. 00:00 → dim. 23:59).</span><br>
           <span class="note">Forfaits aéroports : <strong>pas de +15%</strong> — grilles jour &amp; nuit/WE dédiées.</span>
@@ -118,23 +123,21 @@
         <div>
           <div class="sect-title">
             <span class="icon">
-              <!-- Car icon -->
               <svg viewBox="0 0 24 24"><path d="M3 13l2-6a2 2 0 0 1 2-1h8a2 2 0 0 1 2 1l2 6M5 13h14M7 17h0M17 17h0M6 13v4M18 13v4"/></svg>
             </span>
             <span>Courses classiques</span>
           </div>
-
           <div class="row">
             <span class="chip price"><span>Prise en charge</span><b>10&nbsp;€</b></span>
             <span class="chip price"><span>Kilomètre</span><b>2,00&nbsp;€&nbsp;/&nbsp;km</b></span>
             <span class="chip price"><span>Minute</span><b>1,50&nbsp;€&nbsp;/&nbsp;min</b></span>
           </div>
-          <div class="hint">Majoration <b>+15%</b> appliquée la nuit et le week-end.</div>
+          <div class="note" style="margin-top:8px">Majoration <b>+15%</b> appliquée la nuit et le week-end.</div>
 
           <div class="card" style="margin-top:12px">
             <p style="margin:.4rem 0 0">
-              Nos tarifs incluent une prise en charge fixe de <strong>10&nbsp;€</strong>, puis une
-              facturation transparente à <strong>2&nbsp;€/km</strong> et <strong>1,50&nbsp;€/min</strong>.
+              Nos tarifs incluent une prise en charge fixe de <strong>10&nbsp;€</strong>, puis une facturation
+              transparente à <strong>2&nbsp;€/km</strong> et <strong>1,50&nbsp;€/min</strong>.
             </p>
             <p class="note" style="margin:.4rem 0 0">
               Des ajustements automatiques garantissent un tarif cohérent pour les longs trajets
@@ -149,7 +152,6 @@
         <div>
           <div class="sect-title">
             <span class="icon">
-              <!-- Plane icon -->
               <svg viewBox="0 0 24 24"><path d="M2 16l20-6M2 12l20-6M12 14l-2 6M12 14l2 6"/></svg>
             </span>
             <span>Forfaits aéroports</span>
@@ -177,7 +179,7 @@
               </div>
             </div>
           </div>
-          <div class="hint">Forfaits fixes par sens (départ ou arrivée PARIS). <b>Aucune</b> majoration additionnelle.</div>
+          <div class="note">Forfaits fixes par sens (départ ou arrivée PARIS). <b>Aucune</b> majoration additionnelle.</div>
         </div>
 
         <div class="sep" role="separator" aria-hidden="true"></div>
@@ -186,7 +188,6 @@
         <div>
           <div class="sect-title">
             <span class="icon">
-              <!-- Clock icon -->
               <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v5l3 2"/></svg>
             </span>
             <span>Mise à disposition (MAD)</span>
@@ -199,7 +200,7 @@
             <span class="chip price"><span>4&nbsp;h</span><b>300&nbsp;€</b><span style="opacity:.7">(75&nbsp;€/h)</span></span>
             <span class="chip price"><span>8&nbsp;h</span><b>560&nbsp;€</b><span style="opacity:.7">(70&nbsp;€/h)</span></span>
           </div>
-          <div class="hint">TVA <b>20%</b>. Pas de majoration nuit/week-end.</div>
+          <div class="note">TVA <b>20%</b>. Pas de majoration nuit/week-end.</div>
         </div>
 
         <div class="sep" role="separator" aria-hidden="true"></div>
@@ -208,7 +209,6 @@
         <div>
           <div class="sect-title">
             <span class="icon">
-              <!-- Ticket/Masks icon -->
               <svg viewBox="0 0 24 24"><path d="M4 8h12v8H4zM16 10h4v8h-8"/></svg>
             </span>
             <span>Forfaits Enghien (Casino / Théâtre)</span>
@@ -238,7 +238,7 @@
               </div>
             </div>
           </div>
-          <div class="hint">Au-delà de 30&nbsp;km : tarification « courses classiques » (km + minute).</div>
+          <div class="note">Au-delà de 30&nbsp;km : tarification « courses classiques » (km + minute).</div>
         </div>
 
         <!-- CTA -->
