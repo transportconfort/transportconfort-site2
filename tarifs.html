@@ -64,7 +64,6 @@
     @media (pointer:fine){ .r:hover{background:rgba(255,255,255,.025)} }
 
     /* ====== MOBILE OPTI ====== */
-    /* Chips en grille sur mobile */
     @media (max-width:540px){
       .tcv-tarifs{padding:20px;border-radius:12px}
       .tcv-tarifs h2{font-size:1.38rem}
@@ -93,11 +92,26 @@
         justify-content:space-between;
       }
     }
-    /* Très petits écrans : 1 colonne */
     @media (max-width:360px){
       .chips{grid-template-columns:1fr}
       .chips .chip{font-size:.94rem}
     }
+
+    /* === HOTFIX mobile “bulles” qui débordent === */
+    @media (max-width:560px){
+      .tcv-tarifs .row > .col{
+        border-radius:12px; overflow:visible;
+        background:var(--card); border:1px solid var(--line);
+      }
+      .tcv-tarifs .rows{background:transparent; border-radius:0; overflow:visible; margin-top:6px}
+      .tcv-tarifs .r{grid-template-columns:1fr auto; gap:10px; padding:10px 2px; border-bottom:1px solid var(--line); background:transparent; border-radius:0}
+      .tcv-tarifs .r:last-child{border-bottom:0}
+      .tcv-tarifs .r .label{word-break:break-word; overflow-wrap:anywhere; hyphens:auto}
+      .tcv-tarifs .row{gap:12px}
+      .tcv-tarifs .col-title{margin-bottom:8px}
+    }
+    .tcv-tarifs .rows, .tcv-tarifs .r{background:transparent}
+    .tcv-tarifs .r .label, .tcv-tarifs .r .val{line-height:1.35}
   </style>
 </head>
 <body>
@@ -139,11 +153,10 @@
         <div>
           <div class="sect-title">
             <span class="icon">
-              <svg viewBox="0 0 24 24"><path d="M3 13l2-6a2 2 0 0 1 2-1h8a2 2 0 0 1 2 1l2 6M5 13h14M7 17h0M17 17h0M6 13v4M18 13v4"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M3 13l2-6a2 2 0 0 1 2-1h8a2 2 0 0 1 2 1l2 6M5 13h14M6 13v4M18 13v4"/></svg>
             </span>
             <span>Courses classiques</span>
           </div>
-          <!-- CHIPS -> grille responsive -->
           <div class="row chips">
             <span class="chip price"><span>Prise en charge</span><b>10&nbsp;€</b></span>
             <span class="chip price"><span>Kilomètre</span><b>2,00&nbsp;€&nbsp;/&nbsp;km</b></span>
@@ -210,7 +223,6 @@
             <span>Mise à disposition (MAD)</span>
           </div>
 
-          <!-- CHIPS -> grille responsive -->
           <div class="row chips">
             <span class="chip price"><span>1&nbsp;h</span><b>100&nbsp;€</b></span>
             <span class="chip price"><span>2&nbsp;h</span><b>180&nbsp;€</b><span style="opacity:.7">(90&nbsp;€/h)</span></span>
