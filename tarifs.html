@@ -63,8 +63,8 @@
     .r .val{font-variant-numeric:tabular-nums;font-weight:700}
     @media (pointer:fine){ .r:hover{background:rgba(255,255,255,.025)} }
 
-    /* ====== MOBILE OPTI ====== */
-    @media (max-width:540px){
+    /* ====== MOBILE OPTI + FIX ====== */
+    @media (max-width:560px){
       .tcv-tarifs{padding:20px;border-radius:12px}
       .tcv-tarifs h2{font-size:1.38rem}
       .tcv-tarifs .lede{font-size:.95rem}
@@ -76,12 +76,30 @@
       .col-inner{padding:14px}
       .row > .col::before{transform:translateY(-14px)}
 
-      .r{grid-template-columns:1fr;gap:6px;padding:10px 2px}
-      .r .label{font-size:1.02rem}
-      .r .val{text-align:right}
-      .btn{width:100%}
+      .r{
+        grid-template-columns:1fr auto;
+        gap:10px;
+        padding:10px 2px;
+        border-bottom:1px solid var(--line);
+        align-items:center;
+        background:transparent;
+      }
+      .r:last-child{border-bottom:0}
+      .r .label{
+        min-width:0;
+        white-space:normal;
+        word-break:normal;
+        overflow-wrap:normal;
+        hyphens:auto;
+        line-height:1.35;
+      }
+      .r .val{
+        white-space:nowrap;
+        font-variant-numeric:tabular-nums;
+        line-height:1.35;
+      }
 
-      /* Grille 2x2 pour les chips */
+      .btn{width:100%}
       .chips{
         display:grid;
         grid-template-columns:repeat(2,minmax(0,1fr));
@@ -96,22 +114,6 @@
       .chips{grid-template-columns:1fr}
       .chips .chip{font-size:.94rem}
     }
-
-    /* === HOTFIX mobile “bulles” qui débordent === */
-    @media (max-width:560px){
-      .tcv-tarifs .row > .col{
-        border-radius:12px; overflow:visible;
-        background:var(--card); border:1px solid var(--line);
-      }
-      .tcv-tarifs .rows{background:transparent; border-radius:0; overflow:visible; margin-top:6px}
-      .tcv-tarifs .r{grid-template-columns:1fr auto; gap:10px; padding:10px 2px; border-bottom:1px solid var(--line); background:transparent; border-radius:0}
-      .tcv-tarifs .r:last-child{border-bottom:0}
-      .tcv-tarifs .r .label{word-break:break-word; overflow-wrap:anywhere; hyphens:auto}
-      .tcv-tarifs .row{gap:12px}
-      .tcv-tarifs .col-title{margin-bottom:8px}
-    }
-    .tcv-tarifs .rows, .tcv-tarifs .r{background:transparent}
-    .tcv-tarifs .r .label, .tcv-tarifs .r .val{line-height:1.35}
   </style>
 </head>
 <body>
