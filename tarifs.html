@@ -6,7 +6,9 @@
   <title>Tarifs • Transport Confort</title>
   <link rel="stylesheet" href="/assets/style.css">
   <style>
-    :root{--bg:#0B0B0B;--fg:#F5F5F5;--muted:#CFCFCF;--gold:#C7A24B;--line:#1F1F1F;--card:#111111}
+    :root{
+      --bg:#0B0B0B;--fg:#F5F5F5;--muted:#CFCFCF;--gold:#C7A24B;--line:#1F1F1F;--card:#111111
+    }
     *{box-sizing:border-box}
     body{background:var(--bg);color:var(--fg);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;line-height:1.6}
     .container{max-width:1120px;margin:0 auto;padding:0 16px}
@@ -49,8 +51,6 @@
     .sect-title svg{width:14px;height:14px;stroke:var(--gold);stroke-width:1.6;fill:none}
 
     .col{min-width:280px;flex:1}
-    .row > .col{position:relative}
-    .row > .col::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;border-radius:14px 14px 0 0;background:linear-gradient(90deg,#d9c26b,#c7a24b,#d9c26b);opacity:.7;transform:translateY(-16px)}
     .col-inner{background:linear-gradient(180deg,#101010,#0c0c0c);border:1px solid var(--line);border-radius:14px;padding:16px 16px 10px;box-shadow:0 10px 24px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.03)}
 
     .col-title{display:inline-block;margin-bottom:10px;padding:.32rem .8rem;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:.82rem;letter-spacing:.18px;background:rgba(255,255,255,.02)}
@@ -63,7 +63,7 @@
     .r .val{font-variant-numeric:tabular-nums;font-weight:700}
     @media (pointer:fine){ .r:hover{background:rgba(255,255,255,.025)} }
 
-    /* ====== MOBILE OPTI + FIX ====== */
+    /* ====== MOBILE OPTI ====== */
     @media (max-width:560px){
       .tcv-tarifs{padding:20px;border-radius:12px}
       .tcv-tarifs h2{font-size:1.38rem}
@@ -74,45 +74,13 @@
       .row{gap:12px}
       .col{min-width:100%}
       .col-inner{padding:14px}
-      .row > .col::before{transform:translateY(-14px)}
 
-      .r{
-        grid-template-columns:1fr auto;
-        gap:10px;
-        padding:10px 2px;
-        border-bottom:1px solid var(--line);
-        align-items:center;
-        background:transparent;
-      }
-      .r:last-child{border-bottom:0}
-      .r .label{
-        min-width:0;
-        white-space:normal;
-        word-break:normal;
-        overflow-wrap:normal;
-        hyphens:auto;
-        line-height:1.35;
-      }
-      .r .val{
-        white-space:nowrap;
-        font-variant-numeric:tabular-nums;
-        line-height:1.35;
-      }
-
+      /* Affichage 2 lignes (libellé puis prix centré) */
+      .rows.price .r{grid-template-columns:1fr;gap:6px;padding:10px 2px;border-bottom:1px solid var(--line)}
+      .rows.price .r:last-child{border-bottom:0}
+      .rows.price .label{font-size:1.02rem}
+      .rows.price .val{text-align:center;font-weight:800}
       .btn{width:100%}
-      .chips{
-        display:grid;
-        grid-template-columns:repeat(2,minmax(0,1fr));
-        gap:10px;
-      }
-      .chips .chip{
-        width:100%;
-        justify-content:space-between;
-      }
-    }
-    @media (max-width:360px){
-      .chips{grid-template-columns:1fr}
-      .chips .chip{font-size:.94rem}
     }
   </style>
 </head>
@@ -155,11 +123,11 @@
         <div>
           <div class="sect-title">
             <span class="icon">
-              <svg viewBox="0 0 24 24"><path d="M3 13l2-6a2 2 0 0 1 2-1h8a2 2 0 0 1 2 1l2 6M5 13h14M6 13v4M18 13v4"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M3 13l2-6a2 2 0 0 1 2-1h8a2 2 0 0 1 2 1l2 6M5 13h14M7 17h0M17 17h0M6 13v4M18 13v4"/></svg>
             </span>
             <span>Courses classiques</span>
           </div>
-          <div class="row chips">
+          <div class="row">
             <span class="chip price"><span>Prise en charge</span><b>10&nbsp;€</b></span>
             <span class="chip price"><span>Kilomètre</span><b>2,00&nbsp;€&nbsp;/&nbsp;km</b></span>
             <span class="chip price"><span>Minute</span><b>1,50&nbsp;€&nbsp;/&nbsp;min</b></span>
@@ -225,7 +193,7 @@
             <span>Mise à disposition (MAD)</span>
           </div>
 
-          <div class="row chips">
+          <div class="row">
             <span class="chip price"><span>1&nbsp;h</span><b>100&nbsp;€</b></span>
             <span class="chip price"><span>2&nbsp;h</span><b>180&nbsp;€</b><span style="opacity:.7">(90&nbsp;€/h)</span></span>
             <span class="chip price"><span>3&nbsp;h</span><b>240&nbsp;€</b><span style="opacity:.7">(80&nbsp;€/h)</span></span>
