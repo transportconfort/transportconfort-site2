@@ -350,32 +350,93 @@
     const isNW = isNightOrWeekend(dateStr, timeStr);
     const ap = detectAirportCode(fromText, toText);
 
-    // Forfait aéroport
-    if (ap && isParisLeg(fromText, toText)) {
-      const base = FORFAITS[ap][isNW ? 'night' : 'day'];
+    // ====== Forfaits aéroports : logique étendue (40 km CDG/Orly, départ IDF -> Beauvais) ======
+    const leg = route.routes?.[0]?.legs?.[0];
+    const fromText = els.from.value || '';
+    const toText   = els.to.value || '';
+    const isNW     = isNightOrWeekend(dateStr, timeStr);
 
-      els.distance.textContent = '—';
-      els.duration.textContent = '—';
-      els.total.textContent = TC.fmtMoney(base);
-      const totalLbl = document.getElementById('totalLabel');
-      if (totalLbl) {
-        totalLbl.textContent = `Forfait ${ap} ${isNW ? 'nuit/WE' : 'jour'}`;
-        totalLbl.style.display = '';
+    const dep = fromText.toLowerCase();
+    const arr = toText.toLowerCase();
+
+    // petite fonction utilitaire : détection IDF simplifiée
+    function isIDF(addr) {
+      const patterns = [
+        "paris", "75", "92", "93", "94", "95", "91", "78", "77",
+        "enghien", "epinay", "sarcelles", "saint-denis", "gennevilliers",
+        "argenteuil", "issy", "boulogne", "nanterre", "aubervilliers"
+      ];
+      const a = addr.toLowerCase();
+      return patterns.some(p => a.includes(p));
+    }
+
+    // calcule la distance "haversine" rapide
+    function haversineKm(a, b) {
+      const R = 6371;
+      const dLat = ((b.lat - a.lat) * Math.PI) / 180;
+      const dLon = ((b.lng - a.lng) * Math.PI) / 180;
+      const la1 = (a.lat * Math.PI) / 180;
+      const la2 = (b.lat * Math.PI) / 180;
+      const x =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos(la1) * Math.cos(la2) * Math.sin(dLon / 2) ** 2;
+      return 2 * R * Math.asin(Math.sqrt(x));
+    }
+
+    let appliedForfait = null;
+    let total = null;
+
+    if (leg) {
+      const start = { lat: leg.start_location.lat(), lng: leg.start_location.lng() };
+      const end   = { lat: leg.end_location.lat(),   lng: leg.end_location.lng() };
+      const kmTotal = leg.distance.value / 1000;
+
+      const isCDG  = dep.includes("charles-de-gaulle") || arr.includes("charles-de-gaulle") ||
+                     dep.includes("roissy") || arr.includes("roissy") ||
+                     dep.includes("cdg") || arr.includes("cdg");
+      const isOrly = dep.includes("orly") || arr.includes("orly");
+      const isBva  = dep.includes("beauvais") || arr.includes("beauvais");
+
+      // --- 1. CDG / Orly : rayon 40 km
+      if ((isCDG || isOrly) && kmTotal <= 40) {
+        if (isCDG) {
+          total = FORFAITS.CDG[isNW ? "night" : "day"];
+          appliedForfait = `CDG ${isNW ? "nuit/WE" : "jour"}`;
+        } else {
+          total = FORFAITS.ORY[isNW ? "night" : "day"];
+          appliedForfait = `ORY ${isNW ? "nuit/WE" : "jour"}`;
+        }
       }
 
+      // --- 2. Beauvais : uniquement si départ IDF -> Beauvais
+      else if (isBva && isIDF(dep)) {
+        total = FORFAITS.BVA[isNW ? "night" : "day"];
+        appliedForfait = `BVA ${isNW ? "nuit/WE" : "jour"}`;
+      }
+    }
+
+    // --- Si forfait trouvé ---
+    if (appliedForfait) {
+      els.distance.textContent = '—';
+      els.duration.textContent = '—';
+      els.total.textContent = TC.fmtMoney(total);
+      const totalLbl = document.getElementById('totalLabel');
+      if (totalLbl) {
+        totalLbl.textContent = `Forfait ${appliedForfait}`;
+        totalLbl.style.display = '';
+      }
       els.calendlyBtn?.removeAttribute('disabled');
 
       window._TC_LAST = {
         type: 'FORFAIT_AEROPORT',
-        airport: ap,
-        from,
-        to,
+        from, to,
         whenISO: dt.toISOString(),
-        price_eur: base,
-        label: `Forfait ${ap} ${isNW ? 'nuit/WE' : 'jour'}`,
+        price_eur: total,
+        label: `Forfait ${appliedForfait}`,
       };
       return;
     }
+
 
     // === Forfait Enghien (rayon court autour du Casino) ===
     const leg = route.routes?.[0]?.legs?.[0];
