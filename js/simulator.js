@@ -225,7 +225,7 @@
   // Majoration Nuit/WE : +15%
   function price(dist_m, dur_s, when) {
     const PICKUP_FEE = 10.00;
-    const PER_KM     = 2.00;
+    const PER_KM     = 1.90;
     const PER_MIN    = 1.00;
 
     const km  = Math.max(0, dist_m / 1000);
