@@ -173,6 +173,7 @@
     }
   }
 
+  // (on la laisse même si elle n’est plus utilisée directement)
   function detectAirportCode(fromText, toText) {
     const t = (fromText + ' ' + toText).toLowerCase();
     if (t.includes('orly') || t.includes('ory')) return 'ORY';
@@ -217,7 +218,7 @@
   }
 
   // ====== TARIF CLASSIQUE LISSÉ ======
-  // Base : 10 € pickup + 2,00 €/km + 1,00 €/min
+  // Base : 10 € pickup + 1,90 €/km + 1,00 €/min
   // Dégressivité distance (appliquée sur la part km) :
   //   0–30 km 100% ; 30–60 km 90% ; 60–120 km 80% ; 120+ km 70%
   // Dégressivité temps (appliquée sur la part minutes) :
@@ -297,7 +298,7 @@
       return;
     }
 
-    // MAD (forfait fixe)
+    // ===== 1. MODE MAD =====
     if (modeMad) {
       const sel = document.getElementById('mad-hours');
       const h = sel ? Number(sel.value || 1) : 1;
@@ -330,13 +331,13 @@
       return;
     }
 
-    // Courses : besoin d'une arrivée
+    // ===== 2. COURSES CLASSIQUES : besoin d'une arrivée =====
     if (!to) {
       alert("Renseignez l’adresse d’arrivée.");
       return;
     }
 
-    // Itinéraire (pour affichage)
+    // ===== 3. Itinéraire pour affichage =====
     const route = await ds.route({
       origin: from,
       destination: to,
@@ -346,100 +347,83 @@
     dr.setDirections(route);
 
     const fromText = els.from.value || '';
-    const toText = els.to.value || '';
-    const isNW = isNightOrWeekend(dateStr, timeStr);
-    const ap = detectAirportCode(fromText, toText);
-
-    // ====== Forfaits aéroports : logique étendue (40 km CDG/Orly, départ IDF -> Beauvais) ======
-    const leg = route.routes?.[0]?.legs?.[0];
-    const fromText = els.from.value || '';
     const toText   = els.to.value || '';
     const isNW     = isNightOrWeekend(dateStr, timeStr);
+    const leg      = route.routes?.[0]?.legs?.[0];
 
-    const dep = fromText.toLowerCase();
-    const arr = toText.toLowerCase();
-
-    // petite fonction utilitaire : détection IDF simplifiée
+    // petite fonction locale : détecter si une adresse est en IDF
     function isIDF(addr) {
       const patterns = [
-        "paris", "75", "92", "93", "94", "95", "91", "78", "77",
-        "enghien", "epinay", "sarcelles", "saint-denis", "gennevilliers",
-        "argenteuil", "issy", "boulogne", "nanterre", "aubervilliers"
+        "paris", " 75", " 92", " 93", " 94", " 95", " 91", " 78", " 77",
+        "enghien", "epinay", "épinay", "sarcelles", "saint-denis", "st-denis",
+        "gennevilliers", "argenteuil", "aubervilliers", "cergy", "montmorency"
       ];
-      const a = addr.toLowerCase();
+      const a = (addr || '').toLowerCase();
       return patterns.some(p => a.includes(p));
     }
 
-    // calcule la distance "haversine" rapide
-    function haversineKm(a, b) {
-      const R = 6371;
-      const dLat = ((b.lat - a.lat) * Math.PI) / 180;
-      const dLon = ((b.lng - a.lng) * Math.PI) / 180;
-      const la1 = (a.lat * Math.PI) / 180;
-      const la2 = (b.lat * Math.PI) / 180;
-      const x =
-        Math.sin(dLat / 2) ** 2 +
-        Math.cos(la1) * Math.cos(la2) * Math.sin(dLon / 2) ** 2;
-      return 2 * R * Math.asin(Math.sqrt(x));
-    }
-
-    let appliedForfait = null;
-    let total = null;
-
+    // ===== 4. FORFAITS AÉROPORTS (nouvelle logique) =====
     if (leg) {
-      const start = { lat: leg.start_location.lat(), lng: leg.start_location.lng() };
-      const end   = { lat: leg.end_location.lat(),   lng: leg.end_location.lng() };
       const kmTotal = leg.distance.value / 1000;
+      const dep = fromText.toLowerCase();
+      const arr = toText.toLowerCase();
 
-      const isCDG  = dep.includes("charles-de-gaulle") || arr.includes("charles-de-gaulle") ||
-                     dep.includes("roissy") || arr.includes("roissy") ||
-                     dep.includes("cdg") || arr.includes("cdg");
-      const isOrly = dep.includes("orly") || arr.includes("orly");
-      const isBva  = dep.includes("beauvais") || arr.includes("beauvais");
+      const isCDG =
+        dep.includes("charles-de-gaulle") || dep.includes("charles de gaulle") ||
+        dep.includes("roissy") || dep.includes("cdg") ||
+        arr.includes("charles-de-gaulle") || arr.includes("charles de gaulle") ||
+        arr.includes("roissy") || arr.includes("cdg");
 
-      // --- 1. CDG / Orly : rayon 40 km
+      const isOrly =
+        dep.includes("orly") || arr.includes("orly");
+
+      const isBeauvais =
+        arr.includes("beauvais") || arr.includes("tille") || arr.includes("tillé");
+
+      let airportFare = null;
+      let airportLabel = null;
+
+      // 4.a CDG / ORLY : seulement si trajet ≤ 40 km
       if ((isCDG || isOrly) && kmTotal <= 40) {
         if (isCDG) {
-          total = FORFAITS.CDG[isNW ? "night" : "day"];
-          appliedForfait = `CDG ${isNW ? "nuit/WE" : "jour"}`;
+          airportFare  = FORFAITS.CDG[isNW ? 'night' : 'day'];
+          airportLabel = `Forfait CDG ${isNW ? 'nuit/WE' : 'jour'}`;
         } else {
-          total = FORFAITS.ORY[isNW ? "night" : "day"];
-          appliedForfait = `ORY ${isNW ? "nuit/WE" : "jour"}`;
+          airportFare  = FORFAITS.ORY[isNW ? 'night' : 'day'];
+          airportLabel = `Forfait ORY ${isNW ? 'nuit/WE' : 'jour'}`;
         }
       }
+      // 4.b BEAUVAIS : seulement départ IDF -> Beauvais
+      else if (isBeauvais && isIDF(fromText)) {
+        airportFare  = FORFAITS.BVA[isNW ? 'night' : 'day'];
+        airportLabel = `Forfait BVA ${isNW ? 'nuit/WE' : 'jour'}`;
+      }
 
-      // --- 2. Beauvais : uniquement si départ IDF -> Beauvais
-      else if (isBva && isIDF(dep)) {
-        total = FORFAITS.BVA[isNW ? "night" : "day"];
-        appliedForfait = `BVA ${isNW ? "nuit/WE" : "jour"}`;
+      // si on a trouvé un forfait aéroport → on affiche et on sort
+      if (airportFare !== null) {
+        els.distance.textContent = '—';
+        els.duration.textContent = '—';
+        els.total.textContent    = TC.fmtMoney(airportFare);
+        const totalLbl = document.getElementById('totalLabel');
+        if (totalLbl) {
+          totalLbl.textContent = airportLabel;
+          totalLbl.style.display = '';
+        }
+        els.calendlyBtn?.removeAttribute('disabled');
+
+        window._TC_LAST = {
+          type: 'FORFAIT_AEROPORT',
+          from,
+          to,
+          whenISO: dt.toISOString(),
+          price_eur: airportFare,
+          label: airportLabel,
+        };
+        return;
       }
     }
 
-    // --- Si forfait trouvé ---
-    if (appliedForfait) {
-      els.distance.textContent = '—';
-      els.duration.textContent = '—';
-      els.total.textContent = TC.fmtMoney(total);
-      const totalLbl = document.getElementById('totalLabel');
-      if (totalLbl) {
-        totalLbl.textContent = `Forfait ${appliedForfait}`;
-        totalLbl.style.display = '';
-      }
-      els.calendlyBtn?.removeAttribute('disabled');
-
-      window._TC_LAST = {
-        type: 'FORFAIT_AEROPORT',
-        from, to,
-        whenISO: dt.toISOString(),
-        price_eur: total,
-        label: `Forfait ${appliedForfait}`,
-      };
-      return;
-    }
-
-
-    // === Forfait Enghien (rayon court autour du Casino) ===
-    const leg = route.routes?.[0]?.legs?.[0];
+    // ===== 5. FORFAIT ENGHIEN (on garde ta logique actuelle) =====
     if (leg) {
       const start = { lat: leg.start_location.lat(), lng: leg.start_location.lng() };
       const end   = { lat: leg.end_location.lat(),   lng: leg.end_location.lng() };
@@ -474,7 +458,7 @@
       }
     }
 
-    // Tarif classique lissé
+    // ===== 6. TARIF CLASSIQUE (distance matrix) =====
     const dm = new google.maps.DistanceMatrixService();
     const r = await dm.getDistanceMatrix({
       origins: [from],
@@ -484,12 +468,12 @@
     });
     const cell = r.rows[0].elements[0];
     const dist = cell.distance.value; // m
-    const dur = (cell.duration_in_traffic || cell.duration).value; // s
+    const dur  = (cell.duration_in_traffic || cell.duration).value; // s
 
     const p = price(dist, dur, dt);
     els.distance.textContent = (dist / 1000).toFixed(1) + ' km';
     els.duration.textContent = Math.round(dur / 60) + ' min';
-    els.total.textContent = TC.fmtMoney(p);
+    els.total.textContent    = TC.fmtMoney(p);
     const totalLbl = document.getElementById('totalLabel');
     if (totalLbl) {
       totalLbl.textContent = 'Tarif classique';
