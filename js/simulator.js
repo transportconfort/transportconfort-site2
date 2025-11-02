@@ -217,7 +217,7 @@
   }
 
   // ====== TARIF CLASSIQUE LISSÉ ======
-  // Base : 10 € pickup + 2,00 €/km + 1,50 €/min
+  // Base : 10 € pickup + 2,00 €/km + 1,00 €/min
   // Dégressivité distance (appliquée sur la part km) :
   //   0–30 km 100% ; 30–60 km 90% ; 60–120 km 80% ; 120+ km 70%
   // Dégressivité temps (appliquée sur la part minutes) :
@@ -226,7 +226,7 @@
   function price(dist_m, dur_s, when) {
     const PICKUP_FEE = 10.00;
     const PER_KM     = 2.00;
-    const PER_MIN    = 1.50;
+    const PER_MIN    = 1.00;
 
     const km  = Math.max(0, dist_m / 1000);
     const min = Math.max(0, dur_s / 60);
