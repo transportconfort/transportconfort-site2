@@ -30,34 +30,19 @@ a{color:var(--gold);text-decoration:none}a:hover{text-decoration:underline}
 .sim-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
 .sim-col{display:flex;flex-direction:column;gap:12px}
 @media (max-width: 980px){.sim-grid{grid-template-columns:1fr}}
-/* ===== PATCH calendrier (desktop, thème sombre) ===== */
-
-/* Rétablir l’apparence native sur nos champs stylés */
-.input[type="date"],
-.input[type="time"],
-select.input {
-  appearance: auto !important;
-  -webkit-appearance: auto !important;
+/* ===== Amélioration visibilité flèche calendrier (desktop) ===== */
+input[type="date"] {
+  color-scheme: dark;           /* améliore le contraste du sélecteur */
+  padding-right: 2.2rem;        /* espace à droite pour la flèche */
 }
 
-/* Forcer l’affichage et la cliquabilité de l’icône calendrier */
-.input[type="date"]::-webkit-calendar-picker-indicator,
+/* Rends la flèche visible et claire sur fond sombre */
 input[type="date"]::-webkit-calendar-picker-indicator {
-  display: block !important;
   opacity: 1 !important;
-  pointer-events: auto !important;
-  filter: invert(1) brightness(1.2) contrast(1.1) !important; /* visible sur fond sombre */
-  -webkit-filter: invert(1) brightness(1.2) contrast(1.1) !important;
+  display: block !important;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
   cursor: pointer;
+  filter: invert(1) brightness(1.1); /* rend la flèche blanche sur fond noir */
 }
-
-/* Confort visuel : espace à droite pour l’icône */
-.input[type="date"],
-.input[type="time"],
-input[type="date"],
-input[type="time"] {
-  color-scheme: dark;
-  padding-right: 2.2rem;
-}
-/* ===== FIN PATCH ===== */
-
