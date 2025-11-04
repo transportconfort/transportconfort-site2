@@ -30,5 +30,3 @@ a{color:var(--gold);text-decoration:none}a:hover{text-decoration:underline}
 .sim-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
 .sim-col{display:flex;flex-direction:column;gap:12px}
 @media (max-width: 980px){.sim-grid{grid-template-columns:1fr}}
-/* s'assure que la zone de la date capte bien les clics */
-#openDate, label[for="date"] { pointer-events: auto; }
