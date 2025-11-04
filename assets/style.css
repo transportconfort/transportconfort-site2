@@ -30,19 +30,3 @@ a{color:var(--gold);text-decoration:none}a:hover{text-decoration:underline}
 .sim-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
 .sim-col{display:flex;flex-direction:column;gap:12px}
 @media (max-width: 980px){.sim-grid{grid-template-columns:1fr}}
-/* ===== Amélioration visibilité flèche calendrier (desktop) ===== */
-input[type="date"] {
-  color-scheme: dark;           /* améliore le contraste du sélecteur */
-  padding-right: 2.2rem;        /* espace à droite pour la flèche */
-}
-
-/* Rends la flèche visible et claire sur fond sombre */
-input[type="date"]::-webkit-calendar-picker-indicator {
-  opacity: 1 !important;
-  display: block !important;
-  width: 20px;
-  height: 20px;
-  margin-right: 8px;
-  cursor: pointer;
-  filter: invert(1) brightness(1.1); /* rend la flèche blanche sur fond noir */
-}
