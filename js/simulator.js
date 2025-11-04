@@ -1,6 +1,13 @@
-/* simulator.js — version nettoyée (estimation + Calendly uniquement) */
+/* simulator.js — estimation + Calendly
+   - Affichage carte = itinéraire LE PLUS RAPIDE
+   - Calcul prix = distance LA PLUS COURTE (évite les détours coûteux)
+   - Forfaits aéroports: CDG/ORY si ≤ 40 km ; Beauvais = départ IDF → BVA
+   - Tarifs classiques lissés: pickup 9 € + 1.85 €/km + 0.95 €/min (+15% nuit/WE)
+*/
+
 (async function () {
-  // Charge config + Google Maps
+  // ====== Chargement config & Google Maps ======
+  if (!window.TC) throw new Error('Espace TC manquant');
   const cfg = await TC.loadConfig();
 
   async function loadGmaps() {
@@ -21,7 +28,7 @@
   };
   // Casino Barrière, 3 Av. de Ceinture, 95880 Enghien-les-Bains
   const ENGHIEN   = { lat: 48.96992, lng: 2.30939 };
-  const R_ENGHIEN = 0.6; // km — rayon d’attache très court
+  const R_ENGHIEN = 0.6; // km — rayon court autour du Casino
 
   // ====== DOM ======
   const els = {
@@ -38,7 +45,7 @@
     map: TC.q('#map'),
   };
 
-  // ====== UI MAD : injecte la ligne "Durée" s'il n'existe pas, et masque "Arrivée" en MAD ======
+  // ====== UI MAD : ajout de la ligne Durée + masquage du champ Arrivée ======
   function ensureMadRow() {
     let row = document.getElementById('mad-row');
     if (!row) {
@@ -58,7 +65,6 @@
           <option value="8">8 h (journée)</option>
         </select>
       `;
-      // point d’ancrage : juste après la ligne Passagers si possible
       const paxNode = document.getElementById('pax');
       const anchor =
         paxNode?.closest('div') ||
@@ -68,7 +74,6 @@
       anchor.parentNode.insertBefore(row, anchor.nextSibling);
     }
   }
-
   function syncModeUI() {
     const isMad = document.getElementById('mode-mad')?.checked;
     const madRow = document.getElementById('mad-row');
@@ -78,23 +83,20 @@
       (toInput ? toInput.previousElementSibling : null);
 
     if (madRow) madRow.style.display = isMad ? 'flex' : 'none';
-
     if (toInput) {
       toInput.style.display = isMad ? 'none' : '';
       if (isMad) toInput.value = '';
     }
     if (toLabel) toLabel.style.display = isMad ? 'none' : '';
   }
-
   ensureMadRow();
   syncModeUI();
   document.getElementById('mode-mad')?.addEventListener('change', syncModeUI);
   document.getElementById('mode-course')?.addEventListener('change', syncModeUI);
 
-  // ====== Préremplissage date/heure (pas de 5 min + arrondi auto) ======
+  // ====== Date/heure par défaut (arrondi 5 min) ======
   {
     const now = new Date();
-    // +120 min, arrondi au 5 min supérieur
     now.setMinutes(now.getMinutes() + 120, 0, 0);
     const round5 = (m) => Math.ceil(m / 5) * 5;
     now.setMinutes(round5(now.getMinutes()));
@@ -119,7 +121,7 @@
         els.time.value = `${hh}:${mm}`;
       } else {
         els.time.type = 'time';
-        els.time.step = 300; // 5 min
+        els.time.step = 300;
         els.time.value = `${hh}:${mm}`;
         const snapTo5 = () => {
           const v = els.time.value || '';
@@ -134,14 +136,6 @@
       }
     }
   }
-
-  // Bouton calendrier (icône)
-  document.getElementById('openDate')?.addEventListener('click', () => {
-    const inp = document.getElementById('date');
-    if (!inp) return;
-    if (inp.showPicker) inp.showPicker();
-    else inp.focus();
-  });
 
   // ====== Google Places + Map ======
   new google.maps.places.Autocomplete(els.from, { componentRestrictions: { country: 'fr' } });
@@ -173,15 +167,14 @@
     }
   }
 
-  // (on la laisse même si elle n’est plus utilisée directement)
+  // Ces deux helpers restent dispo si tu veux t’en resservir ailleurs
   function detectAirportCode(fromText, toText) {
     const t = (fromText + ' ' + toText).toLowerCase();
     if (t.includes('orly') || t.includes('ory')) return 'ORY';
     if (t.includes('roissy') || t.includes('charles de gaulle') || t.includes('cdg')) return 'CDG';
-    if (t.includes('beauvais') || t.includes('tillé') || t.includes('bva')) return 'BVA';
+    if (t.includes('beauvais') || t.includes('tillé') || t.includes('tille') || t.includes('bva')) return 'BVA';
     return null;
   }
-
   function isParisLeg(fromText, toText) {
     const f = (fromText || '').toLowerCase();
     const t = (toText || '').toLowerCase();
@@ -217,13 +210,10 @@
     return band ? { total: band.price, label: band.label } : null;
   }
 
-  // ====== TARIF CLASSIQUE LISSÉ ======
-  // Base : 9 € pickup + 1,85 €/km + 0,95 €/min
-  // Dégressivité distance (appliquée sur la part km) :
-  //   0–30 km 100% ; 30–60 km 90% ; 60–120 km 80% ; 120+ km 70%
-  // Dégressivité temps (appliquée sur la part minutes) :
-  //   0–60 min 100% ; 60–120 min 90% ; 120+ min 80%
-  // Majoration Nuit/WE : +15%
+  // ====== Tarification classique lissée
+  // Base : pickup 9 €, 1.85 €/km, 0.95 €/min, +15% nuit/WE
+  // KM bands : 0–30 (100%), 30–60 (90%), 60–120 (80%), 120+ (70%)
+  // MIN bands : 0–60 (100%), 60–120 (90%), 120+ (80%)
   function price(dist_m, dur_s, when) {
     const PICKUP_FEE = 9.00;
     const PER_KM     = 1.85;
@@ -234,10 +224,10 @@
 
     function kmCharge(k) {
       const bands = [
-        { upto: 30,      factor: 1.00 },
-        { upto: 60,      factor: 0.90 },
-        { upto: 120,     factor: 0.80 },
-        { upto: Infinity, factor: 0.70 }
+        { upto: 30,       factor: 1.00 },
+        { upto: 60,       factor: 0.90 },
+        { upto: 120,      factor: 0.80 },
+        { upto: Infinity, factor: 0.70 },
       ];
       let remain = k, last = 0, sum = 0;
       for (const b of bands) {
@@ -253,9 +243,9 @@
 
     function minCharge(m) {
       const bands = [
-        { upto: 60,      factor: 1.00 },
-        { upto: 120,     factor: 0.90 },
-        { upto: Infinity, factor: 0.80 }
+        { upto: 60,       factor: 1.00 },
+        { upto: 120,      factor: 0.90 },
+        { upto: Infinity, factor: 0.80 },
       ];
       let remain = m, last = 0, sum = 0;
       for (const b of bands) {
@@ -283,36 +273,27 @@
   // ====== Estimation ======
   async function estimate() {
     const from = els.from.value.trim();
-    const to = (els.to.value || '').trim();
+    const to   = (els.to.value || '').trim();
     const dateStr = els.date.value;
     const timeStr = els.time.value;
     const dt = new Date((dateStr || '') + 'T' + (timeStr || '') + ':00');
     const modeMad = !!document.getElementById('mode-mad')?.checked;
 
-    if (!from) {
-      alert("Renseignez l’adresse de départ.");
-      return;
-    }
-    if (!dateStr || !timeStr) {
-      alert("Sélectionnez la date et l’heure.");
-      return;
-    }
+    if (!from) { alert("Renseignez l’adresse de départ."); return; }
+    if (!dateStr || !timeStr) { alert("Sélectionnez la date et l’heure."); return; }
 
-    // ===== 1. MODE MAD =====
+    // ===== MAD =====
     if (modeMad) {
       const sel = document.getElementById('mad-hours');
       const h = sel ? Number(sel.value || 1) : 1;
       let total = MAD_TOTALS[h];
-      if (total == null) total = 100 * h; // secours
+      if (total == null) total = 100 * h;
 
       els.distance.textContent = '—';
       els.duration.textContent = h + ' h';
-      els.total.textContent = TC.fmtMoney(total);
+      els.total.textContent    = TC.fmtMoney(total);
       const totalLbl = document.getElementById('totalLabel');
-      if (totalLbl) {
-        totalLbl.textContent = `MAD ${h}h`;
-        totalLbl.style.display = '';
-      }
+      if (totalLbl) { totalLbl.textContent = `MAD ${h}h`; totalLbl.style.display = ''; }
 
       els.calendlyBtn?.removeAttribute('disabled');
 
@@ -331,164 +312,160 @@
       return;
     }
 
-    // ===== 2. COURSES CLASSIQUES : besoin d'une arrivée =====
+    // ===== Course classique : besoin d'une arrivée =====
     if (!to) {
       alert("Renseignez l’adresse d’arrivée.");
       return;
     }
 
-    // ===== 3. Itinéraire pour affichage =====
-    const route = await ds.route({
-      origin: from,
-      destination: to,
-      travelMode: google.maps.TravelMode.DRIVING,
-      drivingOptions: { departureTime: dt, trafficModel: 'bestguess' },
-    });
-    dr.setDirections(route);
+    // ===== Itinéraires (alternatives) =====
+    let routes = [];
+    try {
+      const directions = await ds.route({
+        origin: from,
+        destination: to,
+        travelMode: google.maps.TravelMode.DRIVING,
+        drivingOptions: { departureTime: dt, trafficModel: 'bestguess' },
+        provideRouteAlternatives: true
+      });
+      routes = directions.routes || [];
+      if (routes.length) {
+        // Choix affichage/prix
+        const sumDist = (r) => (r.legs || []).reduce((s, l) => s + (l.distance?.value || 0), 0);
+        const sumDur  = (r) => (r.legs || []).reduce((s, l) => s + ((l.duration_in_traffic?.value) || (l.duration?.value) || 0), 0);
+
+        let shortestIdx = 0, fastestIdx = 0;
+        routes.forEach((r, i) => {
+          if (sumDist(r) < sumDist(routes[shortestIdx])) shortestIdx = i;
+          if (sumDur(r)  < sumDur(routes[fastestIdx]))   fastestIdx  = i;
+        });
+
+        // Affichage = plus rapide
+        dr.setDirections(directions);
+        try { dr.setRouteIndex(fastestIdx); } catch {}
+
+        var dist_m = sumDist(routes[shortestIdx]); // pour tarification
+        var dur_s  = sumDur(routes[fastestIdx]);   // pour durée affichée
+      }
+    } catch (e) {
+      console.warn('Directions KO, on bascule sur DistanceMatrix', e);
+    }
+
+    // Fallback DistanceMatrix (si Directions a échoué)
+    if (!routes.length) {
+      const dm = new google.maps.DistanceMatrixService();
+      const r = await dm.getDistanceMatrix({
+        origins: [from],
+        destinations: [to],
+        travelMode: google.maps.TravelMode.DRIVING,
+        drivingOptions: { departureTime: dt, trafficModel: 'bestguess' },
+      });
+      const cell = r.rows[0].elements[0];
+      var dist_m = cell.distance.value;
+      var dur_s  = (cell.duration_in_traffic || cell.duration).value;
+      // On efface toute route affichée
+      try { dr.set('directions', null); } catch {}
+    }
 
     const fromText = els.from.value || '';
-    const toText   = els.to.value || '';
+    const toText   = els.to.value   || '';
     const isNW     = isNightOrWeekend(dateStr, timeStr);
-    const leg      = route.routes?.[0]?.legs?.[0];
 
-    // petite fonction locale : détecter si une adresse est en IDF
+    // Petite heuristique IDF
     function isIDF(addr) {
       const patterns = [
-        "paris", " 75", " 92", " 93", " 94", " 95", " 91", " 78", " 77",
-        "enghien", "epinay", "épinay", "sarcelles", "saint-denis", "st-denis",
-        "gennevilliers", "argenteuil", "aubervilliers", "cergy", "montmorency"
+        "paris"," 75"," 92"," 93"," 94"," 95"," 91"," 78"," 77",
+        "enghien","epinay","épinay","sarcelles","saint-denis","st-denis",
+        "gennevilliers","argenteuil","aubervilliers","cergy","montmorency"
       ];
       const a = (addr || '').toLowerCase();
       return patterns.some(p => a.includes(p));
     }
 
-    // ===== 4. FORFAITS AÉROPORTS (nouvelle logique) =====
-    if (leg) {
-      const kmTotal = leg.distance.value / 1000;
+    // ===== Forfaits Aéroports =====
+    // NB: seuil de 40 km évalué sur la distance tarifiée (plus courte)
+    (function tryAirportFare() {
+      const kmTotal = dist_m / 1000;
       const dep = fromText.toLowerCase();
       const arr = toText.toLowerCase();
 
-      const isCDG =
-        dep.includes("charles-de-gaulle") || dep.includes("charles de gaulle") ||
-        dep.includes("roissy") || dep.includes("cdg") ||
-        arr.includes("charles-de-gaulle") || arr.includes("charles de gaulle") ||
-        arr.includes("roissy") || arr.includes("cdg");
+      const isCDG = dep.includes("charles-de-gaulle") || dep.includes("charles de gaulle") || dep.includes("roissy") || dep.includes("cdg")
+                 || arr.includes("charles-de-gaulle") || arr.includes("charles de gaulle") || arr.includes("roissy") || arr.includes("cdg");
+      const isOrly = dep.includes("orly") || arr.includes("orly");
+      const isBeauvais = arr.includes("beauvais") || arr.includes("tillé") || arr.includes("tille");
 
-      const isOrly =
-        dep.includes("orly") || arr.includes("orly");
+      let airportFare = null, airportLabel = null;
 
-      const isBeauvais =
-        arr.includes("beauvais") || arr.includes("tille") || arr.includes("tillé");
-
-      let airportFare = null;
-      let airportLabel = null;
-
-      // 4.a CDG / ORLY : seulement si trajet ≤ 40 km
       if ((isCDG || isOrly) && kmTotal <= 40) {
-        if (isCDG) {
-          airportFare  = FORFAITS.CDG[isNW ? 'night' : 'day'];
-          airportLabel = `Forfait CDG ${isNW ? 'nuit/WE' : 'jour'}`;
-        } else {
-          airportFare  = FORFAITS.ORY[isNW ? 'night' : 'day'];
-          airportLabel = `Forfait ORY ${isNW ? 'nuit/WE' : 'jour'}`;
-        }
-      }
-      // 4.b BEAUVAIS : seulement départ IDF -> Beauvais
-      else if (isBeauvais && isIDF(fromText)) {
-        airportFare  = FORFAITS.BVA[isNW ? 'night' : 'day'];
+        if (isCDG) { airportFare = FORFAITS.CDG[isNW ? 'night' : 'day']; airportLabel = `Forfait CDG ${isNW ? 'nuit/WE' : 'jour'}`; }
+        else       { airportFare = FORFAITS.ORY[isNW ? 'night' : 'day']; airportLabel = `Forfait ORY ${isNW ? 'nuit/WE' : 'jour'}`; }
+      } else if (isBeauvais && isIDF(fromText)) {
+        airportFare = FORFAITS.BVA[isNW ? 'night' : 'day'];
         airportLabel = `Forfait BVA ${isNW ? 'nuit/WE' : 'jour'}`;
       }
 
-      // si on a trouvé un forfait aéroport → on affiche et on sort
       if (airportFare !== null) {
         els.distance.textContent = '—';
         els.duration.textContent = '—';
         els.total.textContent    = TC.fmtMoney(airportFare);
         const totalLbl = document.getElementById('totalLabel');
-        if (totalLbl) {
-          totalLbl.textContent = airportLabel;
-          totalLbl.style.display = '';
-        }
+        if (totalLbl) { totalLbl.textContent = airportLabel; totalLbl.style.display = ''; }
         els.calendlyBtn?.removeAttribute('disabled');
-
         window._TC_LAST = {
-          type: 'FORFAIT_AEROPORT',
-          from,
-          to,
-          whenISO: dt.toISOString(),
-          price_eur: airportFare,
-          label: airportLabel,
+          type: 'FORFAIT_AEROPORT', from, to, whenISO: dt.toISOString(),
+          price_eur: airportFare, label: airportLabel
         };
-        return;
+        throw '__DONE__'; // on sort proprement
       }
-    }
+    })();
 
-    // ===== 5. FORFAIT ENGHIEN (on garde ta logique actuelle) =====
-    if (leg) {
-      const start = { lat: leg.start_location.lat(), lng: leg.start_location.lng() };
-      const end   = { lat: leg.end_location.lat(),   lng: leg.end_location.lng() };
+    // ===== Forfait Enghien =====
+    (function tryEnghien() {
+      // Si on a eu un itinéraire Directions on l’a déjà affiché ; sinon on ne peut pas mesurer la proximité,
+      // donc on passe ce test (cas rarissime).
+      const dir = dr.getDirections?.();
+      const leg0 = dir?.routes?.[dr.getRouteIndex?.() ?? 0]?.legs?.[0];
+      if (!leg0) return;
 
+      const start = { lat: leg0.start_location.lat(), lng: leg0.start_location.lng() };
+      const end   = { lat: leg0.end_location.lat(),   lng: leg0.end_location.lng() };
       const dStart = haversineKm(start, ENGHIEN);
       const dEnd   = haversineKm(end,   ENGHIEN);
-
       const isEnghienEndpoint = (dStart <= R_ENGHIEN) || (dEnd <= R_ENGHIEN);
-      if (isEnghienEndpoint) {
-        const bandDist = (dStart <= R_ENGHIEN) ? dEnd : dStart;
+      if (!isEnghienEndpoint) return;
 
-        const eng = computeEnghienForfait(bandDist, isNW);
-        if (eng) {
-          els.distance.textContent = '—';
-          els.duration.textContent = '—';
-          els.total.textContent    = TC.fmtMoney(eng.total);
-          const totalLbl = document.getElementById('totalLabel');
-          if (totalLbl) { totalLbl.textContent = eng.label; totalLbl.style.display = ''; }
+      const bandDist = (dStart <= R_ENGHIEN) ? dEnd : dStart;
+      const eng = computeEnghienForfait(bandDist, isNW);
+      if (!eng) return;
 
-          els.calendlyBtn?.removeAttribute('disabled');
+      els.distance.textContent = '—';
+      els.duration.textContent = '—';
+      els.total.textContent    = TC.fmtMoney(eng.total);
+      const totalLbl = document.getElementById('totalLabel');
+      if (totalLbl) { totalLbl.textContent = eng.label; totalLbl.style.display = ''; }
+      els.calendlyBtn?.removeAttribute('disabled');
+      window._TC_LAST = {
+        type: 'FORFAIT_ENGHIEN', from, to, whenISO: dt.toISOString(),
+        price_eur: eng.total, label: eng.label, km_to_enghien: Math.round(bandDist*10)/10
+      };
+      throw '__DONE__';
+    })();
 
-          window._TC_LAST = {
-            type: 'FORFAIT_ENGHIEN',
-            from, to,
-            whenISO: dt.toISOString(),
-            price_eur: eng.total,
-            label: eng.label,
-            km_to_enghien: Math.round(bandDist * 10) / 10
-          };
-          return;
-        }
-      }
-    }
-
-    // ===== 6. TARIF CLASSIQUE (distance matrix) =====
-    const dm = new google.maps.DistanceMatrixService();
-    const r = await dm.getDistanceMatrix({
-      origins: [from],
-      destinations: [to],
-      travelMode: google.maps.TravelMode.DRIVING,
-      drivingOptions: { departureTime: dt, trafficModel: 'bestguess' },
-    });
-    const cell = r.rows[0].elements[0];
-    const dist = cell.distance.value; // m
-    const dur  = (cell.duration_in_traffic || cell.duration).value; // s
-
-    const p = price(dist, dur, dt);
-    els.distance.textContent = (dist / 1000).toFixed(1) + ' km';
-    els.duration.textContent = Math.round(dur / 60) + ' min';
+    // ===== Tarif classique (prix = distance la plus courte ; durée = plus rapide/fallback) =====
+    const p = price(dist_m, dur_s, dt);
+    els.distance.textContent = (dist_m / 1000).toFixed(1) + ' km';
+    els.duration.textContent = Math.round(dur_s / 60) + ' min';
     els.total.textContent    = TC.fmtMoney(p);
     const totalLbl = document.getElementById('totalLabel');
-    if (totalLbl) {
-      totalLbl.textContent = 'Tarif classique';
-      totalLbl.style.display = '';
-    }
+    if (totalLbl) { totalLbl.textContent = 'Tarif classique'; totalLbl.style.display = ''; }
 
     els.calendlyBtn?.removeAttribute('disabled');
-
     window._TC_LAST = {
       type: 'COURSE',
-      from,
-      to,
+      from, to,
       whenISO: dt.toISOString(),
-      dist_m: dist,
-      dur_s: dur,
+      dist_m: dist_m,
+      dur_s:  dur_s,
       price_eur: p,
       label: 'Tarif classique',
     };
@@ -499,11 +476,10 @@
     els.estimateBtn.addEventListener('click', (e) => {
       e.preventDefault();
       estimate().catch((err) => {
+        if (err === '__DONE__') return; // cas forfait/enghien qui sort volontairement
         console.error(err);
         alert('Estimation impossible. Réessayez.');
       });
     });
   }
-
-  // === FIN du fichier : exactement UNE seule IIFE fermée ===
 })();
