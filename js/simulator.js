@@ -490,4 +490,20 @@ function price(dist_m, dur_s, when) {
       });
     });
   }
+   // === Permet de cliquer sur toute la zone date pour ouvrir le calendrier ===
+document.addEventListener('DOMContentLoaded', () => {
+  const dateField = document.getElementById('date');
+  const dateWrapper = dateField?.closest('div');
+
+  if (dateField && dateWrapper) {
+    dateWrapper.style.cursor = 'pointer';
+
+    dateWrapper.addEventListener('click', (e) => {
+      // On évite les doubles clics sur le bouton ou autres éléments
+      if (e.target.tagName.toLowerCase() === 'input' || e.target.id === 'openDate') return;
+      if (dateField.showPicker) dateField.showPicker();
+      else dateField.focus();
+    });
+  }
+});
 })();
