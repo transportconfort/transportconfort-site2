@@ -530,4 +530,5 @@ function price(dist_m, dur_s, when) {
       }
     });
   }
+   })();
 })();
