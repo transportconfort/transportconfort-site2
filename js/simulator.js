@@ -210,65 +210,73 @@
     return band ? { total: band.price, label: band.label } : null;
   }
 
-  // ====== Tarification classique lissée
-  // Base : pickup 9 €, 1.85 €/km, 0.95 €/min, +15% nuit/WE
-  // KM bands : 0–30 (100%), 30–60 (90%), 60–120 (80%), 120+ (70%)
-  // MIN bands : 0–60 (100%), 60–120 (90%), 120+ (80%)
-  function price(dist_m, dur_s, when) {
-    const PICKUP_FEE = 9.00;
-    const PER_KM     = 1.85;
-    const PER_MIN    = 0.95;
+  // ====== TARIF CLASSIQUE LISSÉ (avec plafond dynamique minutes) ======
+// Base : 9 € pickup + 1,85 €/km + 0,95 €/min
+// Dégressivité distance (part km) : 0–30 km 100% ; 30–60 km 90% ; 60–120 km 80% ; 120+ km 70%
+// Dégressivité temps (part min)   : 0–60 min 100% ; 60–120 min 90% ; 120+ min 80%
+// Majoration Nuit/WE : +15%
+// Plafond dynamique : minutes facturables ≤ 1.5 × km (évite les excès sur trajets courts très congestionnés)
+function price(dist_m, dur_s, when) {
+  const PICKUP_FEE = 9.00;
+  const PER_KM     = 1.85;
+  const PER_MIN    = 0.95;
 
-    const km  = Math.max(0, dist_m / 1000);
-    const min = Math.max(0, dur_s / 60);
+  const km  = Math.max(0, dist_m / 1000);
+  const min = Math.max(0, dur_s / 60);
 
-    function kmCharge(k) {
-      const bands = [
-        { upto: 30,       factor: 1.00 },
-        { upto: 60,       factor: 0.90 },
-        { upto: 120,      factor: 0.80 },
-        { upto: Infinity, factor: 0.70 },
-      ];
-      let remain = k, last = 0, sum = 0;
-      for (const b of bands) {
-        const seg = Math.max(0, Math.min(remain, b.upto - last));
-        if (!seg) continue;
-        sum += seg * PER_KM * b.factor;
-        remain -= seg;
-        last = b.upto;
-        if (remain <= 0) break;
-      }
-      return sum;
+  // === Plafond dynamique des minutes facturables ===
+  // Exemple : 25 km ⇒ max 37.5 min facturées (arrondi appliqué par la dégressivité)
+  const MINUTES_CAP_RATIO = 1.5;                 // 1.5 min par km
+  const maxBillableMin    = MINUTES_CAP_RATIO * km;
+  const billableMin       = Math.min(min, maxBillableMin);
+
+  function kmCharge(k) {
+    const bands = [
+      { upto: 30,       factor: 1.00 },
+      { upto: 60,       factor: 0.90 },
+      { upto: 120,      factor: 0.80 },
+      { upto: Infinity, factor: 0.70 }
+    ];
+    let remain = k, last = 0, sum = 0;
+    for (const b of bands) {
+      const seg = Math.max(0, Math.min(remain, b.upto - last));
+      if (!seg) continue;
+      sum += seg * PER_KM * b.factor;
+      remain -= seg;
+      last = b.upto;
+      if (remain <= 0) break;
     }
-
-    function minCharge(m) {
-      const bands = [
-        { upto: 60,       factor: 1.00 },
-        { upto: 120,      factor: 0.90 },
-        { upto: Infinity, factor: 0.80 },
-      ];
-      let remain = m, last = 0, sum = 0;
-      for (const b of bands) {
-        const seg = Math.max(0, Math.min(remain, b.upto - last));
-        if (!seg) continue;
-        sum += seg * PER_MIN * b.factor;
-        remain -= seg;
-        last = b.upto;
-        if (remain <= 0) break;
-      }
-      return sum;
-    }
-
-    const isNW = isNightOrWeekend(
-      when.toISOString().slice(0, 10),
-      when.toTimeString().slice(0, 5)
-    );
-
-    let amt = PICKUP_FEE + kmCharge(km) + minCharge(min);
-    if (isNW) amt *= 1.15;
-
-    return Math.round(amt * 100) / 100;
+    return sum;
   }
+
+  function minCharge(m) {
+    const bands = [
+      { upto: 60,       factor: 1.00 },
+      { upto: 120,      factor: 0.90 },
+      { upto: Infinity, factor: 0.80 }
+    ];
+    let remain = m, last = 0, sum = 0;
+    for (const b of bands) {
+      const seg = Math.max(0, Math.min(remain, b.upto - last));
+      if (!seg) continue;
+      sum += seg * PER_MIN * b.factor;
+      remain -= seg;
+      last = b.upto;
+      if (remain <= 0) break;
+    }
+    return sum;
+  }
+
+  const isNW = isNightOrWeekend(
+    when.toISOString().slice(0, 10),
+    when.toTimeString().slice(0, 5)
+  );
+
+  let amt = PICKUP_FEE + kmCharge(km) + minCharge(billableMin);
+  if (isNW) amt *= 1.15;
+
+  return Math.round(amt * 100) / 100;
+}
 
   // ====== Estimation ======
   async function estimate() {
