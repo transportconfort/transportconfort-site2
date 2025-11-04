@@ -211,7 +211,7 @@
   }
 
   // ====== TARIF CLASSIQUE LISSÉ (avec plafond dynamique minutes) ======
-// Base : 9 € pickup + 1,85 €/km + 0,95 €/min
+// Base : 9 € pickup + 1,85 €/km + 0,90 €/min
 // Dégressivité distance (part km) : 0–30 km 100% ; 30–60 km 90% ; 60–120 km 80% ; 120+ km 70%
 // Dégressivité temps (part min)   : 0–60 min 100% ; 60–120 min 90% ; 120+ min 80%
 // Majoration Nuit/WE : +15%
@@ -219,7 +219,7 @@
 function price(dist_m, dur_s, when) {
   const PICKUP_FEE = 9.00;
   const PER_KM     = 1.85;
-  const PER_MIN    = 0.95;
+  const PER_MIN    = 0.90;
 
   const km  = Math.max(0, dist_m / 1000);
   const min = Math.max(0, dur_s / 60);
@@ -404,7 +404,7 @@ function price(dist_m, dur_s, when) {
 
       let airportFare = null, airportLabel = null;
 
-      if ((isCDG || isOrly) && kmTotal <= 40) {
+      if ((isCDG || isOrly) && kmTotal <= 45) {
         if (isCDG) { airportFare = FORFAITS.CDG[isNW ? 'night' : 'day']; airportLabel = `Forfait CDG ${isNW ? 'nuit/WE' : 'jour'}`; }
         else       { airportFare = FORFAITS.ORY[isNW ? 'night' : 'day']; airportLabel = `Forfait ORY ${isNW ? 'nuit/WE' : 'jour'}`; }
       } else if (isBeauvais && isIDF(fromText)) {
