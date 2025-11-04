@@ -30,23 +30,3 @@ a{color:var(--gold);text-decoration:none}a:hover{text-decoration:underline}
 .sim-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
 .sim-col{display:flex;flex-direction:column;gap:12px}
 @media (max-width: 980px){.sim-grid{grid-template-columns:1fr}}
-/* ===== Correctif affichage calendrier sur fond sombre ===== */
-input[type="date"],
-input[type="time"],
-select {
-  appearance: auto;
-  -webkit-appearance: auto;
-}
-
-input[type="date"]::-webkit-calendar-picker-indicator {
-  opacity: 1 !important;
-  filter: invert(1) brightness(1.2) contrast(1.1);
-  cursor: pointer;
-}
-
-input[type="date"],
-input[type="time"] {
-  color-scheme: dark;
-  padding-right: 2.2rem;
-}
-/* ===== Fin du correctif ===== */
