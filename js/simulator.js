@@ -490,4 +490,44 @@ function price(dist_m, dur_s, when) {
       });
     });
   }
+   // === Rendre toute la zone "Date" cliquable (desktop) ===
+(function makeWholeDateAreaClickable () {
+  const input  = document.getElementById('date');
+  const button = document.getElementById('openDate');
+
+  if (!input) return;
+
+  // On vise le conteneur qui entoure l'input et le bouton
+  const container =
+    (button && button.parentElement) ||
+    input.parentElement ||
+    input.closest('div');
+
+  if (container) {
+    container.style.cursor = 'pointer';
+
+    container.addEventListener('click', (e) => {
+      // si l’utilisateur clique déjà sur l’input natif ou le bouton, on laisse faire
+      if (e.target === input || e.target === button || e.target.closest('#openDate')) return;
+
+      // on force le focus + ouverture du sélecteur si dispo
+      input.focus();
+      if (typeof input.showPicker === 'function') {
+        try { input.showPicker(); } catch (_) { /* certains navigateurs bloquent, ce n’est pas grave */ }
+      }
+    });
+  }
+
+  // Rendre aussi le <label for="date"> déclencheur
+  const label = document.querySelector('label[for="date"]');
+  if (label) {
+    label.style.cursor = 'pointer';
+    label.addEventListener('click', (e) => {
+      e.preventDefault();
+      input.focus();
+      if (typeof input.showPicker === 'function') {
+        try { input.showPicker(); } catch (_) {}
+      }
+    });
+  }
 })();
