@@ -211,15 +211,15 @@
   }
 
   // ====== TARIF CLASSIQUE LISSÉ (avec plafond dynamique minutes) ======
-// Base : 9 € pickup + 1,85 €/km + 0,90 €/min
+// Base : 5 € pickup + 1,50 €/km + 0,50 €/min
 // Dégressivité distance (part km) : 0–30 km 100% ; 30–60 km 90% ; 60–120 km 80% ; 120+ km 70%
 // Dégressivité temps (part min)   : 0–60 min 100% ; 60–120 min 90% ; 120+ min 80%
 // Majoration Nuit/WE : +15%
 // Plafond dynamique : minutes facturables ≤ 1.5 × km (évite les excès sur trajets courts très congestionnés)
 function price(dist_m, dur_s, when) {
-  const PICKUP_FEE = 9.00;
-  const PER_KM     = 1.85;
-  const PER_MIN    = 0.90;
+  const PICKUP_FEE = 5.00;
+  const PER_KM     = 1.50;
+  const PER_MIN    = 0.50;
 
   const km  = Math.max(0, dist_m / 1000);
   const min = Math.max(0, dur_s / 60);
