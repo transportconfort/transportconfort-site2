@@ -251,9 +251,9 @@ function price(dist_m, dur_s, when) {
 
   function minCharge(m) {
     const bands = [
-      { upto: 60,       factor: 1.00 },
-      { upto: 120,      factor: 0.90 },
-      { upto: Infinity, factor: 0.80 }
+      { upto: 60,       factor: 0.85 },
+      { upto: 120,      factor: 0.75 },
+      { upto: Infinity, factor: 0.70 }
     ];
     let remain = m, last = 0, sum = 0;
     for (const b of bands) {
