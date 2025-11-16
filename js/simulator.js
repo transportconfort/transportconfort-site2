@@ -391,7 +391,7 @@ function price(dist_m, dur_s, when) {
     }
 
     // ===== Forfaits Aéroports =====
-    // NB: seuil de 40 km évalué sur la distance tarifiée (plus courte)
+    // NB: seuil de 35 km évalué sur la distance tarifiée (plus courte)
     (function tryAirportFare() {
       const kmTotal = dist_m / 1000;
       const dep = fromText.toLowerCase();
@@ -404,7 +404,7 @@ function price(dist_m, dur_s, when) {
 
       let airportFare = null, airportLabel = null;
 
-      if ((isCDG || isOrly) && kmTotal <= 45) {
+      if ((isCDG || isOrly) && kmTotal <= 35) {
         if (isCDG) { airportFare = FORFAITS.CDG[isNW ? 'night' : 'day']; airportLabel = `Forfait CDG ${isNW ? 'nuit/WE' : 'jour'}`; }
         else       { airportFare = FORFAITS.ORY[isNW ? 'night' : 'day']; airportLabel = `Forfait ORY ${isNW ? 'nuit/WE' : 'jour'}`; }
       } else if (isBeauvais && isIDF(fromText)) {
