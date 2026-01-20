@@ -58,15 +58,6 @@
       .card{padding:18px}
     }
 
-    /* === Bandeau promo compact === */
-    .tcv-promo{position:sticky;top:0;z-index:40;background:linear-gradient(0deg,rgba(11,11,11,.9),rgba(11,11,11,.98));border:1px solid var(--line);border-radius:12px;padding:8px 10px;display:flex;align-items:center;gap:8px}
-    .tcv-promo.hidden{display:none}
-    .tcv-promo .tag{border:1px solid var(--gold);border-radius:999px;color:var(--gold);font-weight:700;font-size:.85rem;padding:4px 8px}
-    .tcv-promo .txt{font-size:.9rem}
-    .tcv-promo .txt b{color:var(--gold)}
-    .tcv-promo .btn{margin-left:auto;padding:8px 10px;border-radius:10px}
-    .tcv-promo .close{margin-left:6px;background:transparent;color:#bbb;border:1px solid var(--line);border-radius:999px;padding:2px 8px;line-height:1}
-
     /* === Colonne images empilées === */
     .images-card .stack{display:grid;gap:10px}
     .images-card .ph{margin:0;padding:0;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
@@ -180,14 +171,6 @@
     <!-- ===== HOME ===== -->
     <section id="tcv-home" class="tcv-home" aria-labelledby="home-title">
       <div class="wrap">
-
-        <!-- Promo sticky (compact) -->
-        <div id="tcv-promo" class="tcv-promo hidden" role="region" aria-label="Promotion -15%">
-          <span class="tag">🎁 –15%</span>
-          <div class="txt">Offre de lancement : <b>–15%</b> jusqu’au <b>31/12/2025</b>. Prix affiché hors remise.</div>
-          <a class="btn" href="/simulator.html">Réserver</a>
-          <button class="close" type="button" aria-label="Fermer">×</button>
-        </div>
 
         <script>
           (function(){
