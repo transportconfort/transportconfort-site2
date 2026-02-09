@@ -22,8 +22,8 @@
   // ====== Barèmes ======
   const MAD_TOTALS = { 1: 100, 2: 180, 3: 240, 4: 300, 8: 560 };
   const FORFAITS = {
-    ORY: { day: 55, night: 65 },
-    CDG: { day: 75, night: 85 },
+    ORY: { day: 50, night: 60 },
+    CDG: { day: 60, night: 70 },
     BVA: { day: 150, night: 170 },
   };
   // Casino Barrière, 3 Av. de Ceinture, 95880 Enghien-les-Bains
