@@ -232,7 +232,7 @@ function price(dist_m, dur_s, when) {
 
   function kmCharge(k) {
     const bands = [
-      { upto: 30,       factor: 1.50 },
+      { upto: 30,       factor: 1.00 },
       { upto: 60,       factor: 0.90 },
       { upto: 120,      factor: 0.80 },
       { upto: Infinity, factor: 0.70 }
