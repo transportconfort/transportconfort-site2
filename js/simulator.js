@@ -295,7 +295,7 @@ function price(dist_m, dur_s, when) {
       const sel = document.getElementById('mad-hours');
       const h = sel ? Number(sel.value || 1) : 1;
       let total = MAD_TOTALS[h];
-      if (total == null) total = 100 * h;
+      if (total == null) total = 85 * h;
 
       els.distance.textContent = '—';
       els.duration.textContent = h + ' h';
