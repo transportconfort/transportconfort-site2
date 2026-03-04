@@ -20,7 +20,7 @@
   await loadGmaps();
 
   // ====== Barèmes ======
-  const MAD_TOTALS = { 1: 100, 2: 180, 3: 240, 4: 300, 8: 560 };
+  const MAD_TOTALS = { 1: 85, 2: 160, 3: 225, 4: 260, 8: 440 };
   const FORFAITS = {
     ORY: { day: 50, night: 60 },
     CDG: { day: 60, night: 70 },
