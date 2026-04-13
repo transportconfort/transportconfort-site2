@@ -209,6 +209,12 @@
                        : { price: 70, label: 'Forfait Enghien 30 km (jour)' };
     return band ? { total: band.price, label: band.label } : null;
   }
+// ===== Minimum de course =====
+const MIN_FARE = 20; // ou 18 selon ta stratégie
+
+function applyMinimumFare(amount) {
+  return amount < MIN_FARE ? MIN_FARE : amount;
+}
 
   // ====== TARIF CLASSIQUE LISSÉ (avec plafond dynamique minutes) ======
 // Base : 5 € pickup + 1,50 €/km + 0,50 €/min
@@ -460,10 +466,14 @@ function price(dist_m, dur_s, when) {
     })();
 
     // ===== Tarif classique (prix = distance la plus courte ; durée = plus rapide/fallback) =====
-    const p = price(dist_m, dur_s, dt);
-    els.distance.textContent = (dist_m / 1000).toFixed(1) + ' km';
-    els.duration.textContent = Math.round(dur_s / 60) + ' min';
-    els.total.textContent    = TC.fmtMoney(p);
+   let p = price(dist_m, dur_s, dt);
+
+// Application du minimum de course
+p = applyMinimumFare(p);
+
+els.distance.textContent = (dist_m / 1000).toFixed(1) + ' km';
+els.duration.textContent = Math.round(dur_s / 60) + ' min';
+els.total.textContent    = TC.fmtMoney(p);
     const totalLbl = document.getElementById('totalLabel');
     if (totalLbl) { totalLbl.textContent = 'Tarif classique'; totalLbl.style.display = ''; }
 
