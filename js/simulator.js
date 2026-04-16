@@ -232,7 +232,17 @@ function price(dist_m, dur_s, when) {
 
   // === Plafond dynamique des minutes facturables ===
   // Exemple : 25 km ⇒ max 37.5 min facturées (arrondi appliqué par la dégressivité)
-  const MINUTES_CAP_RATIO = 2.1;                 // 1.1 min par km
+   let MINUTES_CAP_RATIO;
+
+if (km <= 10) {
+  MINUTES_CAP_RATIO = 2.2;
+} else if (km <= 25) {
+  MINUTES_CAP_RATIO = 2.0;
+} else if (km <= 50) {
+  MINUTES_CAP_RATIO = 1.7;
+} else {
+  MINUTES_CAP_RATIO = 1.5;
+}                // 1.1 min par km
   const maxBillableMin    = MINUTES_CAP_RATIO * km;
   const billableMin       = Math.min(min, maxBillableMin);
 
