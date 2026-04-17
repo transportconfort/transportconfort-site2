@@ -289,7 +289,7 @@ if (km <= 10) {
   );
 
   let amt = PICKUP_FEE + kmCharge(km) + minCharge(billableMin);
-  if (isNW) amt *= 1.15;
+  if (isNW) amt *= 1.10;
 
   return Math.round(amt * 100) / 100;
 }
