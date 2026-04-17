@@ -265,23 +265,36 @@ if (km <= 10) {
     return sum;
   }
 
+   const isShortTrip = km <= 20;
   function minCharge(m) {
-     const bands = [
-  { upto: 45, factor: 1.05 },
-  { upto: 90, factor: 0.75 },
-  { upto: Infinity, factor: 0.65 }
-    ];
-    let remain = m, last = 0, sum = 0;
-    for (const b of bands) {
-      const seg = Math.max(0, Math.min(remain, b.upto - last));
-      if (!seg) continue;
-      sum += seg * PER_MIN * b.factor;
-      remain -= seg;
-      last = b.upto;
-      if (remain <= 0) break;
-    }
-    return sum;
+  const bands = isShortTrip
+    ? [
+        { upto: 45, factor: 1.05 },
+        { upto: 90, factor: 0.75 },
+        { upto: Infinity, factor: 0.65 }
+      ]
+    : [
+        { upto: 45, factor: 0.85 },
+        { upto: 90, factor: 0.75 },
+        { upto: Infinity, factor: 0.65 }
+      ];
+
+  let remain = m, last = 0, sum = 0;
+
+  for (const b of bands) {
+    const seg = Math.max(0, Math.min(remain, b.upto - last));
+    if (!seg) continue;
+
+    sum += seg * PER_MIN * b.factor;
+
+    remain -= seg;
+    last = b.upto;
+
+    if (remain <= 0) break;
   }
+
+  return sum;
+}
 
   const isNW = isNightOrWeekend(
     when.toISOString().slice(0, 10),
