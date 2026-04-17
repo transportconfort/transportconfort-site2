@@ -267,7 +267,7 @@ if (km <= 10) {
 
   function minCharge(m) {
      const bands = [
-  { upto: 45, factor: 0.95 },
+  { upto: 45, factor: 1.05 },
   { upto: 90, factor: 0.75 },
   { upto: Infinity, factor: 0.65 }
     ];
