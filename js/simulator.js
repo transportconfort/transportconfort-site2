@@ -266,10 +266,10 @@ if (km <= 10) {
   }
 
   function minCharge(m) {
-    const bands = [
-      { upto: 60,       factor: 0.85 },
-      { upto: 120,      factor: 0.75 },
-      { upto: Infinity, factor: 0.70 }
+     const bands = [
+  { upto: 45, factor: 0.85 },
+  { upto: 90, factor: 0.75 },
+  { upto: Infinity, factor: 0.65 }
     ];
     let remain = m, last = 0, sum = 0;
     for (const b of bands) {
