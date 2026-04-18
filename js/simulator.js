@@ -433,7 +433,7 @@ if (km <= 10) {
 
       let airportFare = null, airportLabel = null;
 
-      if ((isCDG || isOrly) && kmTotal <= 35) {
+      if ((isCDG || isOrly) && kmTotal <= 40) {
         if (isCDG) { airportFare = FORFAITS.CDG[isNW ? 'night' : 'day']; airportLabel = `Forfait CDG ${isNW ? 'nuit/WE' : 'jour'}`; }
         else       { airportFare = FORFAITS.ORY[isNW ? 'night' : 'day']; airportLabel = `Forfait ORY ${isNW ? 'nuit/WE' : 'jour'}`; }
       } else if (isBeauvais && isIDF(fromText)) {
