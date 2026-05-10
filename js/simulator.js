@@ -152,20 +152,16 @@
   const dr = new google.maps.DirectionsRenderer({ map });
 
   // ====== Utilitaires tarifs ======
-  function isNight(dateStr, timeStr) {
-  try {
-    const [y, m, d] = (dateStr || '').split('-').map(Number);
-    const [hh, mm] = (timeStr || '').split(':').map(Number);
+function isNight(dateStr, timeStr) {
+  if (!timeStr) return false;
 
-    const dt = new Date(y, (m || 1) - 1, d || 1, hh || 0, mm || 0);
+  const parts = timeStr.split(':');
 
-    const hour = dt.getHours();
+  const hour = parseInt(parts[0], 10);
 
-    return hour >= 23 || hour < 7;
-  } catch {
-    return false;
-  }
+  return hour >= 23 || hour < 7;
 }
+   
 function isNightOrWeekend(dateStr, timeStr) {
   try {
     const [y, m, d] = (dateStr || '').split('-').map(Number);
