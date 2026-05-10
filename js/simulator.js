@@ -26,10 +26,7 @@
     CDG: { day: 60, night: 70 },
     BVA: { day: 150, night: 170 },
   };
-  // Casino Barrière, 3 Av. de Ceinture, 95880 Enghien-les-Bains
-  const ENGHIEN   = { lat: 48.96992, lng: 2.30939 };
-  const R_ENGHIEN = 0.6; // km — rayon court autour du Casino
-
+ 
   // ====== DOM ======
   const els = {
     from: TC.q('#from'),
@@ -207,22 +204,6 @@ function isNightOrWeekend(dateStr, timeStr) {
     return 2 * R * Math.asin(Math.sqrt(x));
   }
 
-  function computeEnghienForfait(kmToEnghien, isNightWE) {
-    let band = null;
-    if (kmToEnghien <= 5)
-      band = isNightWE ? { price: 20, label: 'Forfait Enghien 5 km (nuit/WE)' }
-                       : { price: 15, label: 'Forfait Enghien 5 km (jour)' };
-    else if (kmToEnghien <= 10)
-      band = isNightWE ? { price: 30, label: 'Forfait Enghien 10 km (nuit/WE)' }
-                       : { price: 25, label: 'Forfait Enghien 10 km (jour)' };
-    else if (kmToEnghien <= 20)
-      band = isNightWE ? { price: 60, label: 'Forfait Enghien 20 km (nuit/WE)' }
-                       : { price: 50, label: 'Forfait Enghien 20 km (jour)' };
-    else if (kmToEnghien <= 30)
-      band = isNightWE ? { price: 80, label: 'Forfait Enghien 30 km (nuit/WE)' }
-                       : { price: 70, label: 'Forfait Enghien 30 km (jour)' };
-    return band ? { total: band.price, label: band.label } : null;
-  }
 // ===== Minimum de course =====
 const MIN_FARE = 20; // ou 18 selon ta stratégie
 
@@ -493,38 +474,6 @@ const isAirportNight = isNight(dateStr, timeStr); // aéroports uniquement
     throw '__DONE__';
   }
 })();
-
-    // ===== Forfait Enghien =====
-    (function tryEnghien() {
-      // Si on a eu un itinéraire Directions on l’a déjà affiché ; sinon on ne peut pas mesurer la proximité,
-      // donc on passe ce test (cas rarissime).
-      const dir = dr.getDirections?.();
-      const leg0 = dir?.routes?.[dr.getRouteIndex?.() ?? 0]?.legs?.[0];
-      if (!leg0) return;
-
-      const start = { lat: leg0.start_location.lat(), lng: leg0.start_location.lng() };
-      const end   = { lat: leg0.end_location.lat(),   lng: leg0.end_location.lng() };
-      const dStart = haversineKm(start, ENGHIEN);
-      const dEnd   = haversineKm(end,   ENGHIEN);
-      const isEnghienEndpoint = (dStart <= R_ENGHIEN) || (dEnd <= R_ENGHIEN);
-      if (!isEnghienEndpoint) return;
-
-      const bandDist = (dStart <= R_ENGHIEN) ? dEnd : dStart;
-      const eng = computeEnghienForfait(bandDist, isNW);
-      if (!eng) return;
-
-      els.distance.textContent = '—';
-      els.duration.textContent = '—';
-      els.total.textContent    = TC.fmtMoney(eng.total);
-      const totalLbl = document.getElementById('totalLabel');
-      if (totalLbl) { totalLbl.textContent = eng.label; totalLbl.style.display = ''; }
-      els.calendlyBtn?.removeAttribute('disabled');
-      window._TC_LAST = {
-        type: 'FORFAIT_ENGHIEN', from, to, whenISO: dt.toISOString(),
-        price_eur: eng.total, label: eng.label, km_to_enghien: Math.round(bandDist*10)/10
-      };
-      throw '__DONE__';
-    })();
 
     // ===== Tarif classique (prix = distance la plus courte ; durée = plus rapide/fallback) =====
    let p = price(dist_m, dur_s, dt);
