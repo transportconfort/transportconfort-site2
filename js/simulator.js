@@ -166,7 +166,25 @@
     return false;
   }
 }
+function isNightOrWeekend(dateStr, timeStr) {
+  try {
+    const [y, m, d] = (dateStr || '').split('-').map(Number);
+    const [hh, mm] = (timeStr || '').split(':').map(Number);
 
+    const dt = new Date(y, (m || 1) - 1, d || 1, hh || 0, mm || 0);
+
+    const day = dt.getDay();
+    const hour = dt.getHours();
+
+    const isWE = day === 0 || day === 6;
+    const isNightTime = hour >= 23 || hour < 7;
+
+    return isWE || isNightTime;
+  } catch {
+    return false;
+  }
+}
+   
   // Ces deux helpers restent dispo si tu veux t’en resservir ailleurs
   function detectAirportCode(fromText, toText) {
     const t = (fromText + ' ' + toText).toLowerCase();
@@ -405,8 +423,10 @@ if (km <= 10) {
     }
 
     const fromText = els.from.value || '';
-    const toText   = els.to.value   || '';
-    const isNW     = isNightOrWeekend(dateStr, timeStr);
+const toText   = els.to.value   || '';
+
+const isNW = isNightOrWeekend(dateStr, timeStr); // classique + Enghien
+const isAirportNight = isNight(dateStr, timeStr); // aéroports uniquement
 
     // Petite heuristique IDF
     function isIDF(addr) {
@@ -419,42 +439,64 @@ if (km <= 10) {
       return patterns.some(p => a.includes(p));
     }
 
-    // ===== Forfaits Aéroports =====
-    // NB: seuil de 35 km évalué sur la distance tarifiée (plus courte)
-    (function tryAirportFare() {
-      const kmTotal = dist_m / 1000;
-      const dep = fromText.toLowerCase();
-      const arr = toText.toLowerCase();
+ // ===== Forfaits Aéroports =====
+// NB: seuil de 35 km évalué sur la distance tarifiée (plus courte)
+(function tryAirportFare() {
+  const kmTotal = dist_m / 1000;
+  const dep = fromText.toLowerCase();
+  const arr = toText.toLowerCase();
 
-      const isCDG = dep.includes("charles-de-gaulle") || dep.includes("charles de gaulle") || dep.includes("roissy") || dep.includes("cdg")
-                 || arr.includes("charles-de-gaulle") || arr.includes("charles de gaulle") || arr.includes("roissy") || arr.includes("cdg");
-      const isOrly = dep.includes("orly") || arr.includes("orly");
-      const isBeauvais = arr.includes("beauvais") || arr.includes("tillé") || arr.includes("tille");
+  const isCDG = dep.includes("charles-de-gaulle") || dep.includes("charles de gaulle") || dep.includes("roissy") || dep.includes("cdg")
+             || arr.includes("charles-de-gaulle") || arr.includes("charles de gaulle") || arr.includes("roissy") || arr.includes("cdg");
 
-      let airportFare = null, airportLabel = null;
+  const isOrly = dep.includes("orly") || arr.includes("orly");
 
-      if ((isCDG || isOrly) && kmTotal <= 40) {
-        if (isCDG) { airportFare = FORFAITS.CDG[isNW ? 'night' : 'day']; airportLabel = `Forfait CDG ${isNW ? 'nuit/WE' : 'jour'}`; }
-        else       { airportFare = FORFAITS.ORY[isNW ? 'night' : 'day']; airportLabel = `Forfait ORY ${isNW ? 'nuit/WE' : 'jour'}`; }
-      } else if (isBeauvais && isIDF(fromText)) {
-        airportFare = FORFAITS.BVA[isNW ? 'night' : 'day'];
-        airportLabel = `Forfait BVA ${isNW ? 'nuit/WE' : 'jour'}`;
-      }
+  const isBeauvais = arr.includes("beauvais") || arr.includes("tillé") || arr.includes("tille");
 
-      if (airportFare !== null) {
-        els.distance.textContent = '—';
-        els.duration.textContent = '—';
-        els.total.textContent    = TC.fmtMoney(airportFare);
-        const totalLbl = document.getElementById('totalLabel');
-        if (totalLbl) { totalLbl.textContent = airportLabel; totalLbl.style.display = ''; }
-        els.calendlyBtn?.removeAttribute('disabled');
-        window._TC_LAST = {
-          type: 'FORFAIT_AEROPORT', from, to, whenISO: dt.toISOString(),
-          price_eur: airportFare, label: airportLabel
-        };
-        throw '__DONE__'; // on sort proprement
-      }
-    })();
+  let airportFare = null, airportLabel = null;
+
+  if ((isCDG || isOrly) && kmTotal <= 40) {
+
+    if (isCDG) {
+      airportFare = FORFAITS.CDG[isAirportNight ? 'night' : 'day'];
+      airportLabel = `Forfait CDG ${isAirportNight ? 'nuit' : 'jour'}`;
+    } else {
+      airportFare = FORFAITS.ORY[isAirportNight ? 'night' : 'day'];
+      airportLabel = `Forfait ORY ${isAirportNight ? 'nuit' : 'jour'}`;
+    }
+
+  } else if (isBeauvais && isIDF(fromText)) {
+
+    airportFare = FORFAITS.BVA[isAirportNight ? 'night' : 'day'];
+    airportLabel = `Forfait BVA ${isAirportNight ? 'nuit' : 'jour'}`;
+  }
+
+  if (airportFare !== null) {
+    els.distance.textContent = '—';
+    els.duration.textContent = '—';
+    els.total.textContent    = TC.fmtMoney(airportFare);
+
+    const totalLbl = document.getElementById('totalLabel');
+
+    if (totalLbl) {
+      totalLbl.textContent = airportLabel;
+      totalLbl.style.display = '';
+    }
+
+    els.calendlyBtn?.removeAttribute('disabled');
+
+    window._TC_LAST = {
+      type: 'FORFAIT_AEROPORT',
+      from,
+      to,
+      whenISO: dt.toISOString(),
+      price_eur: airportFare,
+      label: airportLabel
+    };
+
+    throw '__DONE__';
+  }
+})();
 
     // ===== Forfait Enghien =====
     (function tryEnghien() {
