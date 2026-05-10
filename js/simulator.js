@@ -20,7 +20,7 @@
   await loadGmaps();
 
   // ====== Barèmes ======
-  const MAD_TOTALS = { 1: 85, 2: 160, 3: 225, 4: 260, 8: 440 };
+  const MAD_TOTALS = { 1: 80, 2: 150, 3: 210, 4: 240, 8: 400 };
   const FORFAITS = {
     ORY: { day: 50, night: 60 },
     CDG: { day: 60, night: 70 },
@@ -338,7 +338,7 @@ if (km <= 10) {
       const sel = document.getElementById('mad-hours');
       const h = sel ? Number(sel.value || 1) : 1;
       let total = MAD_TOTALS[h];
-      if (total == null) total = 85 * h;
+      if (total == null) total = 80 * h;
 
       els.distance.textContent = '—';
       els.duration.textContent = h + ' h';
