@@ -152,20 +152,20 @@
   const dr = new google.maps.DirectionsRenderer({ map });
 
   // ====== Utilitaires tarifs ======
-  function isNightOrWeekend(dateStr, timeStr) {
-    try {
-      const [y, m, d] = (dateStr || '').split('-').map(Number);
-      const [hh, mm] = (timeStr || '').split(':').map(Number);
-      const dt = new Date(y, (m || 1) - 1, d || 1, hh || 0, mm || 0);
-      const day = dt.getDay(); // 0 = dimanche
-      const hour = dt.getHours();
-      const isWE = day === 0 || day === 6;
-      const isNight = hour >= 23 || hour < 7;
-      return isNight || isWE;
-    } catch {
-      return false;
-    }
+  function isNight(dateStr, timeStr) {
+  try {
+    const [y, m, d] = (dateStr || '').split('-').map(Number);
+    const [hh, mm] = (timeStr || '').split(':').map(Number);
+
+    const dt = new Date(y, (m || 1) - 1, d || 1, hh || 0, mm || 0);
+
+    const hour = dt.getHours();
+
+    return hour >= 23 || hour < 7;
+  } catch {
+    return false;
   }
+}
 
   // Ces deux helpers restent dispo si tu veux t’en resservir ailleurs
   function detectAirportCode(fromText, toText) {
