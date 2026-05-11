@@ -415,6 +415,21 @@ const isAirportNight = isNight(dateStr, timeStr); // aéroports uniquement
       const a = (addr || '').toLowerCase();
       return patterns.some(p => a.includes(p));
     }
+     function isParisTrainStation(text) {
+  const t = (text || '').toLowerCase();
+
+  const stations = [
+    'gare du nord',
+    'gare de lyon',
+    'gare montparnasse',
+    'gare saint-lazare',
+    'gare de l\'est',
+    'gare d\'austerlitz',
+    'gare bercy'
+  ];
+
+  return stations.some(s => t.includes(s));
+}
 
  // ===== Forfaits Aéroports =====
 // NB: seuil de 35 km évalué sur la distance tarifiée (plus courte)
@@ -480,12 +495,27 @@ const isAirportNight = isNight(dateStr, timeStr); // aéroports uniquement
 
 // Application du minimum de course
 p = applyMinimumFare(p);
+     
+     // Supplément gare parisienne
+if (isParisTrainStation(fromText) || isParisTrainStation(toText)) {
+  p += 7;
+}
 
 els.distance.textContent = (dist_m / 1000).toFixed(1) + ' km';
 els.duration.textContent = Math.round(dur_s / 60) + ' min';
 els.total.textContent    = TC.fmtMoney(p);
     const totalLbl = document.getElementById('totalLabel');
-    if (totalLbl) { totalLbl.textContent = 'Tarif classique'; totalLbl.style.display = ''; }
+   if (totalLbl) {
+  const hasStationSupplement =
+    isParisTrainStation(fromText) ||
+    isParisTrainStation(toText);
+
+  totalLbl.textContent = hasStationSupplement
+    ? 'Tarif classique + gare parisienne'
+    : 'Tarif classique';
+
+  totalLbl.style.display = '';
+}
 
     els.calendlyBtn?.removeAttribute('disabled');
     window._TC_LAST = {
