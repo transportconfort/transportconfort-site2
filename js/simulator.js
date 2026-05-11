@@ -490,43 +490,49 @@ const isAirportNight = isNight(dateStr, timeStr); // aéroports uniquement
   }
 })();
 
-    // ===== Tarif classique (prix = distance la plus courte ; durée = plus rapide/fallback) =====
-   let p = price(dist_m, dur_s, dt);
+   // ===== Tarif classique (prix = distance la plus courte ; durée = plus rapide/fallback) =====
+let p = price(dist_m, dur_s, dt);
 
 // Application du minimum de course
 p = applyMinimumFare(p);
-     
-     // Supplément gare parisienne
-if (isParisTrainStation(fromText) || isParisTrainStation(toText)) {
+
+// Supplément gare parisienne
+const hasStationSupplement =
+  isParisTrainStation(fromText) ||
+  isParisTrainStation(toText);
+
+if (hasStationSupplement) {
   p += 7;
 }
 
 els.distance.textContent = (dist_m / 1000).toFixed(1) + ' km';
 els.duration.textContent = Math.round(dur_s / 60) + ' min';
 els.total.textContent    = TC.fmtMoney(p);
-    const totalLbl = document.getElementById('totalLabel');
-   if (totalLbl) {
-  const hasStationSupplement =
-    isParisTrainStation(fromText) ||
-    isParisTrainStation(toText);
 
+const totalLbl = document.getElementById('totalLabel');
+
+if (totalLbl) {
   totalLbl.textContent = hasStationSupplement
-    ? 'Tarif classique + gare parisienne'
+    ? 'Supplément gare inclus'
     : 'Tarif classique';
 
   totalLbl.style.display = '';
 }
 
-    els.calendlyBtn?.removeAttribute('disabled');
-    window._TC_LAST = {
-      type: 'COURSE',
-      from, to,
-      whenISO: dt.toISOString(),
-      dist_m: dist_m,
-      dur_s:  dur_s,
-      price_eur: p,
-      label: 'Tarif classique',
-    };
+els.calendlyBtn?.removeAttribute('disabled');
+
+window._TC_LAST = {
+  type: 'COURSE',
+  from,
+  to,
+  whenISO: dt.toISOString(),
+  dist_m: dist_m,
+  dur_s: dur_s,
+  price_eur: p,
+  label: hasStationSupplement
+    ? 'Supplément gare inclus'
+    : 'Tarif classique',
+};
   } // fin estimate()
 
   // ===== Bind UI =====
