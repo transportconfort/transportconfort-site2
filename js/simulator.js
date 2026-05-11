@@ -513,7 +513,7 @@ const totalLbl = document.getElementById('totalLabel');
 
 if (totalLbl) {
   totalLbl.textContent = hasStationSupplement
-    ? 'Supplément gare inclus'
+    ? 'Tarif gare parisienne'
     : 'Tarif classique';
 
   totalLbl.style.display = '';
@@ -530,7 +530,7 @@ window._TC_LAST = {
   dur_s: dur_s,
   price_eur: p,
   label: hasStationSupplement
-    ? 'Supplément gare inclus'
+    ? 'Tarif gare parisienne'
     : 'Tarif classique',
 };
   } // fin estimate()
