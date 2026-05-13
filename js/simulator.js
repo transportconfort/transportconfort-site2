@@ -176,36 +176,57 @@
   }
 
   // Ces deux helpers restent dispo si tu veux t’en resservir ailleurs
-  function detectAirportCode(fromText, toText) {
-    const t = (fromText + ' ' + toText).toLowerCase();
+ function detectAirportCode(fromText, toText) {
+  const t = (fromText + ' ' + toText).toLowerCase();
 
-    if (
-      t.includes('orly') ||
-      t.includes('ory')
-    ) {
-      return 'ORY';
-    }
-
-    if (
-      t.includes('roissy') ||
-      t.includes('charles de gaulle') ||
-      t.includes('charles-de-gaulle') ||
-      t.includes('cdg')
-    ) {
-      return 'CDG';
-    }
-
-    if (
-      t.includes('beauvais') ||
-      t.includes('tillé') ||
-      t.includes('tille') ||
-      t.includes('bva')
-    ) {
-      return 'BVA';
-    }
-
-    return null;
+  // ===== ORLY =====
+  if (
+    t.includes('orly') ||
+    t.includes('ory')
+  ) {
+    return 'ORY';
   }
+
+  // ===== CDG / ROISSY =====
+  if (
+    t.includes('roissy') ||
+    t.includes('charles de gaulle') ||
+    t.includes('charles-de-gaulle') ||
+    t.includes('aéroport de paris-charles-de-gaulle') ||
+    t.includes('aeroport de paris-charles-de-gaulle') ||
+    t.includes('cdg') ||
+
+    // terminaux CDG
+    t.includes('terminal 1') ||
+    t.includes('terminal 2') ||
+    t.includes('terminal 2a') ||
+    t.includes('terminal 2b') ||
+    t.includes('terminal 2c') ||
+    t.includes('terminal 2d') ||
+    t.includes('terminal 2e') ||
+    t.includes('terminal 2f') ||
+    t.includes('terminal 2g') ||
+    t.includes('terminal 3') ||
+
+    // communes ultra liées CDG
+    t.includes('le mesnil-amelot') ||
+    t.includes('tremblay-en-france')
+  ) {
+    return 'CDG';
+  }
+
+  // ===== BEAUVAIS =====
+  if (
+    t.includes('beauvais') ||
+    t.includes('tillé') ||
+    t.includes('tille') ||
+    t.includes('bva')
+  ) {
+    return 'BVA';
+  }
+
+  return null;
+}
 
   function isParisLeg(fromText, toText) {
     const f = (fromText || '').toLowerCase();
