@@ -534,14 +534,22 @@ const isNight = isNightOnly(
     // Application du minimum de course
     p = applyMinimumFare(p);
 
-    // Supplément gare parisienne
-    const hasStationSupplement =
-      isParisTrainStation(fromText) ||
-      isParisTrainStation(toText);
+   // Supplément gare parisienne
+// Seulement si gare détectée + trajet <= 15 km + pas de forfait aéroport
+const airportDetected = detectAirportCode(fromText, toText);
+const kmTotal = dist_m / 1000;
 
-    if (hasStationSupplement) {
-      p += 3;
-    }
+const hasStationSupplement =
+  (
+    isParisTrainStation(fromText) ||
+    isParisTrainStation(toText)
+  ) &&
+  kmTotal <= 15 &&
+  !airportDetected;
+
+if (hasStationSupplement) {
+  p += 3;
+}
 
     els.distance.textContent = (dist_m / 1000).toFixed(1) + ' km';
     els.duration.textContent = Math.round(dur_s / 60) + ' min';
