@@ -156,24 +156,26 @@
     return hour >= 23 || hour < 7;
   }
 
-  function isNightOrWeekend(dateStr, timeStr) {
-    try {
-      const [y, m, d] = (dateStr || '').split('-').map(Number);
-      const [hh, mm] = (timeStr || '').split(':').map(Number);
+  function isNightOnly(dateStr, timeStr) {
+  try {
+    const [y, m, d] = (dateStr || '').split('-').map(Number);
+    const [hh, mm] = (timeStr || '').split(':').map(Number);
 
-      const dt = new Date(y, (m || 1) - 1, d || 1, hh || 0, mm || 0);
+    const dt = new Date(
+      y,
+      (m || 1) - 1,
+      d || 1,
+      hh || 0,
+      mm || 0
+    );
 
-      const day = dt.getDay();
-      const hour = dt.getHours();
+    const hour = dt.getHours();
 
-      const isWE = day === 0 || day === 6;
-      const isNightTime = hour >= 23 || hour < 7;
-
-      return isWE || isNightTime;
-    } catch {
-      return false;
-    }
+    return hour >= 23 || hour < 7;
+  } catch {
+    return false;
   }
+}
 
   // Ces deux helpers restent dispo si tu veux t’en resservir ailleurs
  function detectAirportCode(fromText, toText) {
@@ -334,13 +336,13 @@ function applyMinimumFare(amount) {
       return sum;
     }
 
-    const isNW = isNightOrWeekend(
-      when.toISOString().slice(0, 10),
-      when.toTimeString().slice(0, 5)
-    );
+const isNight = isNightOnly(
+  when.toISOString().slice(0, 10),
+  when.toTimeString().slice(0, 5)
+);
 
     let amt = PICKUP_FEE + kmCharge(km) + minCharge(billableMin);
-    if (isNW) amt *= 1.10;
+    if (isNight) amt *= 1.05;
 
     return Math.round(amt * 100) / 100;
   }
@@ -445,7 +447,6 @@ function applyMinimumFare(amount) {
     const fromText = els.from.value || '';
     const toText = els.to.value || '';
 
-    const isNW = isNightOrWeekend(dateStr, timeStr); // classique + Enghien
     const isAirportNight = isNight(dateStr, timeStr); // aéroports uniquement
 
     // Petite heuristique IDF
