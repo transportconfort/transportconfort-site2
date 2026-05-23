@@ -260,9 +260,9 @@ function applyMinimumFare(amount) {
   // Majoration Nuit/WE : +15%
   // Plafond dynamique : minutes facturables ≤ 1.5 × km (évite les excès sur trajets courts très congestionnés)
   function price(dist_m, dur_s, when) {
-    const PICKUP_FEE = 5.00;
-    const PER_KM = 1.50;
-    const PER_MIN = 0.40;
+    const PICKUP_FEE = 10.00;
+    const PER_KM = 1.40;
+    const PER_MIN = 0.35;
 
     const km = Math.max(0, dist_m / 1000);
     const min = Math.max(0, dur_s / 60);
@@ -286,10 +286,10 @@ function applyMinimumFare(amount) {
 
     function kmCharge(k) {
       const bands = [
-        { upto: 20, factor: 1.00 },
-        { upto: 40, factor: 0.85 },
-        { upto: 70, factor: 0.73 },
-        { upto: Infinity, factor: 0.68 }
+        { upto: 15, factor: 1.00 },
+        { upto: 35, factor: 0.82 },
+        { upto: 60, factor: 0.68 },
+        { upto: Infinity, factor: 0.62 }
       ];
       let remain = k, last = 0, sum = 0;
       for (const b of bands) {
